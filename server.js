@@ -20,8 +20,8 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json());
 app.use(cors());
 
-// Static files route
-app.use(express.static(path.join(__dirname, 'mani-app', 'public')));
+// Static files route (Directly points to public folder based on render logs)
+app.use(express.static(path.join(__dirname, 'public')));
 
 // MongoDB Connection
 const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://sarathisdh_db_user:Sarathi2007@cluster0.qmjrufz.mongodb.net/dream66?retryWrites=true&w=majority&appName=Cluster0";
@@ -79,35 +79,35 @@ let jetxNextTarget = 2.00;
 let aviatorManualSet = false;
 let jetxManualSet = false;
 
-// --- EXะCT ROUTING FOR MANI-APP/PUBLIC STRUCTURE ---
+// --- CORRECT ROUTING MAPPED TO PUBLIC FOLDER ---
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'mani-app', 'public', 'index.html'));
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Dedicated route for 13 games inside mani-app/public/games
+// Dedicated route for 13 games inside public/games folder
 app.get('/games/:gameName', (req, res) => {
     let gameName = req.params.gameName;
     if (!gameName.includes('.')) gameName += '.html';
-    const gamePath = path.join(__dirname, 'mani-app', 'public', 'games', gameName);
+    const gamePath = path.join(__dirname, 'public', 'games', gameName);
     
     res.sendFile(gamePath, (err) => {
         if (err) {
-            res.sendFile(path.join(__dirname, 'mani-app', 'public', 'index.html'));
+            res.sendFile(path.join(__dirname, 'public', 'index.html'));
         }
     });
 });
 
-// General pages route (payment.html, profile.html, etc.) inside mani-app/public
+// General pages route (payment.html, profile.html, etc.) inside public folder
 app.get('/:page', (req, res, next) => {
     let pageName = req.params.page;
     if (pageName === 'games') return next();
     if (!pageName.includes('.')) pageName += '.html';
     
-    const filePath = path.join(__dirname, 'mani-app', 'public', pageName);
+    const filePath = path.join(__dirname, 'public', pageName);
     
     res.sendFile(filePath, (err) => {
         if (err) {
-            res.sendFile(path.join(__dirname, 'mani-app', 'public', 'index.html'));
+            res.sendFile(path.join(__dirname, 'public', 'index.html'));
         }
     });
 });
@@ -116,7 +116,7 @@ app.get('/:page', (req, res, next) => {
 app.post('/api/send-otp', (req, res) => {
     const { phone } = req.body;
     if (!phone || phone.length !== 10) {
-        return res.status(400).json({ success: false, message: 'சரியான 10 இலக்க மொபைல் எண்ண을 உள்ளிடவும்.' });
+        return res.status(400).json({ success: false, message: 'சரியான 10 இலக்க மொபைல் எண்ணை உள்ளிடவும்.' });
     }
     const otp = Math.floor(100000 + Math.random() * 900000);
     otpStorage[phone] = otp;
