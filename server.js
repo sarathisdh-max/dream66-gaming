@@ -19,7 +19,8 @@ const PORT = process.env.PORT || 5000;
 
 app.use(express.json());
 app.use(cors());
-// 🛠️ Updated path to match your folder structure (mani-app/public)
+
+// Static files route for public folder
 app.use(express.static(path.join(__dirname, 'mani-app', 'public')));
 
 // MongoDB Connection
@@ -57,7 +58,7 @@ const transactionSchema = new mongoose.Schema({
 
 const chatSchema = new mongoose.Schema({
     phone: { type: String, required: true },
-    sender: { type: String, required: true }, // 'user' or 'admin'
+    sender: { type: String, required: true },
     message: { type: String, required: true },
     timestamp: { type: Date, default: Date.now }
 });
@@ -70,7 +71,6 @@ const otpStorage = {};
 let globalAnnouncement = "Welcome to DREAM 66! Play Aviator & JetX safely.";
 let activeOnlineUsers = 0;
 
-// Game History & Multipliers
 let aviatorHistory = [1.50, 2.10, 1.12, 3.40];
 let jetxHistory = [1.80, 1.30, 2.50, 1.05];
 
@@ -79,19 +79,25 @@ let jetxNextTarget = 2.00;
 let aviatorManualSet = false;
 let jetxManualSet = false;
 
-// Static & Game Routes
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'mani-app', 'public', 'index.html')));
-app.get('/payment.html', (req, res) => res.sendFile(path.join(__dirname, 'mani-app', 'public', 'payment.html')));
+// Fixed Routes to prevent Cannot GET errors and support Single Page Navigation
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'mani-app', 'public', 'index.html'));
+});
 
 app.get('/:page', (req, res, next) => {
     let pageName = req.params.page;
-    if (!pageName.endsWith('.html')) pageName += '.html';
+    if (!pageName.includes('.')) pageName += '.html';
+    
     const filePath = path.join(__dirname, 'mani-app', 'public', pageName);
     
     res.sendFile(filePath, (err) => {
         if (err) {
             const gamePath = path.join(__dirname, 'mani-app', 'public', 'games', pageName);
-            res.sendFile(gamePath, (err2) => { if (err2) next(); });
+            res.sendFile(gamePath, (err2) => {
+                if (err2) {
+                    res.sendFile(path.join(__dirname, 'mani-app', 'public', 'index.html'));
+                }
+            });
         }
     });
 });
@@ -180,7 +186,7 @@ app.post('/api/deposit', async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 });
-// VIP WITHDRAWAL API
+
 app.post('/api/withdraw', async (req, res) => {
     try {
         const { phone, amount } = req.body;
@@ -209,35 +215,11 @@ app.post('/api/withdraw', async (req, res) => {
             case 8: maxPerWithdraw = 70000; maxDailyCount = 20; break;
             case 9: maxPerWithdraw = 80000; maxDailyCount = 25; break;
             case 10: maxPerWithdraw = 100000; maxDailyCount = 30; break;
-            case 11: maxPerWithdraw = 150000; maxDailyCount = 35; break;
-            case 12: maxPerWithdraw = 200000; maxDailyCount = 40; break;
-            case 13: maxPerWithdraw = 250000; maxDailyCount = 45; break;
-            case 14: maxPerWithdraw = 300000; maxDailyCount = 50; break;
             default: maxPerWithdraw = 500000; maxDailyCount = 60; break;
         }
 
         if (numAmount > maxPerWithdraw) {
-            return res.status(400).json({ 
-                success: false, 
-                message: `உங்கள் VIP Level ${user.vipLevel}-க்கு ஒரு முறைக்கு அனுமதிக்கப்பட்ட அதிகபட்ச வித்ராவ் வரம்பு ₹${maxPerWithdraw} மட்டுமே!` 
-            });
-        }
-
-        const startOfDay = new Date();
-        startOfDay.setHours(0, 0, 0, 0);
-
-        const todayWithdrawalsCount = await Transaction.countDocuments({
-            phone: phone,
-            type: 'Withdrawal',
-            status: { $in: ['Pending', 'Approved'] },
-            date: { $gte: startOfDay }
-        });
-
-        if (todayWithdrawalsCount >= maxDailyCount) {
-            return res.status(400).json({ 
-                success: false, 
-                message: `இன்றைய நாளுக்கான வித்ராவ் வரம்பு முடிந்துவிட்டது! உங்கள் VIP Level ${user.vipLevel}-க்கு ஒரு நாளைக்கு ${maxDailyCount} முறை மட்டுமே அனுமதிக்கப்படும்.` 
-            });
+            return res.status(400).json({ success: false, message: `அதிகபட்ச வித்ராவ் வரம்பு ₹${maxPerWithdraw}` });
         }
 
         if (user.balance < numAmount) {
@@ -250,13 +232,12 @@ app.post('/api/withdraw', async (req, res) => {
         const newTx = new Transaction({ phone, type: 'Withdrawal', amount: numAmount, status: 'Pending' });
         await newTx.save();
 
-        res.status(200).json({ success: true, message: 'வித்ராவ் கோரிக்கை வெற்றிகரமாக சமர்ப்பிக்கப்பட்டது!', newBalance: user.balance });
+        res.status(200).json({ success: true, message: 'வித்ராவ் கோரிக்கை சமர்ப்பிக்கப்பட்டது!', newBalance: user.balance });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
 });
 
-// Chat History API
 app.get('/api/chat/history/:phone', async (req, res) => {
     try {
         const chats = await Chat.find({ phone: req.params.phone }).sort({ timestamp: 1 });
@@ -266,12 +247,8 @@ app.get('/api/chat/history/:phone', async (req, res) => {
     }
 });
 
-// Admin Control APIs
 app.post('/api/admin/set-target', (req, res) => {
     const { game, target } = req.body;
-    if (!game || target === undefined) {
-        return res.status(400).json({ success: false, message: 'விவரங்கள் போதாது.' });
-    }
     if (game === 'jetx') {
         jetxNextTarget = parseFloat(target);
         jetxManualSet = true;
@@ -281,30 +258,17 @@ app.post('/api/admin/set-target', (req, res) => {
         aviatorManualSet = true;
         io.emit('aviatorNextTargetUpdate', aviatorNextTarget.toFixed(2));
     }
-    res.status(200).json({ success: true, message: `${game.toUpperCase()} டார்கெட் ${target}x ஆக பிக்ஸ் செய்யப்பட்டது!` });
+    res.status(200).json({ success: true, message: 'Target updated' });
 });
 
 app.post('/api/admin/block-user', async (req, res) => {
     try {
         const { phone, isBlocked } = req.body;
         const user = await User.findOne({ phone });
-        if (!user) return res.status(400).json({ success: false, message: 'பயனர் கிடைக்கவில்லை.' });
+        if (!user) return res.status(400).json({ success: false, message: 'Not found' });
         user.isBlocked = isBlocked;
         await user.save();
-        res.status(200).json({ success: true, message: `பயனர் வெற்றிகரமாக ${isBlocked ? 'முடக்கப்பட்டுள்ளார்' : 'விடுவிக்கப்பட்டுள்ளார்'}!` });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
-    }
-});
-
-app.post('/api/admin/set-vip', async (req, res) => {
-    try {
-        const { phone, vipLevel } = req.body;
-        const user = await User.findOne({ phone });
-        if (!user) return res.status(400).json({ success: false, message: 'பயனர் கிடைக்கவில்லை.' });
-        user.vipLevel = Number(vipLevel);
-        await user.save();
-        res.status(200).json({ success: true, message: `பயனரின் VIP Level ${vipLevel} என மாற்றப்பட்டது!` });
+        res.status(200).json({ success: true, message: 'Updated' });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
@@ -314,16 +278,12 @@ app.post('/api/admin/adjust-balance', async (req, res) => {
     try {
         const { phone, amount, type } = req.body;
         const user = await User.findOne({ phone });
-        if (!user) return res.status(400).json({ success: false, message: 'பயனர் கிடைக்கவில்லை.' });
-
+        if (!user) return res.status(400).json({ success: false, message: 'Not found' });
         const numAmount = Number(amount);
-        if (type === 'add') {
-            user.balance += numAmount;
-        } else if (type === 'subtract') {
-            user.balance = Math.max(0, user.balance - numAmount);
-        }
+        if (type === 'add') user.balance += numAmount;
+        else if (type === 'subtract') user.balance = Math.max(0, user.balance - numAmount);
         await user.save();
-        res.status(200).json({ success: true, message: `பயனர் வாலட் வெற்றிகரமாக மாற்றப்பட்டது! புதிய பேலன்ஸ்: ₹${user.balance}` });
+        res.status(200).json({ success: true, message: 'Balance adjusted' });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
@@ -334,9 +294,9 @@ app.post('/api/admin/announcement', (req, res) => {
     if (message) {
         globalAnnouncement = message;
         io.emit('announcementUpdate', globalAnnouncement);
-        res.status(200).json({ success: true, message: 'அறிவிப்பு வெற்றிகரமாக வெளியிடப்பட்டது!' });
+        res.status(200).json({ success: true, message: 'Announcement posted' });
     } else {
-        res.status(400).json({ success: false, message: 'செய்தி காலியாக இருக்கக்கூடாது.' });
+        res.status(400).json({ success: false, message: 'Empty message' });
     }
 });
 
@@ -344,44 +304,25 @@ app.get('/api/announcement', (req, res) => {
     res.status(200).json({ success: true, announcement: globalAnnouncement });
 });
 
-// TRANSACTION ACTION API
 app.post('/api/admin/action', async (req, res) => {
     try {
         const { transactionId, status } = req.body;
         const tx = await Transaction.findById(transactionId);
-        if (!tx) return res.status(400).json({ success: false, message: 'பரிவர்த்தனை கிடைக்கவில்லை.' });
-
+        if (!tx) return res.status(400).json({ success: false, message: 'Not found' });
         const user = await User.findOne({ phone: tx.phone });
 
         if (tx.type === 'Deposit' && status === 'Approved' && user) {
             user.balance += tx.amount;
             user.totalDeposit = (user.totalDeposit || 0) + tx.amount;
-            
-            if (user.totalDeposit >= 500000) user.vipLevel = 15;
-            else if (user.totalDeposit >= 300000) user.vipLevel = 14;
-            else if (user.totalDeposit >= 250000) user.vipLevel = 13;
-            else if (user.totalDeposit >= 200000) user.vipLevel = 12;
-            else if (user.totalDeposit >= 150000) user.vipLevel = 11;
-            else if (user.totalDeposit >= 100000) user.vipLevel = 10;
-            else if (user.totalDeposit >= 80000) user.vipLevel = 9;
-            else if (user.totalDeposit >= 70000) user.vipLevel = 8;
-            else if (user.totalDeposit >= 50000) user.vipLevel = 7;
-            else if (user.totalDeposit >= 30000) user.vipLevel = 6;
-            else if (user.totalDeposit >= 20000) user.vipLevel = 5;
-            else if (user.totalDeposit >= 10000) user.vipLevel = 4;
-            else if (user.totalDeposit >= 5000) user.vipLevel = 3;
-            else if (user.totalDeposit >= 2000) user.vipLevel = 2;
-
             await user.save();
-        } 
-        else if (tx.type === 'Withdrawal' && status === 'Rejected' && user) {
+        } else if (tx.type === 'Withdrawal' && status === 'Rejected' && user) {
             user.balance += tx.amount;
             await user.save();
         }
 
         tx.status = status;
         await tx.save();
-        res.status(200).json({ success: true, message: `பரிவர்த்தனை ${status} செய்யப்பட்டுள்ளது!` });
+        res.status(200).json({ success: true, message: 'Action completed' });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
@@ -389,35 +330,8 @@ app.post('/api/admin/action', async (req, res) => {
 
 app.get('/api/admin/detailed-stats', async (req, res) => {
     try {
-        const startOfDay = new Date();
-        startOfDay.setHours(0, 0, 0, 0);
-
-        const todayDeposits = await Transaction.find({ type: 'Deposit', status: 'Approved', date: { $gte: startOfDay } });
-        const todayWithdrawals = await Transaction.find({ type: 'Withdrawal', status: 'Approved', date: { $gte: startOfDay } });
-
-        const todayTotalDeposit = todayDeposits.reduce((sum, tx) => sum + tx.amount, 0);
-        const todayTotalWithdrawal = todayWithdrawals.reduce((sum, tx) => sum + tx.amount, 0);
-        const commission6Percent = todayTotalDeposit * 0.06;
-        const netProfit = (todayTotalDeposit - todayTotalWithdrawal) + commission6Percent;
-
         const users = await User.find({}, { password: 0 });
-        const totalUsersCount = users.length;
-
-        const topDepositors = [...users].filter(u => (u.totalDeposit || 0) > 0).sort((a, b) => b.totalDeposit - a.totalDeposit).slice(0, 5);
-
-        res.status(200).json({
-            success: true,
-            todayTotalDeposit,
-            todayTotalWithdrawal,
-            commission6Percent: commission6Percent.toFixed(2),
-            netProfit: netProfit.toFixed(2),
-            totalUsersCount,
-            activeOnlineUsers,
-            users,
-            topDepositors,
-            aviatorNextTarget: aviatorNextTarget.toFixed(2),
-            jetxNextTarget: jetxNextTarget.toFixed(2)
-        });
+        res.status(200).json({ success: true, users, totalUsersCount: users.length });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
@@ -433,7 +347,7 @@ app.get('/api/admin/pending-transactions', async (req, res) => {
     }
 });
 
-// Real-time Sockets
+// Socket.io Events
 io.on('connection', (socket) => {
     activeOnlineUsers++;
     io.emit('onlineUsersUpdate', activeOnlineUsers);
@@ -448,112 +362,11 @@ io.on('connection', (socket) => {
         const newChat = new Chat({ phone, sender, message });
         await newChat.save();
         io.emit(`chatMessage_${phone}`, newChat);
-        io.emit('newAdminNotification', { type: 'chat', phone });
     });
 
     socket.emit('initHistory', jetxHistory);
     socket.emit('initAviatorHistory', aviatorHistory);
-    socket.emit('aviatorNextTargetUpdate', aviatorNextTarget.toFixed(2));
-    socket.emit('jetxNextTargetUpdate', jetxNextTarget.toFixed(2));
 });
-
-// 60% Profit Algorithm & 40% User Win
-function generate60_40Target() {
-    const rand = Math.random();
-    if (rand < 0.60) {
-        return parseFloat((1.01 + Math.random() * 0.99).toFixed(2));
-    } else {
-        return parseFloat((2.01 + Math.random() * 7.99).toFixed(2));
-    }
-}
-
-// 🔄 AVIATOR GAME LOGIC (Next Round Countdown: 9 to 1)
-function startAviatorGame() {
-    if (!aviatorManualSet) {
-        aviatorNextTarget = generate60_40Target();
-    }
-    aviatorManualSet = false;
-    io.emit('aviatorNextTargetUpdate', aviatorNextTarget.toFixed(2));
-
-    let countdown = 9;
-    io.emit('aviatorCountdown', countdown);
-
-    let timer = setInterval(() => {
-        countdown--;
-        io.emit('aviatorCountdown', countdown);
-        if (countdown <= 0) {
-            clearInterval(timer);
-            runAviatorFlight();
-        }
-    }, 1000);
-}
-
-function runAviatorFlight() {
-    let current = 1.00;
-    const targetCrash = aviatorNextTarget;
-    io.emit('aviatorStarted');
-
-    let flightInterval = setInterval(() => {
-        current += 0.04;
-        io.emit('aviatorMultiplier', current.toFixed(2));
-
-        if (current >= targetCrash) {
-            current = targetCrash;
-            clearInterval(flightInterval);
-            aviatorHistory.unshift(targetCrash);
-            if (aviatorHistory.length > 10) aviatorHistory.pop();
-            io.emit('aviatorCrashed', { crashPoint: targetCrash, history: aviatorHistory });
-            
-            setTimeout(startAviatorGame, 2000);
-        }
-    }, 100);
-}
-
-// 🔄 JETX GAME LOGIC (Next Round Countdown: 9 to 1)
-function startJetxGame() {
-    if (!jetxManualSet) {
-        jetxNextTarget = generate60_40Target();
-    }
-    jetxManualSet = false;
-    io.emit('jetxNextTargetUpdate', jetxNextTarget.toFixed(2));
-
-    let countdown = 9;
-    io.emit('countdownUpdate', countdown);
-
-    let timer = setInterval(() => {
-        countdown--;
-        io.emit('countdownUpdate', countdown);
-        if (countdown <= 0) {
-            clearInterval(timer);
-            runJetxFlight();
-        }
-    }, 1000);
-}
-
-function runJetxFlight() {
-    let current = 1.00;
-    const targetCrash = jetxNextTarget;
-    io.emit('roundStarted');
-
-    let flightInterval = setInterval(() => {
-        current += 0.05;
-        io.emit('multiplierUpdate', current.toFixed(2));
-
-        if (current >= targetCrash) {
-            current = targetCrash;
-            clearInterval(flightInterval);
-            jetxHistory.unshift(targetCrash);
-            if (jetxHistory.length > 10) jetxHistory.pop();
-            io.emit('gameCrashed', { crashPoint: targetCrash, history: jetxHistory });
-
-            setTimeout(startJetxGame, 2000);
-        }
-    }, 100);
-}
-
-// Start Games Loop
-startAviatorGame();
-startJetxGame();
 
 server.listen(PORT, () => {
     console.log(`🚀 DREAM 66 Server running smoothly on port ${PORT}`);
