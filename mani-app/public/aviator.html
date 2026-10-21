@@ -1,0 +1,663 @@
+<!-- Back Button -->
+<button onclick="goBackHome()" style="position: absolute; top: 10px; left: 10px; background: linear-gradient(135deg, #ff4d4d, #cc0000); color: white; border: none; padding: 5px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 11px; z-index: 9999; box-shadow: 0 2px 5px rgba(0,0,0,0.4);">
+    ← Back
+</button>
+
+<script>
+    function goBackHome() {
+        playClickSound();
+        window.location.href = 'http://localhost:5000';
+    }
+
+    function playClickSound() {
+        try {
+            let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            let oscillator = audioCtx.createOscillator();
+            let gainNode = audioCtx.createGain();
+            
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(500, audioCtx.currentTime);
+            gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            oscillator.start();
+            oscillator.stop(audioCtx.currentTime + 0.08);
+        } catch(e) {
+            console.log("Audio not supported");
+        }
+    }
+
+    document.addEventListener('click', function(e) {
+        if(e.target.tagName === 'BUTTON') {
+            playClickSound();
+        }
+    });
+</script>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dream 66 Pro - Aviator</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            min-height: 100%;
+            background-color: #050102;
+            overflow-x: hidden;
+            overflow-y: auto;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            width: 95%;
+            max-width: 400px;
+            align-items: center;
+            margin: 40px 0 6px 0;
+        }
+        .logo {
+            color: #ff4757;
+            font-size: 18px;
+            font-weight: bold;
+            font-style: italic;
+        }
+        .balance-box {
+            background: #1a1a1a;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            border: 1px solid #333;
+            color: #2ed573;
+        }
+        #historyBar {
+            width: 95%;
+            max-width: 400px;
+            display: flex;
+            gap: 5px;
+            overflow-x: auto;
+            padding: 3px 0;
+            margin-bottom: 5px;
+            min-height: 25px;
+            align-items: center;
+            scrollbar-width: none;
+        }
+        #historyBar::-webkit-scrollbar {
+            display: none;
+        }
+        .history-pill {
+            background-color: #1a1a1a;
+            border: 1px solid #333;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #2ed573;
+            white-space: nowrap;
+        }
+        #gameContainer {
+            position: relative;
+            width: 95%;
+            max-width: 400px;
+            height: 160px;
+            background: radial-gradient(circle, #2b2b2b 0%, #0a0a0a 100%);
+            border: 1px solid #333;
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        #multiplierDisplay {
+            position: relative;
+            z-index: 2;
+            font-size: 32px;
+            font-weight: bold;
+            color: white;
+            text-align: center;
+        }
+        .crashed-text {
+            color: #ff4757 !important;
+            font-size: 24px !important;
+        }
+        .waiting-timer {
+            font-size: 24px !important;
+            color: #f39c12 !important;
+        }
+        .control-panel {
+            margin-top: 8px;
+            background-color: #161616;
+            padding: 8px;
+            border-radius: 10px;
+            width: 95%;
+            max-width: 400px;
+            box-sizing: border-box;
+            border: 1px solid #222;
+            margin-bottom: 10px;
+        }
+        .tab-buttons {
+            display: flex;
+            background: #0e0e0e;
+            border-radius: 12px;
+            padding: 2px;
+            margin-bottom: 6px;
+            width: 110px;
+        }
+        .tab-btn {
+            background: none;
+            color: #888;
+            border: none;
+            padding: 2px 10px;
+            border-radius: 10px;
+            font-size: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .tab-btn.active {
+            background-color: #2b2b2b;
+            color: white;
+        }
+        .bet-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .bet-input-box {
+            display: flex;
+            flex-direction: column;
+            background: #1a1a1a;
+            border-radius: 8px;
+            padding: 6px;
+            border: 1px solid #333;
+            width: 155px;
+        }
+        .input-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+        
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none !important; 
+            margin: 0 !important; 
+            display: none !important;
+        }
+        input[type=number] {
+            -moz-appearance: textfield !important;
+            appearance: textfield !important;
+            width: 55px;
+            background: transparent;
+            color: white;
+            border: none;
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+            outline: none;
+        }
+
+        .qty-btn {
+            background: #2b2b2b;
+            color: white;
+            border: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .quick-amounts {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 3px;
+            margin-top: 6px;
+        }
+        .quick-btn {
+            background-color: #262626;
+            color: #ccc;
+            border: 1px solid #333;
+            padding: 3px 1px;
+            font-size: 9px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .autoSection {
+            display: none;
+            margin-top: 5px;
+            background: linear-gradient(135deg, #1f1f1f, #121212);
+            border: 1px solid #ff4757;
+            border-radius: 6px;
+            padding: 4px 5px;
+            font-size: 10px;
+            color: #ff4757;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .autoSection span {
+            font-weight: bold;
+            font-size: 9px;
+        }
+        .auto-controls-wrap {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+        .auto-qty-btn {
+            background: #2b2b2b;
+            color: white;
+            border: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .auto-input-wrapper {
+            display: flex;
+            align-items: center;
+            background: #0a0a0a;
+            border: 1px solid #444;
+            border-radius: 4px;
+            padding: 1px 3px;
+        }
+        .autoSection input {
+            width: 30px;
+            background: transparent;
+            color: #2ed573;
+            border: none;
+            text-align: center;
+            font-weight: bold;
+            font-size: 11px;
+            outline: none;
+        }
+        .auto-suffix {
+            color: #bbb;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .actionButton {
+            flex-grow: 1;
+            background-color: #2ed573;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            height: 70px;
+        }
+        .actionButton.cashout {
+            background-color: #ffa502;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-top">
+        <div class="logo">Dream 66</div>
+        <div class="balance-box" id="balanceDisplay">Wallet: ₹ 0.00</div>
+    </div>
+    
+    <div id="historyBar"></div>
+
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="400" height="160"></canvas>
+        <div id="multiplierDisplay" class="waiting-timer">1.00x</div>
+    </div>
+
+    <!-- Panel 1 -->
+    <div class="control-panel">
+        <div class="tab-buttons">
+            <button class="tab-btn active" id="p1BetTab" onclick="switchPanelTab(1, 'bet')">Bet</button>
+            <button class="tab-btn" id="p1AutoTab" onclick="switchPanelTab(1, 'auto')">Auto</button>
+        </div>
+        <div class="bet-row">
+            <div class="bet-input-box">
+                <div class="input-controls">
+                    <button class="qty-btn" onclick="changeAmt(1, -50)">-</button>
+                    <input type="number" id="betAmount1" value="10.00" onchange="validateMin(1)">
+                    <button class="qty-btn" onclick="changeAmt(1, 50)">+</button>
+                </div>
+                <div class="quick-amounts">
+                    <button class="quick-btn" onclick="setAmt(1, 50)">50</button>
+                    <button class="quick-btn" onclick="setAmt(1, 100)">100</button>
+                    <button class="quick-btn" onclick="setAmt(1, 300)">300</button>
+                    <button class="quick-btn" onclick="setAmt(1, 500)">500</button>
+                    <button class="quick-btn" onclick="setAmt(1, 1000)">1000</button>
+                    <button class="quick-btn" onclick="setAmt(1, 2000)">2000</button>
+                </div>
+                <div class="autoSection" id="p1AutoSec">
+                    <span>Auto Payout</span>
+                    <div class="auto-controls-wrap">
+                        <button class="auto-qty-btn" onclick="changeAutoVal(1, -0.5)">-</button>
+                        <div class="auto-input-wrapper">
+                            <input type="number" id="autoVal1" value="2.00" step="0.1" onchange="validateAutoMin(1)">
+                            <span class="auto-suffix">x</span>
+                        </div>
+                        <button class="auto-qty-btn" onclick="changeAutoVal(1, 0.5)">+</button>
+                    </div>
+                </div>
+            </div>
+            <button class="actionButton" id="actionBtn1" onclick="handleAction(1)">Bet<br>10.00 INR</button>
+        </div>
+    </div>
+
+    <!-- Panel 2 -->
+    <div class="control-panel">
+        <div class="tab-buttons">
+            <button class="tab-btn active" id="p2BetTab" onclick="switchPanelTab(2, 'bet')">Bet</button>
+            <button class="tab-btn" id="p2AutoTab" onclick="switchPanelTab(2, 'auto')">Auto</button>
+        </div>
+        <div class="bet-row">
+            <div class="bet-input-box">
+                <div class="input-controls">
+                    <button class="qty-btn" onclick="changeAmt(2, -50)">-</button>
+                    <input type="number" id="betAmount2" value="10.00" onchange="validateMin(2)">
+                    <button class="qty-btn" onclick="changeAmt(2, 50)">+</button>
+                </div>
+                <div class="quick-amounts">
+                    <button class="quick-btn" onclick="setAmt(2, 50)">50</button>
+                    <button class="quick-btn" onclick="setAmt(2, 100)">100</button>
+                    <button class="quick-btn" onclick="setAmt(2, 300)">300</button>
+                    <button class="quick-btn" onclick="setAmt(2, 500)">500</button>
+                    <button class="quick-btn" onclick="setAmt(2, 1000)">1000</button>
+                    <button class="quick-btn" onclick="setAmt(2, 2000)">2000</button>
+                </div>
+                <div class="autoSection" id="p2AutoSec">
+                    <span>Auto Payout</span>
+                    <div class="auto-controls-wrap">
+                        <button class="auto-qty-btn" onclick="changeAutoVal(2, -0.5)">-</button>
+                        <div class="auto-input-wrapper">
+                            <input type="number" id="autoVal2" value="2.00" step="0.1" onchange="validateAutoMin(2)">
+                            <span class="auto-suffix">x</span>
+                        </div>
+                        <button class="auto-qty-btn" onclick="changeAutoVal(2, 0.5)">+</button>
+                    </div>
+                </div>
+            </div>
+            <button class="actionButton" id="actionBtn2" onclick="handleAction(2)">Bet<br>10.00 INR</button>
+        </div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const multiplierDisplay = document.getElementById('multiplierDisplay');
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const historyBar = document.getElementById('historyBar');
+        const balanceDisplay = document.getElementById('balanceDisplay');
+
+        let userBalance = 0.00;
+        let panelState = {
+            1: { bet: 10, isAuto: false, isPlaying: false, hasWon: false },
+            2: { bet: 10, isAuto: false, isPlaying: false, hasWon: false }
+        };
+
+        let currentMultiplierVal = 1.00;
+        let previousRounds = JSON.parse(localStorage.getItem('dream66_aviator_history')) || [1.50, 2.10, 1.12, 3.40];
+        
+        updateHistoryUI();
+        let countdownInterval = null;
+
+        function updateBalanceUI() {
+            balanceDisplay.textContent = 'Wallet: ₹ ' + userBalance.toLocaleString('en-IN', {minimumFractionDigits: 2});
+        }
+
+        function switchPanelTab(pId, tab) {
+            if (pId === 1) {
+                panelState[1].isAuto = (tab === 'auto');
+                document.getElementById('p1BetTab').classList.toggle('active', tab === 'bet');
+                document.getElementById('p1AutoTab').classList.toggle('active', tab === 'auto');
+                document.getElementById('p1AutoSec').style.display = (tab === 'auto') ? 'flex' : 'none';
+            } else {
+                panelState[2].isAuto = (tab === 'auto');
+                document.getElementById('p2BetTab').classList.toggle('active', tab === 'bet');
+                document.getElementById('p2AutoTab').classList.toggle('active', tab === 'auto');
+                document.getElementById('p2AutoSec').style.display = (tab === 'auto') ? 'flex' : 'none';
+            }
+        }
+
+        function setAmt(pId, val) {
+            document.getElementById('betAmount' + pId).value = val.toFixed(2);
+            panelState[pId].bet = val;
+            updateButtonText(pId);
+        }
+
+        function changeAmt(pId, stepVal) {
+            let input = document.getElementById('betAmount' + pId);
+            let curr = parseFloat(input.value) || 10;
+            let newVal = Math.max(10, curr + stepVal);
+            input.value = newVal.toFixed(2);
+            panelState[pId].bet = newVal;
+            updateButtonText(pId);
+        }
+
+        function validateMin(pId) {
+            let input = document.getElementById('betAmount' + pId);
+            let val = parseFloat(input.value) || 10;
+            if(val < 10) val = 10;
+            input.value = val.toFixed(2);
+            panelState[pId].bet = val;
+            updateButtonText(pId);
+        }
+
+        function changeAutoVal(pId, step) {
+            let input = document.getElementById('autoVal' + pId);
+            let curr = parseFloat(input.value) || 2.0;
+            let newVal = Math.max(1.1, curr + step);
+            input.value = newVal.toFixed(1);
+        }
+
+        function validateAutoMin(pId) {
+            let input = document.getElementById('autoVal' + pId);
+            let val = parseFloat(input.value) || 2.0;
+            if(val < 1.1) val = 1.1;
+            input.value = val.toFixed(1);
+        }
+
+        function updateButtonText(pId) {
+            let btn = document.getElementById('actionBtn' + pId);
+            let val = parseFloat(document.getElementById('betAmount' + pId).value) || 10;
+            if (!panelState[pId].isPlaying) {
+                btn.innerHTML = 'Bet<br>' + val.toFixed(2) + ' INR';
+                btn.style.backgroundColor = '#2ed573';
+                btn.classList.remove('cashout');
+                panelState[pId].hasWon = false;
+            }
+        }
+
+        function handleAction(pId) {
+            let state = panelState[pId];
+            let btn = document.getElementById('actionBtn' + pId);
+            let inputVal = parseFloat(document.getElementById('betAmount' + pId).value) || 10;
+            if (inputVal < 10) inputVal = 10;
+            state.bet = inputVal;
+
+            if (!state.isPlaying) {
+                if (userBalance < state.bet) {
+                    alert('Insufficient Balance!');
+                    return;
+                }
+                userBalance -= state.bet;
+                updateBalanceUI();
+                socket.emit('placeLiveBet', { pId: pId, amount: state.bet });
+                
+                state.isPlaying = true;
+                state.hasWon = false;
+                let currentWin = (state.bet * currentMultiplierVal).toFixed(2);
+                btn.innerHTML = 'Cashout<br>₹' + currentWin + ' (' + currentMultiplierVal.toFixed(2) + 'x)';
+                btn.style.backgroundColor = '#ffa502';
+                btn.classList.add('cashout');
+            } else {
+                let rawWinAmt = (state.bet * currentMultiplierVal);
+                let profit = rawWinAmt - state.bet;
+                let userProfitShare = profit * 0.40; // 40% யூசர் லாபம்
+                let finalWinAmt = state.bet + userProfitShare;
+
+                userBalance += finalWinAmt;
+                updateBalanceUI();
+                
+                btn.innerHTML = 'Won<br>₹' + finalWinAmt.toFixed(2);
+                btn.style.backgroundColor = '#2ed573';
+                btn.classList.remove('cashout');
+                state.isPlaying = false;
+                state.hasWon = true;
+            }
+        }
+
+        socket.on('initAviatorHistory', (history) => {
+            if (history && Array.isArray(history) && history.length > 0) {
+                previousRounds = history;
+                saveAndTrimHistory();
+            }
+        });
+
+        socket.on('aviatorStarted', () => {
+            if (countdownInterval) clearInterval(countdownInterval);
+            multiplierDisplay.className = 'waiting-timer';
+            multiplierDisplay.textContent = '1.00x';
+            [1, 2].forEach(pId => {
+                if (panelState[pId].hasWon) {
+                    updateButtonText(pId);
+                }
+            });
+        });
+
+        socket.on('aviatorMultiplier', (mult) => {
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+                countdownInterval = null;
+            }
+            currentMultiplierVal = parseFloat(mult) || 1.00;
+            multiplierDisplay.className = '';
+            multiplierDisplay.textContent = currentMultiplierVal.toFixed(2) + 'x';
+            let progress = Math.min((currentMultiplierVal - 1.00) / 4.00, 0.85);
+            drawFlight(progress);
+
+            [1, 2].forEach(pId => {
+                let state = panelState[pId];
+                let btn = document.getElementById('actionBtn' + pId);
+                if (state.isPlaying) {
+                    let currentWin = (state.bet * currentMultiplierVal).toFixed(2);
+                    btn.innerHTML = 'Cashout<br>₹' + currentWin + ' (' + currentMultiplierVal.toFixed(2) + 'x)';
+                    
+                    if (state.isAuto) {
+                        let target = parseFloat(document.getElementById('autoVal' + pId).value) || 2.0;
+                        if (currentMultiplierVal >= target) {
+                            handleAction(pId);
+                        }
+                    }
+                }
+            });
+        });
+
+        socket.on('aviatorCrashed', (data) => {
+            let cleanCrash = 1.00;
+            let serverHistory = null;
+
+            if (typeof data === 'object' && data !== null) {
+                cleanCrash = parseFloat(data.crashPoint) || 1.00;
+                if (data.history) serverHistory = data.history;
+            } else {
+                cleanCrash = parseFloat(data) || 1.00;
+            }
+
+            multiplierDisplay.textContent = 'Crashed: ' + cleanCrash.toFixed(2) + 'x';
+            multiplierDisplay.className = 'crashed-text';
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            [1, 2].forEach(pId => {
+                if (panelState[pId].isPlaying) {
+                    panelState[pId].isPlaying = false;
+                    updateButtonText(pId);
+                }
+            });
+
+            if (serverHistory) {
+                previousRounds = serverHistory;
+            } else {
+                previousRounds.unshift(cleanCrash);
+            }
+            
+            saveAndTrimHistory();
+
+            if (countdownInterval) clearInterval(countdownInterval);
+            let timerValue = 9;
+            multiplierDisplay.className = 'waiting-timer';
+            multiplierDisplay.textContent = 'Next in ' + timerValue;
+
+            countdownInterval = setInterval(() => {
+                timerValue--;
+                if (timerValue >= 1) {
+                    multiplierDisplay.textContent = 'Next in ' + timerValue;
+                } else {
+                    clearInterval(countdownInterval);
+                    countdownInterval = null;
+                    multiplierDisplay.textContent = 'Waiting...';
+                }
+            }, 1000);
+        });
+
+        function saveAndTrimHistory() {
+            if (previousRounds.length > 100) {
+                previousRounds = previousRounds.slice(0, 100);
+            }
+            localStorage.setItem('dream66_aviator_history', JSON.stringify(previousRounds));
+            updateHistoryUI();
+        }
+
+        function updateHistoryUI() {
+            let html = '';
+            previousRounds.forEach(val => {
+                let formattedVal = parseFloat(val).toFixed(2);
+                html += `<div class="history-pill">${formattedVal}x</div>`;
+            });
+            historyBar.innerHTML = html;
+        }
+
+        function drawFlight(progress) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height);
+            ctx.quadraticCurveTo(canvas.width * 0.4, canvas.height, canvas.width * progress, canvas.height - (canvas.height * progress * 0.75));
+            ctx.strokeStyle = '#c0392b';
+            ctx.lineWidth = 5;
+            ctx.stroke();
+
+            let x = canvas.width * progress;
+            let y = canvas.height - (canvas.height * progress * 0.75);
+            ctx.font = '22px Arial';
+            ctx.fillText('✈️', x - 12, y + 8);
+        }
+    </script>
+</body>
+</html>
