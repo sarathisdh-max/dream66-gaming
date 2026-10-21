@@ -73,7 +73,6 @@
             font-size: 15px;
             font-weight: 900;
             background: linear-gradient(135deg, #ffd700, #ff8c00);
-            background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             letter-spacing: 1px;
@@ -88,7 +87,7 @@
             border: 1.5px solid rgba(255, 215, 0, 0.3);
             width: 100%;
             max-width: 370px;
-            height: 240px;
+            height: 260px;
         }
 
         .status-banner {
@@ -206,13 +205,13 @@
             <div class="balance-box">₹<span id="balance">0.00</span></div>
         </div>
 
-        <canvas id="plinkoCanvas" width="370" height="240"></canvas>
+        <canvas id="plinkoCanvas" width="370" height="260"></canvas>
         <div class="status-banner" id="statusBanner">SELECT CHIP & DROP BALLS!</div>
 
         <div class="settings-bar">
             <div class="setting-box">
                 <span class="setting-label">Risk Level</span>
-                <select class="setting-select" id="riskSelect" onchange="drawBoard()">
+                <select class="setting-select" id="riskSelect" onchange="drawStaticElements()">
                     <option value="low">Low Risk</option>
                     <option value="med">Medium Risk</option>
                     <option value="high" selected>High Risk (1000X)</option>
@@ -251,16 +250,23 @@
     </div>
 
     <script>
+        // Wallet balance set to 0.00 initially
         let balance = parseFloat(localStorage.getItem('user_balance')) || 0.00;
         let currentBet = 10;
         const canvas = document.getElementById('plinkoCanvas');
         const ctx = canvas.getContext('2d');
 
-        const lowMults =  [15, 6, 2, 1.2, 1.1, 0.5, 1.1, 1.2, 2, 6, 15];
-        const medMults =  [200, 50, 20, 5, 2, 0.2, 2, 5, 20, 50, 200];
+        const lowMults  = [15, 6, 2, 1.2, 1.1, 0.5, 1.1, 1.2, 2, 6, 15];
+        const medMults  = [200, 50, 20, 5, 2, 0.2, 2, 5, 20, 50, 200];
         const highMults = [1000, 135, 20, 10, 2, 0.2, 2, 10, 20, 135, 1000];
 
+        const rows = 8;
+        const pinRadius = 2.2;
+        let activeBalls = [];
+        let animationFrameId = null;
+
         updateUI();
+        drawStaticElements();
 
         function updateUI() {
             let ballsCount = parseInt(document.getElementById('ballsSelect').value) || 1;
@@ -278,34 +284,37 @@
             updateUI();
         }
 
-        const rows = 8;
-        const pinRadius = 2.2;
-
-        function drawBoard() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#00ffcc';
-
+        function getPins() {
+            let pins = [];
             for (let r = 0; r < rows; r++) {
                 const count = r + 3;
-                const spacing = 28;
+                const spacing = 26;
                 const startX = (canvas.width - (count - 1) * spacing) / 2;
-
                 for (let c = 0; c < count; c++) {
-                    const x = startX + c * spacing;
-                    const y = 18 + r * 19;
-                    ctx.beginPath();
-                    ctx.arc(x, y, pinRadius, 0, Math.PI * 2);
-                    ctx.fill();
+                    pins.push({
+                        x: startX + c * spacing,
+                        y: 22 + r * 20
+                    });
                 }
             }
+            return pins;
+        }
+
+        function drawStaticElements() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#00ffcc';
+            const pins = getPins();
+            pins.forEach(pin => {
+                ctx.beginPath();
+                ctx.arc(pin.x, pin.y, pinRadius, 0, Math.PI * 2);
+                ctx.fill();
+            });
 
             let risk = document.getElementById('riskSelect').value;
-            let multsArray = highMults;
-            let barColor = '#ff1f40';
-
-            if (risk === 'low') { multsArray = lowMults; barColor = '#0088cc'; }
-            else if (risk === 'med') { multsArray = medMults; barColor = '#00cc66'; }
-
+            let multsArray = risk === 'low' ? lowMults : (risk === 'med' ? medMults : highMults);
+            let barColor = risk === 'low' ? '#0088cc' : (risk === 'med' ? '#00cc66' : '#ff1f40');
+            
             drawActiveSlotRow(multsArray, barColor, canvas.height - 25);
         }
 
@@ -330,8 +339,6 @@
             }
         }
 
-        drawBoard();
-
         function startPlinkoGame() {
             let ballsCount = parseInt(document.getElementById('ballsSelect').value);
             let totalCost = currentBet * ballsCount;
@@ -343,32 +350,92 @@
 
             balance -= totalCost;
             updateUI();
-
-            let risk = document.getElementById('riskSelect').value;
             document.getElementById('statusBanner').innerText = `DROPPING ${ballsCount} BALL(S)...`;
 
-            setTimeout(() => {
-                let totalWin = 0;
-                let multsArray = risk === 'low' ? lowMults : (risk === 'med' ? medMults : highMults);
+            let risk = document.getElementById('riskSelect').value;
+            let multsArray = risk === 'low' ? lowMults : (risk === 'med' ? medMults : highMults);
 
-                for(let b=0; b<ballsCount; b++) {
+            for (let b = 0; b < ballsCount; b++) {
+                setTimeout(() => {
                     const luck = Math.random() * 100;
-                    let targetIndex = 5; 
-
-                    if (luck >= 60) {
+                    let targetIndex = Math.floor(Math.random() * multsArray.length);
+                    if (luck >= 70) {
                         const winOptions = [0, 1, 9, 10];
                         targetIndex = winOptions[Math.floor(Math.random() * winOptions.length)];
                     }
 
-                    let mult = multsArray[targetIndex];
-                    totalWin += currentBet * mult;
-                }
+                    activeBalls.push({
+                        x: canvas.width / 2 + (Math.random() * 10 - 5),
+                        y: 0,
+                        vx: (Math.random() - 0.5) * 1.5,
+                        vy: 1 + Math.random() * 1,
+                        targetSlot: targetIndex,
+                        mult: multsArray[targetIndex]
+                    });
 
-                balance += totalWin;
-                updateUI();
-                document.getElementById('statusBanner').innerText = `TOTAL WIN: ₹${totalWin.toFixed(2)}`;
-                drawBoard();
-            }, 800);
+                    if (!animationFrameId) {
+                        animateGame();
+                    }
+                }, b * 150);
+            }
+        }
+
+        function animateGame() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#00ffcc';
+            const pins = getPins();
+            pins.forEach(pin => {
+                ctx.beginPath();
+                ctx.arc(pin.x, pin.y, pinRadius, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            let risk = document.getElementById('riskSelect').value;
+            let multsArray = risk === 'low' ? lowMults : (risk === 'med' ? medMults : highMults);
+            let barColor = risk === 'low' ? '#0088cc' : (risk === 'med' ? '#00cc66' : '#ff1f40');
+            drawActiveSlotRow(multsArray, barColor, canvas.height - 25);
+
+            let totalWinRound = 0;
+
+            for (let i = activeBalls.length - 1; i >= 0; i--) {
+                let ball = activeBalls[i];
+                ball.x += ball.vx;
+                ball.y += ball.vy;
+                ball.vy += 0.2;
+
+                pins.forEach(pin => {
+                    let dx = ball.x - pin.x;
+                    let dy = ball.y - pin.y;
+                    let dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < pinRadius + 4) {
+                        ball.vy *= -0.4;
+                        ball.vx += (Math.random() - 0.5) * 2;
+                    }
+                });
+
+                ctx.fillStyle = '#ffcc00';
+                ctx.beginPath();
+                ctx.arc(ball.x, ball.y, 4.5, 0, Math.PI * 2);
+                ctx.fill();
+
+                if (ball.y >= canvas.height - 30) {
+                    totalWinRound += currentBet * ball.mult;
+                    activeBalls.splice(i, 1);
+                }
+            }
+
+            if (activeBalls.length > 0) {
+                animationFrameId = requestAnimationFrame(animateGame);
+            } else {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+                if (totalWinRound > 0) {
+                    balance += totalWinRound;
+                    updateUI();
+                    document.getElementById('statusBanner').innerText = `TOTAL WIN: ₹${totalWinRound.toFixed(2)}`;
+                }
+            }
         }
     </script>
 </body>
