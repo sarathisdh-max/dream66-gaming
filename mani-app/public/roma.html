@@ -1,36 +1,3 @@
-<!-- Back Button -->
-<button onclick="goBackHome()" style="position: absolute; top: 10px; left: 10px; background: linear-gradient(135deg, #ff4d4d, #cc0000); color: white; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; z-index: 9999; box-shadow: 0 2px 5px rgba(0,0,0,0.4);">
-    ← Back
-</button>
-
-<script>
-    function goBackHome() {
-        playClickSound();
-        window.location.href = 'http://localhost:5000';
-    }
-
-    function playClickSound() {
-        try {
-            let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            let oscillator = audioCtx.createOscillator();
-            let gainNode = audioCtx.createGain();
-            oscillator.type = 'sine';
-            oscillator.frequency.setValueAtTime(500, audioCtx.currentTime);
-            gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
-            oscillator.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-            oscillator.start();
-            oscillator.stop(audioCtx.currentTime + 0.08);
-        } catch(e) {}
-    }
-
-    document.addEventListener('click', function(e) {
-        if(e.target.tagName === 'BUTTON') {
-            playClickSound();
-        }
-    });
-</script>
-
 <!DOCTYPE html>
 <html lang="ta">
 <head>
@@ -41,18 +8,37 @@
         * {
             box-sizing: border-box;
             user-select: none;
+            touch-action: manipulation;
         }
         html, body {
             margin: 0;
             padding: 0;
             width: 100%;
-            min-height: 100vh;
+            height: 100vh;
+            height: 100dvh;
             background-color: #0b0f17;
             color: white;
             font-family: Arial, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
+            overflow: hidden;
+        }
+        .back-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: linear-gradient(135deg, #ff4d4d, #cc0000);
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 12px;
+            z-index: 9999;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+            text-decoration: none;
         }
         .app-header {
             width: 100%;
@@ -60,10 +46,10 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 14px 18px;
+            padding: 12px 18px;
             background-color: #131b29;
             border-bottom: 1px solid #1f2d42;
-            margin-top: 35px;
+            margin-top: 40px;
         }
         .brand-title {
             font-size: 18px;
@@ -74,8 +60,8 @@
             background: #0b0f17;
             border: 2px solid #2ed573;
             border-radius: 20px;
-            padding: 6px 16px;
-            font-size: 18px;
+            padding: 4px 14px;
+            font-size: 16px;
             font-weight: 900;
             color: #2ed573;
             box-shadow: 0 0 10px rgba(46, 213, 115, 0.3);
@@ -85,7 +71,7 @@
             width: 100%;
             max-width: 420px;
             background: radial-gradient(circle at center, #1a2638 0%, #0b0f17 100%);
-            padding: 20px 15px;
+            padding: 15px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -96,10 +82,10 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
         .timer-badge {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: bold;
             color: #ffd700;
         }
@@ -113,18 +99,18 @@
             justify-content: space-between;
             width: 100%;
             gap: 12px;
-            margin: 10px 0;
+            margin: 5px 0;
         }
         .combat-card-box {
             flex: 1;
             background: #131b29;
             border: 2px solid #24344d;
             border-radius: 12px;
-            padding: 15px 10px;
+            padding: 12px 10px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.5);
         }
         .combat-title {
@@ -136,15 +122,15 @@
         .text-tiger { color: #e74c3c; }
 
         .playing-card {
-            width: 65px;
-            height: 95px;
+            width: 60px;
+            height: 85px;
             background: #ffffff;
             color: #111;
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 26px;
+            font-size: 24px;
             font-weight: 900;
             box-shadow: 0 4px 10px rgba(0,0,0,0.4);
         }
@@ -153,7 +139,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-top: 10px;
+            margin-top: 8px;
         }
         .history-label {
             font-size: 11px;
@@ -165,8 +151,8 @@
             gap: 6px;
         }
         .history-box {
-            width: 38px;
-            height: 26px;
+            width: 36px;
+            height: 24px;
             background: #131b29;
             border: 1px solid #24344d;
             border-radius: 4px;
@@ -184,34 +170,31 @@
         .bet-control-section {
             width: 100%;
             max-width: 420px;
-            padding: 15px;
+            padding: 12px 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
         .input-group-label {
-            font-size: 13px;
+            font-size: 12px;
             color: #8a9ba8;
-            margin-bottom: 6px;
             font-weight: bold;
         }
-        .bet-input-row {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
         .bet-input-box {
-            flex: 1;
+            width: 100%;
             background: #131b29;
             border: 2px solid #24344d;
             border-radius: 8px;
             display: flex;
             align-items: center;
-            padding: 0 12px;
+            padding: 6px 12px;
         }
         .bet-input-box input {
             width: 100%;
             background: transparent;
             border: none;
             color: #2ed573;
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 900;
             text-align: center;
             outline: none;
@@ -220,14 +203,13 @@
         .quick-chips-grid {
             display: grid;
             grid-template-columns: repeat(6, 1fr);
-            gap: 6px;
-            margin-bottom: 15px;
+            gap: 5px;
         }
         .chip-btn {
             background: #192336;
             color: #b0bec5;
             border: 1px solid #24344d;
-            padding: 8px 0;
+            padding: 6px 0;
             border-radius: 6px;
             font-weight: bold;
             font-size: 11px;
@@ -243,11 +225,10 @@
         .dt-choices-grid {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 15px;
+            gap: 8px;
         }
         .choice-btn {
-            padding: 16px 8px;
+            padding: 12px 6px;
             border-radius: 8px;
             border: 2px solid transparent;
             display: flex;
@@ -266,14 +247,15 @@
 
         .place-bet-action {
             width: 100%;
-            padding: 14px;
+            padding: 12px;
             background: #2ed573;
             color: #0b0f17;
             border: none;
             border-radius: 8px;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 900;
             cursor: pointer;
+            margin-top: 4px;
         }
         .place-bet-action:disabled {
             background: #2b384e;
@@ -283,6 +265,8 @@
     </style>
 </head>
 <body>
+
+    <a href="https://dream66-gaming-1.onrender.com" class="back-btn" onclick="goBackHome(event)">← Back</a>
 
     <div class="app-header">
         <div class="brand-title">DREAM 66</div>
@@ -321,10 +305,8 @@
 
     <div class="bet-control-section">
         <div class="input-group-label">Bet amount (Min ₹10)</div>
-        <div class="bet-input-row">
-            <div class="bet-input-box">
-                <input type="number" id="betAmountInput" value="10" min="10" step="10">
-            </div>
+        <div class="bet-input-box">
+            <input type="number" id="betAmountInput" value="10" min="10" step="10">
         </div>
 
         <div class="quick-chips-grid">
@@ -339,22 +321,23 @@
         <div class="dt-choices-grid">
             <div class="choice-btn btn-dragon" onclick="selectChoice('DRAGON', 2.0)" id="btn-DRAGON">
                 <span>DRAGON</span>
-                <span style="font-size: 11px; opacity:0.8; margin-top:3px;">2.00x</span>
+                <span style="font-size: 11px; opacity:0.8; margin-top:2px;">2.00x</span>
             </div>
             <div class="choice-btn btn-tie" onclick="selectChoice('TIE', 8.0)" id="btn-TIE">
                 <span>TIE</span>
-                <span style="font-size: 11px; opacity:0.8; margin-top:3px;">8.00x</span>
+                <span style="font-size: 11px; opacity:0.8; margin-top:2px;">8.00x</span>
             </div>
             <div class="choice-btn btn-tiger" onclick="selectChoice('TIGER', 2.0)" id="btn-TIGER">
                 <span>TIGER</span>
-                <span style="font-size: 11px; opacity:0.8; margin-top:3px;">2.00x</span>
+                <span style="font-size: 11px; opacity:0.8; margin-top:2px;">2.00x</span>
             </div>
         </div>
 
         <button class="place-bet-action" id="placeBetBtn" onclick="confirmBet()">CONFIRM BET</button>
     </div>
+
     <script>
-        let wallet = 0.00;
+        let wallet = parseFloat(localStorage.getItem('user_balance')) || 1000.00;
         let currentRound = 1;
         let selectedChoice = null;
         let selectedMult = 1.0;
@@ -366,18 +349,29 @@
 
         const cardValues = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
 
+        updateWalletUI();
+
         function updateWalletUI() {
             document.getElementById('walletBalance').textContent = '₹ ' + wallet.toLocaleString('en-IN', {minimumFractionDigits: 2});
+            localStorage.setItem('user_balance', wallet.toFixed(2));
+        }
+
+        function goBackHome(e) {
+            e.preventDefault();
+            playClickSound();
+            window.location.href = 'https://dream66-gaming-1.onrender.com';
         }
 
         function setBet(amount) {
             document.getElementById('betAmountInput').value = amount;
+            playClickSound();
         }
 
         function selectChoice(choice, mult) {
             if (!isBettingOpen) return;
             selectedChoice = choice;
             selectedMult = mult;
+            playClickSound();
 
             document.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('selected'));
             document.getElementById('btn-' + choice).classList.add('selected');
@@ -385,6 +379,7 @@
 
         function confirmBet() {
             if (!isBettingOpen) return;
+            playClickSound();
             const amt = parseFloat(document.getElementById('betAmountInput').value);
             
             if (isNaN(amt) || amt < 10) {
@@ -475,12 +470,10 @@
                     historyClass = winner.toLowerCase();
                 }
 
-                // History Update (Strictly 3 boxes)
                 historyList.unshift({ text: historyText, cls: historyClass });
                 if (historyList.length > 3) historyList.pop();
                 renderHistory();
 
-                // 3 விநாடிகளுக்கு பின் அடுத்த ரவுண்டுக்கு ரீசெட் ஆகும்
                 setTimeout(resetRound, 3000);
             }, 1500);
         }
@@ -520,6 +513,21 @@
                 }
                 stack.appendChild(box);
             }
+        }
+
+        function playClickSound() {
+            try {
+                let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                let oscillator = audioCtx.createOscillator();
+                let gainNode = audioCtx.createGain();
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(500, audioCtx.currentTime);
+                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + 0.08);
+            } catch(e) {}
         }
 
         renderHistory();
