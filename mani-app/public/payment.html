@@ -159,14 +159,14 @@
         <div class="brand-title">DREAM 66 GAMING</div>
         <h2>Scan QR code using UPI app</h2>
         
-        <!-- QR Code -->
+        <!-- QR Code (Linked with UPI & Fixed Amount 300) -->
         <div class="qr-box">
-            <img id="qrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=6379227658-2@ybl&pn=DREAM66&am=300" alt="QR Code">
+            <img id="qrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=6379227658-2@ybl&pn=DREAM66&am=300&cu=INR" alt="QR Code">
         </div>
 
         <div>
-            <!-- Save QR Code Button -->
-            <a href="#" class="save-qr-btn" onclick="saveQRCode()">📥 Save QR Code</a>
+            <!-- Save QR Code Button (Downloads to Gallery) -->
+            <a href="#" class="save-qr-btn" onclick="downloadQRCode()">📥 Save QR Code to Gallery</a>
         </div>
 
         <!-- UPI ID (Locked) -->
@@ -180,7 +180,7 @@
 
         <!-- Amount (Locked) -->
         <div class="info-group">
-            <label>Amount</label>
+            <label>Amount (Locked)</label>
             <div class="input-with-btn">
                 <input type="text" id="amountVal" value="300 INR" readonly>
                 <button class="copy-btn" onclick="copyText('amountVal')">Copy</button>
@@ -191,9 +191,9 @@
         <div class="instructions">
             <strong style="color: #ff4d4d;">⚠️ மிக முக்கியமான வழிமுறைகள்:</strong>
             <ol>
-                <li>இந்த QR கோடை ஒருமுறை மட்டுமே சேமிக்க வேண்டும் (Save QR Code / Screenshot). ஒவ்வொரு முறையும் டெபாசிட் செய்யும்போது QR கோடு மாறும் என்பதால் பழையதை பயன்படுத்த வேண்டாம்.</li>
-                <li>பணம் செலுத்தும் வரை இந்தப் பக்கத்தைவிட்டு வெளியேறவோ (Exit/Back) அல்லது ரெஃப்ரெஷ் செய்யவோ கூடாது.</li>
-                <li>PhonePe / GPay ஆப் மூலம் ஸ்கேன் செய்து பணம் செலுத்தவும் (தொகை மற்றும் UPI ID லாக் செய்யப்பட்டுள்ளது).</li>
+                <li><b>Save QR Code</b> பட்டனை அழுத்தி கியூஆர் கோடை உங்கள் கேலரியில் சேமிக்கவும்.</li>
+                <li>PhonePe / GPay ஆப் குள் சென்று கேலரியில் உள்ள QR-ஐ ஸ்கேன் செய்யும் போது <b>தொகை (300 INR) தானாக லாக் ஆகிவிடும்</b>.</li>
+                <li>பணம் செலுத்தும் வரை இந்தப் பக்கத்தைவிட்டு வெளியேறவோ அல்லது ரெஃப்ரெஷ் செய்யவோ கூடாது.</li>
                 <li>பணம் செலுத்திய பின் கிடைக்கும் <b>12 இலக்க UTR எண்ணை</b> கீழே உள்ள கட்டத்தில் சரியாக உள்ளிட்டு <b>Confirm Payment</b> அழுத்தவும்.</li>
             </ol>
         </div>
@@ -216,8 +216,26 @@
             alert("Copied: " + copyText.value);
         }
 
-        function saveQRCode() {
-            alert("QR Code saved successfully! Please use this saved QR to make payment.");
+        function downloadQRCode() {
+            var imageUrl = document.getElementById('qrImage').src;
+            var fileName = "DREAM66_QR_300.png";
+            
+            // Force download to gallery/device storage
+            fetch(imageUrl)
+                .then(response => response.blob())
+                .then(blob => {
+                    var link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(blob);
+                    link.download = fileName;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    alert("QR Code downloaded successfully! Check your gallery/downloads.");
+                })
+                .catch(err => {
+                    // Fallback if CORS restricts fetch
+                    window.open(imageUrl, '_blank');
+                });
         }
 
         function submitPayment() {
