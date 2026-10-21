@@ -1,0 +1,470 @@
+<!-- Back Button -->
+<button onclick="goBackHome()" style="position: absolute; top: 10px; left: 10px; background: linear-gradient(135deg, #ff4d4d, #cc0000); color: white; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; z-index: 9999; box-shadow: 0 2px 5px rgba(0,0,0,0.4);">
+    ← Back
+</button>
+
+<script>
+    function goBackHome() {
+        playClickSound();
+        window.location.href = 'http://localhost:5000';
+    }
+
+    function playClickSound() {
+        try {
+            let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            let oscillator = audioCtx.createOscillator();
+            let gainNode = audioCtx.createGain();
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(500, audioCtx.currentTime);
+            gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            oscillator.start();
+            oscillator.stop(audioCtx.currentTime + 0.08);
+        } catch(e) {}
+    }
+
+    document.addEventListener('click', function(e) {
+        if(e.target.tagName === 'BUTTON') {
+            playClickSound();
+        }
+    });
+</script>
+
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dream 66 - Goblin</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            min-height: 100vh;
+            background-color: #0f141c;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .app-header {
+            width: 100%;
+            max-width: 420px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 18px;
+            background-color: #171d27;
+            border-bottom: 1px solid #232c3d;
+            margin-top: 35px;
+        }
+        .brand-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #d4af37;
+        }
+        .balance-chip {
+            background: #111721;
+            border: 2px solid #2ed573;
+            border-radius: 20px;
+            padding: 6px 16px;
+            font-size: 18px;
+            font-weight: 900;
+            color: #2ed573;
+            box-shadow: 0 0 10px rgba(46, 213, 115, 0.3);
+        }
+        .game-stage {
+            width: 100%;
+            max-width: 420px;
+            background: radial-gradient(circle at center, #1b2433 0%, #0f141c 100%);
+            padding: 15px 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+        .round-info-bar {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .status-display {
+            font-size: 16px;
+            font-weight: bold;
+            color: #2ed573;
+        }
+        .round-id {
+            font-size: 12px;
+            color: #7b8a9e;
+        }
+        
+        /* Goblin Grid (3x3) */
+        .goblin-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            width: 100%;
+            max-width: 320px;
+            margin: 10px 0;
+        }
+        .goblin-tile {
+            aspect-ratio: 1;
+            background: #232c3d;
+            border: 2px solid #323f55;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .goblin-tile:hover {
+            border-color: #d4af37;
+        }
+        .goblin-tile.revealed-gold {
+            background: #1e3d2f;
+            border-color: #2ed573;
+        }
+        .goblin-tile.revealed-goblin {
+            background: #3d1e1e;
+            border-color: #ff4757;
+        }
+
+        /* History Stack (Strictly 3 boxes) */
+        .history-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 5px;
+        }
+        .history-label {
+            font-size: 11px;
+            color: #7b8a9e;
+            font-weight: bold;
+        }
+        .history-stack {
+            display: flex;
+            gap: 6px;
+        }
+        .history-box {
+            width: 45px;
+            height: 25px;
+            background: #151c28;
+            border: 1px solid #232c3d;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .history-box.win { color: #2ed573; }
+        .history-box.loss { color: #ff4757; }
+
+        .bet-control-section {
+            width: 100%;
+            max-width: 420px;
+            padding: 14px;
+        }
+        .input-group-label {
+            font-size: 13px;
+            color: #8f9cae;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+        .bet-input-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .bet-input-box {
+            flex: 1;
+            background: #171d27;
+            border: 2px solid #2a3547;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+        }
+        .bet-input-box input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: #2ed573;
+            font-size: 20px;
+            font-weight: 900;
+            text-align: center;
+            outline: none;
+        }
+        
+        .quick-chips-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+        .chip-btn {
+            background: #232c3d;
+            color: #b0bec5;
+            border: 1px solid #2e3a4e;
+            padding: 8px 0;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 11px;
+            cursor: pointer;
+            text-align: center;
+        }
+        .chip-btn:hover {
+            background: #2ed573;
+            color: #0f141c;
+            border-color: #2ed573;
+        }
+
+        .action-btn {
+            width: 100%;
+            padding: 14px;
+            background: #2ed573;
+            color: #0f141c;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 900;
+            cursor: pointer;
+        }
+        .action-btn:disabled {
+            background: #3a475c;
+            color: #6c7a8e;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-header">
+        <div class="brand-title">DREAM 66</div>
+        <div class="balance-chip" id="walletBalance">₹ 0.00</div>
+    </div>
+
+    <div class="game-stage">
+        <div class="round-info-bar">
+            <div class="status-display" id="statusText">Select Bet & Start</div>
+            <div class="round-id" id="roundId">Round ID: 1</div>
+        </div>
+
+        <!-- 3x3 Goblin Tiles Grid -->
+        <div class="goblin-grid" id="goblinGrid">
+            <div class="goblin-tile" onclick="clickTile(0)">❓</div>
+            <div class="goblin-tile" onclick="clickTile(1)">❓</div>
+            <div class="goblin-tile" onclick="clickTile(2)">❓</div>
+            <div class="goblin-tile" onclick="clickTile(3)">❓</div>
+            <div class="goblin-tile" onclick="clickTile(4)">❓</div>
+            <div class="goblin-tile" onclick="clickTile(5)">❓</div>
+            <div class="goblin-tile" onclick="clickTile(6)">❓</div>
+            <div class="goblin-tile" onclick="clickTile(7)">❓</div>
+            <div class="goblin-tile" onclick="clickTile(8)">❓</div>
+        </div>
+
+        <!-- Strictly 3 Boxes History Stack -->
+        <div class="history-wrapper">
+            <span class="history-label">HISTORY:</span>
+            <div class="history-stack" id="historyStack">
+                <div class="history-box">-</div>
+                <div class="history-box">-</div>
+                <div class="history-box">-</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bet-control-section">
+        <div class="input-group-label">Bet amount (Min ₹10)</div>
+        <div class="bet-input-row">
+            <div class="bet-input-box">
+                <input type="number" id="betAmountInput" value="10" min="10" step="10">
+            </div>
+        </div>
+
+        <div class="quick-chips-grid">
+            <button class="chip-btn" onclick="setBet(10)">10</button>
+            <button class="chip-btn" onclick="setBet(50)">50</button>
+            <button class="chip-btn" onclick="setBet(100)">100</button>
+            <button class="chip-btn" onclick="setBet(300)">300</button>
+            <button class="chip-btn" onclick="setBet(500)">500</button>
+            <button class="chip-btn" onclick="setBet(1000)">1000</button>
+        </div>
+
+        <button class="action-btn" id="actionBtn" onclick="startOrCashout()">START GAME</button>
+    </div>
+    <script>
+        let wallet = 0.00;
+        let currentRound = 1;
+        let gameActive = false;
+        let currentBet = 0;
+        let goblinIndex = -1;
+        let revealedCount = 0;
+        let currentMultiplier = 1.0;
+        let historyList = [];
+
+        function updateWalletUI() {
+            document.getElementById('walletBalance').textContent = '₹ ' + wallet.toLocaleString('en-IN', {minimumFractionDigits: 2});
+        }
+
+        function setBet(amount) {
+            if (gameActive) return;
+            document.getElementById('betAmountInput').value = amount;
+        }
+
+        function startOrCashout() {
+            if (!gameActive) {
+                // Start Game
+                const amt = parseFloat(document.getElementById('betAmountInput').value);
+                if (isNaN(amt) || amt < 10) {
+                    alert('குறைந்தபட்ச பெட் தொகை ₹10 இருக்க வேண்டும்!');
+                    return;
+                }
+                if (amt > wallet) {
+                    alert('போதிய பேலன்ஸ் இல்லை!');
+                    return;
+                }
+
+                wallet -= amt;
+                updateWalletUI();
+                currentBet = amt;
+                gameActive = true;
+                revealedCount = 0;
+                currentMultiplier = 1.0;
+
+                // Randomly place Goblin (Mine)
+                goblinIndex = Math.floor(Math.random() * 9);
+
+                // Reset Tiles
+                const tiles = document.querySelectorAll('.goblin-tile');
+                tiles.forEach((tile, idx) => {
+                    tile.textContent = '❓';
+                    tile.className = 'goblin-tile';
+                });
+
+                document.getElementById('statusText.textContent') = 'Pick a Tile!';
+                document.getElementById('statusText').style.color = '#ffa502';
+                document.getElementById('actionBtn').textContent = 'CASHOUT (1.20x)';
+                document.getElementById('actionBtn').style.background = '#ffa502';
+                document.getElementById('actionBtn').style.color = '#0f141c';
+            } else {
+                // Cashout
+                endGame(true);
+            }
+        }
+
+        function clickTile(index) {
+            if (!gameActive) return;
+            const tile = document.querySelectorAll('.goblin-tile')[index];
+            if (tile.classList.contains('revealed-gold') || tile.classList.contains('revealed-goblin')) return;
+
+            if (index === goblinIndex) {
+                // Hit Goblin (Loss)
+                tile.textContent = '👹';
+                tile.className = 'goblin-tile revealed-goblin';
+                revealAll();
+                endGame(false);
+            } else {
+                // Found Gold
+                tile.textContent = '🪙';
+                tile.className = 'goblin-tile revealed-gold';
+                revealedCount++;
+                currentMultiplier = parseFloat((1.20 + (revealedCount * 0.35)).toFixed(2));
+
+                document.getElementById('statusText').textContent = 'Multiplier: ' + currentMultiplier + 'x';
+                document.getElementById('actionBtn').textContent = 'CASHOUT (₹' + (currentBet * currentMultiplier).toFixed(2) + ')';
+
+                if (revealedCount === 8) {
+                    // All gold found without hitting goblin
+                    endGame(true);
+                }
+            }
+        }
+
+        function revealAll() {
+            const tiles = document.querySelectorAll('.goblin-tile');
+            tiles.forEach((tile, idx) => {
+                if (idx === goblinIndex) {
+                    tile.textContent = '👹';
+                    tile.className = 'goblin-tile revealed-goblin';
+                } else {
+                    tile.textContent = '🪙';
+                    tile.className = 'goblin-tile revealed-gold';
+                }
+            });
+        }
+
+        function endGame(isWin) {
+            gameActive = false;
+            let resultText = '';
+            let historyResultClass = '';
+            let historyText = '';
+
+            if (isWin) {
+                // 60% House Edge / 40% User RTP லாஜிக் கணக்கீடு
+                let rawProfit = (currentBet * currentMultiplier) - currentBet;
+                let userShare = rawProfit * 0.40; // 40% யூசர் லாபம்
+                let finalPayout = currentBet + userShare;
+
+                wallet += finalPayout;
+                updateWalletUI();
+
+                document.getElementById('statusText').textContent = 'WON ₹' + finalPayout.toFixed(2);
+                document.getElementById('statusText').style.color = '#2ed573';
+                resultText = 'WON';
+                historyResultClass = 'win';
+                historyText = '+' + currentMultiplier + 'x';
+            } else {
+                document.getElementById('statusText').textContent = 'LOST ₹' + currentBet.toFixed(2);
+                document.getElementById('statusText').style.color = '#ff4757';
+                resultText = 'LOST';
+                historyResultClass = 'loss';
+                historyText = 'LOST';
+            }
+
+            document.getElementById('actionBtn').textContent = 'START GAME';
+            document.getElementById('actionBtn').style.background = '#2ed573';
+            document.getElementById('actionBtn').style.color = '#0f141c';
+
+            // History Update (Strictly 3 boxes max)
+            historyList.unshift({ text: historyText, cls: historyResultClass });
+            if (historyList.length > 3) historyList.pop();
+            renderHistory();
+
+            // Next Round ID
+            currentRound++;
+            document.getElementById('roundId').textContent = 'Round ID: ' + currentRound;
+        }
+
+        function renderHistory() {
+            const stack = document.getElementById('historyStack');
+            stack.innerHTML = '';
+            for (let i = 0; i < 3; i++) {
+                let box = document.createElement('div');
+                box.className = 'history-box';
+                if (historyList[i]) {
+                    box.textContent = historyList[i].text;
+                    box.className = 'history-box ' + historyList[i].cls;
+                } else {
+                    box.textContent = '-';
+                }
+                stack.appendChild(box);
+            }
+        }
+
+        renderHistory();
+        updateWalletUI();
+    </script>
+</body>
+</html>
