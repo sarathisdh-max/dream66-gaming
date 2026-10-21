@@ -1,12 +1,13 @@
 <!-- Back Button -->
-<button onclick="goBackHome()" style="position: absolute; top: 10px; left: 10px; background: linear-gradient(135deg, #ff4d4d, #cc0000); color: white; border: none; padding: 5px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 11px; z-index: 9999; box-shadow: 0 2px 5px rgba(0,0,0,0.4);">
+<button onclick="goBackHome(event)" style="position: absolute; top: 10px; left: 10px; background: linear-gradient(135deg, #ff4d4d, #cc0000); color: white; border: none; padding: 5px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 11px; z-index: 9999; box-shadow: 0 2px 5px rgba(0,0,0,0.4);">
     ← Back
 </button>
 
 <script>
-    function goBackHome() {
+    function goBackHome(e) {
+        if(e) e.preventDefault();
         playClickSound();
-        window.location.href = 'http://localhost:5000';
+        window.location.href = 'https://dream66-gaming-1.onrender.com';
     }
 
     function playClickSound() {
@@ -43,14 +44,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Dream 66 Pro - Aviator</title>
     <style>
+        * {
+            box-sizing: border-box;
+            touch-action: manipulation;
+        }
         html, body {
             margin: 0;
             padding: 0;
             width: 100%;
-            min-height: 100%;
+            height: 100vh;
+            height: 100dvh;
             background-color: #050102;
-            overflow-x: hidden;
-            overflow-y: auto;
+            overflow: hidden;
             color: white;
             font-family: Arial, sans-serif;
             display: flex;
@@ -63,7 +68,7 @@
             width: 95%;
             max-width: 400px;
             align-items: center;
-            margin: 40px 0 6px 0;
+            margin: 35px 0 4px 0;
         }
         .logo {
             color: #ff4757;
@@ -85,9 +90,9 @@
             display: flex;
             gap: 5px;
             overflow-x: auto;
-            padding: 3px 0;
-            margin-bottom: 5px;
-            min-height: 25px;
+            padding: 2px 0;
+            margin-bottom: 4px;
+            min-height: 22px;
             align-items: center;
             scrollbar-width: none;
         }
@@ -97,9 +102,9 @@
         .history-pill {
             background-color: #1a1a1a;
             border: 1px solid #333;
-            padding: 3px 8px;
+            padding: 2px 6px;
             border-radius: 10px;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: bold;
             color: #2ed573;
             white-space: nowrap;
@@ -108,7 +113,7 @@
             position: relative;
             width: 95%;
             max-width: 400px;
-            height: 160px;
+            height: 140px;
             background: radial-gradient(circle, #2b2b2b 0%, #0a0a0a 100%);
             border: 1px solid #333;
             border-radius: 10px;
@@ -127,45 +132,43 @@
         #multiplierDisplay {
             position: relative;
             z-index: 2;
-            font-size: 32px;
+            font-size: 28px;
             font-weight: bold;
             color: white;
             text-align: center;
         }
         .crashed-text {
             color: #ff4757 !important;
-            font-size: 24px !important;
+            font-size: 20px !important;
         }
         .waiting-timer {
-            font-size: 24px !important;
+            font-size: 20px !important;
             color: #f39c12 !important;
         }
         .control-panel {
-            margin-top: 8px;
+            margin-top: 6px;
             background-color: #161616;
-            padding: 8px;
+            padding: 6px 8px;
             border-radius: 10px;
             width: 95%;
             max-width: 400px;
-            box-sizing: border-box;
             border: 1px solid #222;
-            margin-bottom: 10px;
         }
         .tab-buttons {
             display: flex;
             background: #0e0e0e;
-            border-radius: 12px;
+            border-radius: 10px;
             padding: 2px;
-            margin-bottom: 6px;
-            width: 110px;
+            margin-bottom: 4px;
+            width: 100px;
         }
         .tab-btn {
             background: none;
             color: #888;
             border: none;
-            padding: 2px 10px;
-            border-radius: 10px;
-            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 8px;
+            font-size: 9px;
             cursor: pointer;
             font-weight: bold;
         }
@@ -183,7 +186,7 @@
             flex-direction: column;
             background: #1a1a1a;
             border-radius: 8px;
-            padding: 6px;
+            padding: 5px;
             border: 1px solid #333;
             width: 155px;
         }
@@ -207,7 +210,7 @@
             background: transparent;
             color: white;
             border: none;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: bold;
             text-align: center;
             outline: none;
@@ -217,12 +220,12 @@
             background: #2b2b2b;
             color: white;
             border: none;
-            width: 22px;
-            height: 22px;
+            width: 20px;
+            height: 20px;
             border-radius: 50%;
             font-weight: bold;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 11px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -232,14 +235,14 @@
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 3px;
-            margin-top: 6px;
+            margin-top: 4px;
         }
         .quick-btn {
             background-color: #262626;
             color: #ccc;
             border: 1px solid #333;
-            padding: 3px 1px;
-            font-size: 9px;
+            padding: 2px 1px;
+            font-size: 8px;
             font-weight: bold;
             border-radius: 4px;
             cursor: pointer;
@@ -248,19 +251,19 @@
 
         .autoSection {
             display: none;
-            margin-top: 5px;
+            margin-top: 4px;
             background: linear-gradient(135deg, #1f1f1f, #121212);
             border: 1px solid #ff4757;
             border-radius: 6px;
-            padding: 4px 5px;
-            font-size: 10px;
+            padding: 3px 5px;
+            font-size: 9px;
             color: #ff4757;
             align-items: center;
             justify-content: space-between;
         }
         .autoSection span {
             font-weight: bold;
-            font-size: 9px;
+            font-size: 8px;
         }
         .auto-controls-wrap {
             display: flex;
@@ -271,12 +274,12 @@
             background: #2b2b2b;
             color: white;
             border: none;
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
             border-radius: 50%;
             font-weight: bold;
             cursor: pointer;
-            font-size: 10px;
+            font-size: 9px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -290,18 +293,18 @@
             padding: 1px 3px;
         }
         .autoSection input {
-            width: 30px;
+            width: 28px;
             background: transparent;
             color: #2ed573;
             border: none;
             text-align: center;
             font-weight: bold;
-            font-size: 11px;
+            font-size: 10px;
             outline: none;
         }
         .auto-suffix {
             color: #bbb;
-            font-size: 10px;
+            font-size: 9px;
             font-weight: bold;
         }
 
@@ -309,12 +312,12 @@
             flex-grow: 1;
             background-color: #2ed573;
             color: white;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: bold;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            height: 70px;
+            height: 55px;
         }
         .actionButton.cashout {
             background-color: #ffa502;
@@ -330,7 +333,7 @@
     <div id="historyBar"></div>
 
     <div id="gameContainer">
-        <canvas id="gameCanvas" width="400" height="160"></canvas>
+        <canvas id="gameCanvas" width="400" height="140"></canvas>
         <div id="multiplierDisplay" class="waiting-timer">1.00x</div>
     </div>
 
@@ -407,29 +410,32 @@
             <button class="actionButton" id="actionBtn2" onclick="handleAction(2)">Bet<br>10.00 INR</button>
         </div>
     </div>
-    <script src="/socket.io/socket.io.js"></script>
+    
+    <script src="https://dream66-gaming-1.onrender.com/socket.io/socket.io.js"></script>
     <script>
-        const socket = io();
+        const socket = io('https://dream66-gaming-1.onrender.com');
         const multiplierDisplay = document.getElementById('multiplierDisplay');
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         const historyBar = document.getElementById('historyBar');
         const balanceDisplay = document.getElementById('balanceDisplay');
 
-        let userBalance = 0.00;
+        let userBalance = parseFloat(localStorage.getItem('user_balance')) || 1000.00;
         let panelState = {
             1: { bet: 10, isAuto: false, isPlaying: false, hasWon: false },
-            2: { bet: 10, isAuto: false, isPlaying: false, hasWon: false }
+          2: { bet: 10, isAuto: false, isPlaying: false, hasWon: false }
         };
 
         let currentMultiplierVal = 1.00;
         let previousRounds = JSON.parse(localStorage.getItem('dream66_aviator_history')) || [1.50, 2.10, 1.12, 3.40];
         
+        updateBalanceUI();
         updateHistoryUI();
         let countdownInterval = null;
 
         function updateBalanceUI() {
             balanceDisplay.textContent = 'Wallet: ₹ ' + userBalance.toLocaleString('en-IN', {minimumFractionDigits: 2});
+            localStorage.setItem('user_balance', userBalance.toFixed(2));
         }
 
         function switchPanelTab(pId, tab) {
@@ -504,7 +510,7 @@
 
             if (!state.isPlaying) {
                 if (userBalance < state.bet) {
-                    alert('Insufficient Balance!');
+                    alert('போதிய பேலன்ஸ் இல்லை!');
                     return;
                 }
                 userBalance -= state.bet;
@@ -520,7 +526,7 @@
             } else {
                 let rawWinAmt = (state.bet * currentMultiplierVal);
                 let profit = rawWinAmt - state.bet;
-                let userProfitShare = profit * 0.40; // 40% யூசர் லாபம்
+                let userProfitShare = profit * 0.40; // 40% User RTP
                 let finalWinAmt = state.bet + userProfitShare;
 
                 userBalance += finalWinAmt;
@@ -569,7 +575,7 @@
                 if (state.isPlaying) {
                     let currentWin = (state.bet * currentMultiplierVal).toFixed(2);
                     btn.innerHTML = 'Cashout<br>₹' + currentWin + ' (' + currentMultiplierVal.toFixed(2) + 'x)';
-                    
+                  
                     if (state.isAuto) {
                         let target = parseFloat(document.getElementById('autoVal' + pId).value) || 2.0;
                         if (currentMultiplierVal >= target) {
@@ -650,13 +656,13 @@
             ctx.moveTo(0, canvas.height);
             ctx.quadraticCurveTo(canvas.width * 0.4, canvas.height, canvas.width * progress, canvas.height - (canvas.height * progress * 0.75));
             ctx.strokeStyle = '#c0392b';
-            ctx.lineWidth = 5;
+            ctx.lineWidth = 4;
             ctx.stroke();
 
             let x = canvas.width * progress;
             let y = canvas.height - (canvas.height * progress * 0.75);
-            ctx.font = '22px Arial';
-            ctx.fillText('✈️', x - 12, y + 8);
+            ctx.font = '20px Arial';
+            ctx.fillText('✈️', x - 10, y + 6);
         }
     </script>
 </body>
