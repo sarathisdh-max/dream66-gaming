@@ -20,8 +20,8 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json());
 app.use(cors());
 
-// Static files route (Directly points to public folder based on render logs)
-app.use(express.static(path.join(__dirname, 'public')));
+// Static files route for mani-app/public folder
+app.use(express.static(path.join(__dirname, 'mani-app', 'public')));
 
 // MongoDB Connection
 const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://sarathisdh_db_user:Sarathi2007@cluster0.qmjrufz.mongodb.net/dream66?retryWrites=true&w=majority&appName=Cluster0";
@@ -79,35 +79,21 @@ let jetxNextTarget = 2.00;
 let aviatorManualSet = false;
 let jetxManualSet = false;
 
-// --- CORRECT ROUTING MAPPED TO PUBLIC FOLDER ---
+// --- PERFECT ROUTING FOR FLAT PUBLIC FOLDER STRUCTURE ---
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    res.sendFile(path.join(__dirname, 'mani-app', 'public', 'index.html'));
 });
 
-// Dedicated route for 13 games inside public/games folder
-app.get('/games/:gameName', (req, res) => {
-    let gameName = req.params.gameName;
-    if (!gameName.includes('.')) gameName += '.html';
-    const gamePath = path.join(__dirname, 'public', 'games', gameName);
-    
-    res.sendFile(gamePath, (err) => {
-        if (err) {
-            res.sendFile(path.join(__dirname, 'public', 'index.html'));
-        }
-    });
-});
-
-// General pages route (payment.html, profile.html, etc.) inside public folder
 app.get('/:page', (req, res, next) => {
     let pageName = req.params.page;
-    if (pageName === 'games') return next();
+    if (pageName.startsWith('api')) return next();
     if (!pageName.includes('.')) pageName += '.html';
     
-    const filePath = path.join(__dirname, 'public', pageName);
+    const filePath = path.join(__dirname, 'mani-app', 'public', pageName);
     
     res.sendFile(filePath, (err) => {
         if (err) {
-            res.sendFile(path.join(__dirname, 'public', 'index.html'));
+            res.sendFile(path.join(__dirname, 'mani-app', 'public', 'index.html'));
         }
     });
 });
