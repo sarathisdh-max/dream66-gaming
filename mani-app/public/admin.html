@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DREAM 66 - Admin Control Panel</title>
+    <style>
+        body { background-color: #050102; color: #fff; font-family: 'Poppins', sans-serif; padding: 20px; }
+        .admin-card { background: #1a0408; border: 1px solid #3d0a14; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 0 15px rgba(255, 31, 64, 0.2); }
+        h2, h3 { color: #ff1f40; }
+        .target-text { font-size: 22px; font-weight: bold; color: #ffd700; }
+        .hidden { display: none !important; }
+        input, button, select { padding: 10px; margin: 5px 0; border-radius: 6px; border: 1px solid #3d0a14; background: #0f0204; color: #fff; font-family: inherit; }
+        button { background: #ff1f40; cursor: pointer; font-weight: bold; }
+        button:hover { background: #d91433; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #3d0a14; padding: 10px; text-align: left; font-size: 14px; }
+        th { background: #26050b; color: #ff1f40; }
+        .btn-approve { background: #28a745; border: none; padding: 6px 12px; cursor: pointer; color: #fff; border-radius: 4px; font-weight: bold; }
+        .btn-reject { background: #dc3545; border: none; padding: 6px 12px; cursor: pointer; color: #fff; border-radius: 4px; font-weight: bold; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .stat-box { background: #110205; border: 1px solid #ff1f40; padding: 15px; border-radius: 8px; text-align: center; }
+        .stat-num { font-size: 20px; font-weight: bold; color: #28a745; margin-top: 5px; }
+        .user-tab-btn { background: #26050b; border: 1px solid #ff1f40; padding: 8px 16px; cursor: pointer; color: #fff; border-radius: 6px; font-weight: bold; transition: 0.3s; }
+        .user-tab-btn.active { background: #ff1f40; border-color: #ff1f40; }
+        .user-tab-content { display: none; }
+        .user-tab-content.active { display: block; }
+    </style>
+</head>
+<body>
+
+    <!-- 1. Admin Login Section -->
+    <div id="loginSection" class="admin-card" style="max-width: 400px; margin: 50px auto;">
+        <h2>🔐 Admin Login</h2>
+        <input type="text" id="adminUser" placeholder="Username" autocomplete="off" style="width: 100%;">
+        <input type="password" id="adminPass" placeholder="Password" autocomplete="new-password" style="width: 100%;">
+        <button onclick="adminLogin()" style="width: 100%; margin-top: 10px;">Login</button>
+        <p id="loginMsg" style="color: #ff4d4d; margin-top: 10px;"></p>
+    </div>
+
+    <!-- 2. Admin Dashboard Section -->
+    <div id="dashboardSection" class="hidden">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2>DREAM 66 - Admin Control Panel</h2>
+            <button onclick="logout()" style="background: #dc3545; width: auto; padding: 8px 15px;">Logout</button>
+        </div>
+
+        <!-- Today's Analytics & Profit Report -->
+        <div class="admin-card">
+            <h3>📊 Today's Performance & Company Profit</h3>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <p>Total Deposits Today</p>
+                    <div id="statDepCount" class="stat-num">0 (₹0)</div>
+                </div>
+                <div class="stat-box">
+                    <p>Total Withdrawals Today</p>
+                    <div id="statWdCount" class="stat-num" style="color: #ffc107;">₹0</div>
+                </div>
+                <div class="stat-box">
+                    <p>Company Profit (Net & Comm.)</p>
+                    <div id="statProfit" class="stat-num" style="color: #00d2ff;">₹0.00</div>
+                </div>
+            </div>
+            <button onclick="loadData()" style="padding: 5px 10px; font-size: 12px;">Refresh All Data</button>
+        </div>
+
+        <!-- Game Targets Section & Manual Control -->
+        <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+            <div class="admin-card" style="flex: 1; min-width: 280px;">
+                <h3>🚀 JetX Live Crash Target</h3>
+                <p>Current Target: <span id="adminJetxTarget" class="target-text">Waiting...</span></p>
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <input type="number" id="jetxTargetInput" step="0.1" placeholder="e.g. 2.00" style="flex: 1;">
+                    <button onclick="setGameTarget('jetx')">Set Target</button>
+                </div>
+            </div>
+            <div class="admin-card" style="flex: 1; min-width: 280px;">
+                <h3>✈️ Aviator Live Crash Target</h3>
+                <p>Current Target: <span id="adminAviatorTarget" class="target-text">Waiting...</span></p>
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <input type="number" id="aviatorTargetInput" step="0.1" placeholder="e.g. 2.00" style="flex: 1;">
+                    <button onclick="setGameTarget('aviator')">Set Target</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Global Announcement Section -->
+        <div class="admin-card">
+            <h3>📢 Global Website Announcement</h3>
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="announcementInput" placeholder="Enter message to broadcast to all users..." style="flex: 1;">
+                <button onclick="sendAnnouncement()">Publish Announcement</button>
+            </div>
+        </div>
+
+        <!-- User Management & Balance Adjustment Section -->
+        <div class="admin-card">
+            <h3>👥 User Management & Balance Control</h3>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
+                <input type="text" id="managePhone" placeholder="User Phone Number" style="flex: 1; min-width: 200px;">
+                <input type="number" id="manageAmount" placeholder="Amount (for Balance)" style="width: 150px;">
+                <select id="actionType" style="background: #0f0204; color: #fff;">
+                    <option value="add">Add Balance</option>
+                    <option value="subtract">Subtract Balance</option>
+                </select>
+                <button onclick="adjustUserBalance()">Update Balance</button>
+                <button onclick="toggleUserBlock(true)" style="background: #dc3545;">Block User</button>
+                <button onclick="toggleUserBlock(false)" style="background: #28a745;">Unblock User</button>
+            </div>
+        </div>
+
+        <!-- Pending Deposits Table -->
+        <div class="admin-card">
+            <h3>📥 Pending Deposit Requests</h3>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date / Time</th>
+                            <th>Phone Number</th>
+                            <th>Amount</th>
+                            <th>UTR Number</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="depositTableBody">
+                        <tr><td colspan="5" style="text-align: center;">Loading deposits...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pending Withdrawals Table -->
+        <div class="admin-card">
+            <h3>📤 Pending Withdrawal Requests</h3>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date / Time</th>
+                            <th>Phone Number</th>
+                            <th>Amount</th>
+                            <th>Details</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="withdrawalTableBody">
+                        <tr><td colspan="5" style="text-align: center;">Loading withdrawals...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Users Lists Section -->
+        <div class="admin-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                <h3 style="margin: 0;">👤 Users Management</h3>
+                <div style="display: flex; gap: 10px;">
+                    <button class="user-tab-btn active" onclick="switchUserTab('registerTab', this)">Register User List</button>
+                    <button class="user-tab-btn" onclick="switchUserTab('loginTab', this)">Login User List</button>
+                </div>
+            </div>
+
+            <!-- 1. Register User List Tab Content -->
+            <div id="registerTab" class="user-tab-content active">
+                <div style="overflow-x: auto; max-height: 300px;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Phone Number</th>
+                                <th>Balance</th>
+                                <th>Total Deposit</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <tr><td colspan="5" style="text-align: center;">Loading registered users...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 2. Login User List Tab Content -->
+            <div id="loginTab" class="user-tab-content">
+                <div style="overflow-x: auto; max-height: 300px;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Phone Number</th>
+                                <th>Balance</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="loginUsersTableBody">
+                            <tr><td colspan="4" style="text-align: center;">Loading login users...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        window.onload = () => {
+            const token = localStorage.getItem('adminToken');
+            if (token) {
+                document.getElementById('loginSection').classList.add('hidden');
+                document.getElementById('dashboardSection').classList.remove('hidden');
+                loadData();
+            }
+        };
+
+        function switchUserTab(tabId, btn) {
+            document.querySelectorAll('.user-tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.user-tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        async function adminLogin() {
+            const username = document.getElementById('adminUser').value;
+            const password = document.getElementById('adminPass').value;
+
+            try {
+                const res = await fetch('/api/admin/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    localStorage.setItem('adminToken', 'active');
+                    document.getElementById('loginSection').classList.add('hidden');
+                    document.getElementById('dashboardSection').classList.remove('hidden');
+                    loadData();
+                } else {
+                    document.getElementById('loginMsg').innerText = data.message;
+                }
+            } catch (err) {
+                document.getElementById('loginMsg').innerText = 'Server connection error!';
+            }
+        }
+
+        function loadData() {
+            loadDetailedStats();
+            loadPendingTransactions();
+        }
+
+        let globalUsersList = [];
+        let activeOnlinePhones = [];
+
+        async function loadDetailedStats() {
+            try {
+                const res = await fetch('/api/admin/detailed-stats');
+                const data = await res.json();
+                if (data.success) {
+                    globalUsersList = data.users || [];
+                    document.getElementById('statDepCount').innerText = `${data.totalUsersCount} Users (₹${data.todayTotalDeposit})`;
+                    document.getElementById('statWdCount').innerText = `₹${data.todayTotalWithdrawal}`;
+                    document.getElementById('statProfit').innerText = `₹${data.netProfit} (Comm: ₹${data.commission6Percent})`;
+                    
+                    renderRegisterUsers(globalUsersList);
+                    renderLoginUsers();
+                }
+            } catch (err) {
+                console.error('Error loading stats:', err);
+            }
+        }
+
+        function renderRegisterUsers(users) {
+            const usersTbody = document.getElementById('usersTableBody');
+            usersTbody.innerHTML = '';
+            if (users && users.length > 0) {
+                users.forEach(u => {
+                    usersTbody.innerHTML += `
+                        <tr>
+                            <td>${u.name || 'N/A'}</td>
+                            <td>${u.phone}</td>
+                            <td style="color: #28a745;">₹${u.balance}</td>
+                            <td>₹${u.totalDeposit || 0}</td>
+                            <td>${u.isBlocked ? '<span style="color:#dc3545;">Blocked</span>' : '<span style="color:#28a745;">Active</span>'}</td>
+                        </tr>
+                    `;
+                });
+            } else {
+                usersTbody.innerHTML = `<tr><td colspan="5" style="text-align: center;">No registered users found.</td></tr>`;
+            }
+        }
+
+        function renderLoginUsers() {
+            const loginTbody = document.getElementById('loginUsersTableBody');
+            loginTbody.innerHTML = '';
+
+            const activeUsers = globalUsersList.filter(u => activeOnlinePhones.includes(u.phone));
+
+            if (activeUsers.length > 0) {
+                activeUsers.forEach(u => {
+                    loginTbody.innerHTML += `
+                        <tr>
+                            <td>${u.name || 'N/A'}</td>
+                            <td>${u.phone}</td>
+                            <td style="color: #00d2ff;">₹${u.balance}</td>
+                            <td><span style="color:#28a745; font-weight:bold;">Online / Active</span></td>
+                        </tr>
+                    `;
+                });
+            } else {
+                loginTbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #dc3545;">Discontinued / No users currently logged in.</td></tr>`;
+            }
+        }
+
+        async function loadPendingTransactions() {
+            try {
+                const res = await fetch('/api/admin/pending-transactions');
+                const data = await res.json();
+                
+                const depTbody = document.getElementById('depositTableBody');
+                const wdTbody = document.getElementById('withdrawalTableBody');
+                
+                depTbody.innerHTML = '';
+                wdTbody.innerHTML = '';
+
+                if (data.success) {
+                    if (data.pendingDeposits && data.pendingDeposits.length > 0) {
+                        data.pendingDeposits.forEach(tx => {
+                            depTbody.innerHTML += `
+                                <tr>
+                                    <td>${new Date(tx.date).toLocaleString()}</td>
+                                    <td>${tx.phone}</td>
+                                    <td style="color: #28a745; font-weight: bold;">₹${tx.amount}</td>
+                                    <td>UTR: ${tx.utrNumber}</td>
+                                    <td>
+                                        <button class="btn-approve" onclick="updateTx('${tx._id}', 'Approved')">Approve</button>
+                                        <button class="btn-reject" onclick="updateTx('${tx._id}', 'Rejected')">Reject</button>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+                    } else {
+                        depTbody.innerHTML = `<tr><td colspan="5" style="text-align: center;">No pending deposits found.</td></tr>`;
+                    }
+
+                    if (data.pendingWithdrawals && data.pendingWithdrawals.length > 0) {
+                        data.pendingWithdrawals.forEach(tx => {
+                            wdTbody.innerHTML += `
+                                <tr>
+                                    <td>${new Date(tx.date).toLocaleString()}</td>
+                                    <td>${tx.phone}</td>
+                                    <td style="color: #ffc107; font-weight: bold;">₹${tx.amount}</td>
+                                    <td>Withdrawal Request</td>
+                                    <td>
+                                        <button class="btn-approve" onclick="updateTx('${tx._id}', 'Approved')">Approve</button>
+                                        <button class="btn-reject" onclick="updateTx('${tx._id}', 'Rejected')">Reject</button>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+                    } else {
+                        wdTbody.innerHTML = `<tr><td colspan="5" style="text-align: center;">No pending withdrawals found.</td></tr>`;
+                    }
+                }
+            } catch (err) {
+                console.error('Error loading transactions:', err);
+            }
+        }
+
+        async function updateTx(transactionId, status) {
+            try {
+                const res = await fetch('/api/admin/action', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ transactionId, status })
+                });
+                const data = await res.json();
+                alert(data.message);
+                loadData();
+            } catch (err) {
+                console.error('Action error:', err);
+            }
+        }
+
+        async function setGameTarget(game) {
+            const targetInput = document.getElementById(`${game}TargetInput`).value;
+            if (!targetInput) {
+                alert('தயவுசெய்து டார்கெட் மதிப்பை உள்ளிடவும்!');
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/admin/set-target', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ game, target: targetInput })
+                });
+                const data = await res.json();
+                alert(data.message);
+                document.getElementById(`${game}TargetInput`).value = '';
+            } catch (err) {
+                console.error('Target set error:', err);
+            }
+        }
+
+        async function sendAnnouncement() {
+            const message = document.getElementById('announcementInput').value;
+            if (!message) {
+                alert('அறிவிப்புச் செய்தியை உள்ளிடவும்!');
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/admin/announcement', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message })
+                });
+                const data = await res.json();
+                alert(data.message);
+                document.getElementById('announcementInput').value = '';
+            } catch (err) {
+                console.error('Announcement error:', err);
+            }
+        }
+
+        async function adjustUserBalance() {
+            const phone = document.getElementById('managePhone').value;
+            const amount = document.getElementById('manageAmount').value;
+            const type = document.getElementById('actionType').value;
+
+            if (!phone || !amount) {
+                alert('மொபைல் எண் மற்றும் தொகையை உள்ளிடவும்!');
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/admin/adjust-balance', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone, amount, type })
+                });
+                const data = await res.json();
+                alert(data.message);
+                loadDetailedStats();
+            } catch (err) {
+                console.error('Balance adjustment error:', err);
+            }
+        }
+
+        async function toggleUserBlock(isBlocked) {
+            const phone = document.getElementById('managePhone').value;
+            if (!phone) {
+                alert('பயனர் மொபைல் எண்ணை உள்ளிடவும்!');
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/admin/block-user', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone, isBlocked })
+                });
+                const data = await res.json();
+                alert(data.message);
+                loadDetailedStats();
+            } catch (err) {
+                console.error('Block error:', err);
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('adminToken');
+            location.reload();
+        }
+
+        const socket = io();
+
+        socket.on('jetxNextTargetUpdate', (target) => {
+            let el = document.getElementById('adminJetxTarget');
+            if(el) el.innerText = `${target}X`;
+        });
+        
+        socket.on('aviatorNextTargetUpdate', (target) => {
+            let el = document.getElementById('adminAviatorTarget');
+            if(el) el.innerText = `${target}X`;
+        });
+
+        socket.on('userRegistered', () => {
+            loadDetailedStats();
+        });
+
+        socket.on('activeUsersListUpdate', (activePhones) => {
+            activeOnlinePhones = activePhones || [];
+            if (globalUsersList.length > 0) {
+                renderLoginUsers();
+            } else {
+                loadDetailedStats();
+            }
+        });
+    </script>
+</body>
+</html>
