@@ -145,11 +145,6 @@
         .confirm-btn:hover {
             background: #218838;
         }
-        .timer {
-            color: #ffc107;
-            font-size: 13px;
-            margin-top: 10px;
-        }
     </style>
 </head>
 <body>
@@ -159,22 +154,22 @@
         <div class="brand-title">DREAM 66 GAMING</div>
         <h2>Scan QR code using UPI app</h2>
         
-        <!-- QR Code (Linked with UPI & Fixed Amount 300) -->
+        <!-- QR Code Container -->
         <div class="qr-box">
-            <img id="qrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=6379227658-2@ybl&pn=DREAM66&am=300&cu=INR" alt="QR Code">
+            <img id="qrImage" src="" alt="QR Code">
         </div>
 
         <div>
-            <!-- Save QR Code Button (Downloads to Gallery) -->
-            <a href="#" class="save-qr-btn" onclick="downloadQRCode()">📥 Save QR Code to Gallery</a>
+            <!-- Save QR Code Button -->
+            <a href="#" class="save-qr-btn" onclick="downloadQRCode()">📥 Save QR Code</a>
         </div>
 
-        <!-- UPI ID (Locked) -->
+        <!-- UPI ID (Masked & Locked) -->
         <div class="info-group">
             <label>UPI ID to pay manually</label>
             <div class="input-with-btn">
-                <input type="text" id="upiId" value="6379227658-2@ybl" readonly>
-                <button class="copy-btn" onclick="copyText('upiId')">Copy</button>
+                <input type="text" id="upiId" value="6379XXXX58-2@ybl" readonly>
+                <button class="copy-btn" onclick="copyFullUPI()">Copy</button>
             </div>
         </div>
 
@@ -182,19 +177,19 @@
         <div class="info-group">
             <label>Amount (Locked)</label>
             <div class="input-with-btn">
-                <input type="text" id="amountVal" value="300 INR" readonly>
+                <input type="text" id="amountVal" readonly>
                 <button class="copy-btn" onclick="copyText('amountVal')">Copy</button>
             </div>
         </div>
 
-        <!-- Payment Instructions with Important Warnings -->
+        <!-- Payment Instructions (In English) -->
         <div class="instructions">
-            <strong style="color: #ff4d4d;">⚠️ மிக முக்கியமான வழிமுறைகள்:</strong>
+            <strong style="color: #ff4d4d;">⚠️ Important Instructions:</strong>
             <ol>
-                <li><b>Save QR Code</b> பட்டனை அழுத்தி கியூஆர் கோடை உங்கள் கேலரியில் சேமிக்கவும்.</li>
-                <li>PhonePe / GPay ஆப் குள் சென்று கேலரியில் உள்ள QR-ஐ ஸ்கேன் செய்யும் போது <b>தொகை (300 INR) தானாக லாக் ஆகிவிடும்</b>.</li>
-                <li>பணம் செலுத்தும் வரை இந்தப் பக்கத்தைவிட்டு வெளியேறவோ அல்லது ரெஃப்ரெஷ் செய்யவோ கூடாது.</li>
-                <li>பணம் செலுத்திய பின் கிடைக்கும் <b>12 இலக்க UTR எண்ணை</b> கீழே உள்ள கட்டத்தில் சரியாக உள்ளிட்டு <b>Confirm Payment</b> அழுத்தவும்.</li>
+                <li>Click the <b>Save QR Code</b> button to save the QR to your gallery.</li>
+                <li>Open PhonePe / GPay and scan the saved QR. The <b>amount will be locked automatically</b>.</li>
+                <li>Do not exit or refresh this page until the payment is completed.</li>
+                <li>After successful payment, enter the <b>12-digit UTR number</b> below and click <b>Confirm Payment</b>.</li>
             </ol>
         </div>
 
@@ -209,18 +204,31 @@
     </div>
 
     <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const amount = urlParams.get('amount') || '300';
+
+        document.getElementById('amountVal').value = amount + ' INR';
+
+        const fullUpiId = "6379227658-2@ybl";
+        const upiData = `upi://pay?pa=${fullUpiId}&pn=DREAM66&am=${amount}.00&cu=INR`;
+        document.getElementById('qrImage').src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(upiData)}`;
+
+        function copyFullUPI() {
+            navigator.clipboard.writeText(fullUpiId);
+            alert("Copied UPI ID");
+        }
+
         function copyText(elementId) {
             var copyText = document.getElementById(elementId);
             copyText.select();
             navigator.clipboard.writeText(copyText.value);
-            alert("Copied: " + copyText.value);
+            alert("Copied Amount");
         }
 
         function downloadQRCode() {
             var imageUrl = document.getElementById('qrImage').src;
-            var fileName = "DREAM66_QR_300.png";
+            var fileName = `DREAM66_QR_${amount}.png`;
             
-            // Force download to gallery/device storage
             fetch(imageUrl)
                 .then(response => response.blob())
                 .then(blob => {
@@ -230,10 +238,9 @@
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
-                    alert("QR Code downloaded successfully! Check your gallery/downloads.");
+                    alert("QR Code Saved");
                 })
                 .catch(err => {
-                    // Fallback if CORS restricts fetch
                     window.open(imageUrl, '_blank');
                 });
         }
@@ -241,14 +248,13 @@
         function submitPayment() {
             var utr = document.getElementById('utrNumber').value.trim();
             if(utr.length !== 12) {
-                alert("தயவுசெய்து சரியான 12 இலக்க UTR எண்ணை உள்ளிடவும்!");
+                alert("Please enter a valid 12-digit UTR number!");
                 return;
             }
             alert("Payment submitted successfully! Waiting for Admin Verification.");
         }
 
-        // Timer
-        let time = 362; // 6 minutes 2 seconds
+        let time = 362;
         setInterval(() => {
             let minutes = Math.floor(time / 60);
             let seconds = time % 60;
