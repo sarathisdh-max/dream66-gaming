@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DREAM 66 - Plinko 1000 Ultimate</title>
+    <title>DREAM 66 - Plinko 1000 Luxury</title>
     <style>
         * {
             margin: 0;
@@ -13,15 +13,15 @@
             touch-action: manipulation;
         }
         body {
-            background: radial-gradient(circle at center, #12002b 0%, #05000e 100%);
+            background: linear-gradient(135deg, #090117 0%, #1a0836 50%, #05000e 100%);
             color: #fff;
             height: 100vh;
             height: 100dvh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-between;
-            padding: 4px;
+            justify-content: center;
+            padding: 6px;
             overflow: hidden;
             position: fixed;
             width: 100%;
@@ -29,61 +29,63 @@
             top: 0;
         }
 
+        .game-container {
+            width: 100%;
+            max-width: 380px;
+            background: rgba(20, 5, 45, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1.5px solid rgba(0, 255, 204, 0.3);
+            border-radius: 18px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8), inset 0 0 15px rgba(255, 0, 127, 0.2);
+        }
+
         .header {
             width: 100%;
-            max-width: 400px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(25, 5, 45, 0.9);
-            padding: 6px 10px;
+            background: rgba(30, 10, 60, 0.9);
+            padding: 6px 12px;
             border-radius: 10px;
-            border: 1px solid #00ffcc;
-            box-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            margin-bottom: 8px;
         }
         .back-btn {
             background: linear-gradient(135deg, #ff007f, #7928ca);
             color: white;
             border: none;
-            padding: 4px 8px;
+            padding: 4px 10px;
             border-radius: 6px;
             cursor: pointer;
             font-weight: 700;
             text-decoration: none;
             font-size: 10px;
+            box-shadow: 0 0 8px rgba(255, 0, 127, 0.5);
         }
         .title {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 900;
             background: linear-gradient(135deg, #ffd700, #00ffcc);
             background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            letter-spacing: 0.5px;
         }
         .balance-box { font-size: 11px; color: #00ffcc; font-weight: 800; }
 
-        .game-viewport {
-            width: 100%;
-            max-width: 400px;
-            background: rgba(18, 5, 38, 0.95);
-            border-radius: 14px;
-            padding: 8px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.9);
-            border: 1.5px solid #ff007f;
-            position: relative;
-        }
-
         #plinkoCanvas {
-            background: radial-gradient(circle, #1a0836 0%, #090117 100%);
-            border-radius: 10px;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.9);
-            margin-bottom: 4px;
+            background: radial-gradient(circle, #15052c 0%, #070114 100%);
+            border-radius: 12px;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.9);
+            border: 1px solid rgba(0, 255, 204, 0.2);
+            margin-bottom: 6px;
             width: 100%;
             max-width: 330px;
-            height: 230px;
+            height: 200px;
         }
 
         .status-banner {
@@ -91,27 +93,28 @@
             font-weight: 800;
             color: #ffd700;
             min-height: 14px;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
             text-transform: uppercase;
+            text-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
         }
 
         .settings-bar {
             width: 100%;
             display: flex;
-            gap: 4px;
-            margin-bottom: 4px;
+            gap: 6px;
+            margin-bottom: 6px;
         }
         .setting-box {
             flex: 1;
-            background: rgba(30, 10, 60, 0.8);
-            border: 1px solid #00ffcc;
-            border-radius: 6px;
-            padding: 3px 6px;
+            background: rgba(35, 12, 70, 0.7);
+            border: 1px solid rgba(0, 255, 204, 0.3);
+            border-radius: 8px;
+            padding: 4px 8px;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
-        .setting-label { font-size: 7px; color: #aaa; font-weight: 700; text-transform: uppercase; }
+        .setting-label { font-size: 7px; color: #bbb; font-weight: 700; text-transform: uppercase; }
         .setting-select {
             background: transparent;
             border: none;
@@ -128,20 +131,20 @@
         .chips-scroll-container {
             width: 100%;
             display: flex;
-            gap: 4px;
+            gap: 5px;
             overflow-x: auto;
             padding-bottom: 2px;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             scrollbar-width: none;
         }
         .chips-scroll-container::-webkit-scrollbar { display: none; }
 
         .chip-pill {
-            min-width: 36px;
-            height: 24px;
+            min-width: 35px;
+            height: 26px;
             background: linear-gradient(135deg, #28084b, #12002b);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
             color: #fff;
             font-size: 9px;
             font-weight: 900;
@@ -150,21 +153,22 @@
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
+            transition: 0.2s;
         }
         .chip-pill.active-chip {
             background: linear-gradient(135deg, #00ffcc, #0088cc);
             color: #000;
             border-color: #fff;
-            box-shadow: 0 0 8px rgba(0, 255, 204, 0.8);
-            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.8);
+            transform: scale(1.08);
         }
 
         .action-panel {
             width: 100%;
-            background: rgba(20, 5, 40, 0.9);
-            border-radius: 8px;
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 6px 10px;
+            background: rgba(25, 8, 50, 0.9);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 0, 127, 0.3);
+            padding: 6px 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -172,14 +176,15 @@
         .drop-btn {
             background: linear-gradient(135deg, #ff007f, #7928ca);
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             color: #fff;
-            padding: 8px 22px;
+            padding: 8px 24px;
             font-weight: 900;
             font-size: 11px;
             cursor: pointer;
-            box-shadow: 0 0 12px rgba(255, 0, 127, 0.6);
+            box-shadow: 0 0 15px rgba(255, 0, 127, 0.7);
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         .drop-btn:active { transform: scale(0.95); }
 
@@ -189,14 +194,14 @@
 </head>
 <body>
 
-    <div class="header">
-        <a href="index.html" class="back-btn">← Back</a>
-        <div class="title">🔮 PLINKO 1000</div>
-        <div class="balance-box">₹<span id="balance">0.00</span></div>
-    </div>
+    <div class="game-container">
+        <div class="header">
+            <a href="index.html" class="back-btn">← Back</a>
+            <div class="title">🔮 PLINKO 1000</div>
+            <div class="balance-box">₹<span id="balance">0.00</span></div>
+        </div>
 
-    <div class="game-viewport">
-        <canvas id="plinkoCanvas" width="330" height="230"></canvas>
+        <canvas id="plinkoCanvas" width="330" height="200"></canvas>
         <div class="status-banner" id="statusBanner">SELECT CHIP & DROP BALLS!</div>
 
         <div class="settings-bar">
@@ -269,7 +274,7 @@
         }
 
         const rows = 8;
-        const pinRadius = 2.2;
+        const pinRadius = 2;
 
         function drawBoard() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -277,12 +282,12 @@
 
             for (let r = 0; r < rows; r++) {
                 const count = r + 3;
-                const spacing = 26;
+                const spacing = 25;
                 const startX = (canvas.width - (count - 1) * spacing) / 2;
 
                 for (let c = 0; c < count; c++) {
                     const x = startX + c * spacing;
-                    const y = 18 + r * 17;
+                    const y = 15 + r * 16;
                     ctx.beginPath();
                     ctx.arc(x, y, pinRadius, 0, Math.PI * 2);
                     ctx.fill();
@@ -296,27 +301,27 @@
             if (risk === 'low') { multsArray = lowMults; barColor = '#0088cc'; }
             else if (risk === 'med') { multsArray = medMults; barColor = '#00cc66'; }
 
-            drawActiveSlotRow(multsArray, barColor, canvas.height - 25);
+            drawActiveSlotRow(multsArray, barColor, canvas.height - 22);
         }
 
         function drawActiveSlotRow(multsArray, color, slotY) {
             const slots = multsArray.length;
-            const slotWidth = 28;
+            const slotWidth = 27;
             const startSlotX = (canvas.width - slots * slotWidth) / 2;
 
             for (let i = 0; i < slots; i++) {
                 ctx.fillStyle = color;
-                ctx.fillRect(startSlotX + i * slotWidth + 1, slotY, slotWidth - 2, 20);
+                ctx.fillRect(startSlotX + i * slotWidth + 1, slotY, slotWidth - 2, 18);
                 
                 ctx.strokeStyle = '#ffd700';
                 ctx.lineWidth = 1;
-                ctx.strokeRect(startSlotX + i * slotWidth + 1, slotY, slotWidth - 2, 20);
+                ctx.strokeRect(startSlotX + i * slotWidth + 1, slotY, slotWidth - 2, 18);
 
                 ctx.fillStyle = '#fff';
-                ctx.font = 'bold 9px Segoe UI';
+                ctx.font = 'bold 8px Segoe UI';
                 ctx.textAlign = 'center';
                 let label = multsArray[i] >= 1000 ? '1k' : multsArray[i] + 'x';
-                ctx.fillText(label, startSlotX + i * slotWidth + slotWidth / 2, slotY + 13);
+                ctx.fillText(label, startSlotX + i * slotWidth + slotWidth / 2, slotY + 12);
             }
         }
 
