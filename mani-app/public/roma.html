@@ -1,37 +1,3 @@
-<!-- Back Button -->
-<button onclick="goBackHome(event)" style="position: absolute; top: 10px; left: 10px; background: linear-gradient(135deg, #ff4d4d, #cc0000); color: white; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; z-index: 9999; box-shadow: 0 2px 5px rgba(0,0,0,0.4);">
-    ← Back
-</button>
-
-<script>
-    function goBackHome(e) {
-        if(e) e.preventDefault();
-        playClickSound();
-        window.location.href = 'https://dream66-gaming-1.onrender.com';
-    }
-
-    function playClickSound() {
-        try {
-            let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            let oscillator = audioCtx.createOscillator();
-            let gainNode = audioCtx.createGain();
-            oscillator.type = 'sine';
-            oscillator.frequency.setValueAtTime(500, audioCtx.currentTime);
-            gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
-            oscillator.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-            oscillator.start();
-            oscillator.stop(audioCtx.currentTime + 0.08);
-        } catch(e) {}
-    }
-
-    document.addEventListener('click', function(e) {
-        if(e.target.tagName === 'BUTTON') {
-            playClickSound();
-        }
-    });
-</script>
-
 <!DOCTYPE html>
 <html lang="ta">
 <head>
@@ -285,6 +251,11 @@
 </head>
 <body>
 
+    <!-- Back Button -->
+    <button onclick="goBackHome(event)" style="position: absolute; top: 10px; left: 10px; background: linear-gradient(135deg, #ff4d4d, #cc0000); color: white; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; z-index: 9999; box-shadow: 0 2px 5px rgba(0,0,0,0.4);">
+        ← Back
+    </button>
+
     <div class="app-header">
         <div class="brand-title">DREAM 66</div>
         <div class="balance-chip" id="walletBalance">₹ 0.00</div>
@@ -356,6 +327,34 @@
     </div>
 
     <script>
+        function goBackHome(e) {
+            if(e) e.preventDefault();
+            playClickSound();
+            window.location.href = 'https://dream66-gaming-1.onrender.com';
+        }
+
+        function playClickSound() {
+            try {
+                let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                let oscillator = audioCtx.createOscillator();
+                let gainNode = audioCtx.createGain();
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(500, audioCtx.currentTime);
+                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + 0.08);
+            } catch(e) {}
+        }
+
+        document.addEventListener('click', function(e) {
+            if(e.target.tagName === 'BUTTON') {
+                playClickSound();
+            }
+        });
+
+        // Wallet balance initially set to 0.00
         let wallet = parseFloat(localStorage.getItem('user_balance')) || 0.00;
         let currentRound = 1;
         let selectedChoice = null;
@@ -480,7 +479,6 @@
                     historyClass = winner.toLowerCase();
                 }
 
-                // History Update (Strictly 3 boxes)
                 historyList.unshift({ text: historyText, cls: historyClass });
                 if (historyList.length > 3) historyList.pop();
                 renderHistory();
