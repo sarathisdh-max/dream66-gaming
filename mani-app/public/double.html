@@ -1,0 +1,503 @@
+<!-- Back Button -->
+<button onclick="goBackHome()" style="position: absolute; top: 10px; left: 10px; background: linear-gradient(135deg, #ff4d4d, #cc0000); color: white; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; z-index: 9999; box-shadow: 0 2px 5px rgba(0,0,0,0.4);">
+    ← Back
+</button>
+
+<script>
+    function goBackHome() {
+        playClickSound();
+        window.location.href = 'http://localhost:5000';
+    }
+
+    function playClickSound() {
+        try {
+            let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            let oscillator = audioCtx.createOscillator();
+            let gainNode = audioCtx.createGain();
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(500, audioCtx.currentTime);
+            gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            oscillator.start();
+            oscillator.stop(audioCtx.currentTime + 0.08);
+        } catch(e) {}
+    }
+
+    document.addEventListener('click', function(e) {
+        if(e.target.tagName === 'BUTTON') {
+            playClickSound();
+        }
+    });
+</script>
+
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dream 66 - Double</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            min-height: 100vh;
+            background-color: #0f141c;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .app-header {
+            width: 100%;
+            max-width: 420px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 18px;
+            background-color: #171d27;
+            border-bottom: 1px solid #232c3d;
+            margin-top: 35px;
+        }
+        .brand-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #d4af37;
+        }
+        .balance-chip {
+            background: #111721;
+            border: 2px solid #2ed573;
+            border-radius: 20px;
+            padding: 6px 16px;
+            font-size: 18px;
+            font-weight: 900;
+            color: #2ed573;
+            box-shadow: 0 0 10px rgba(46, 213, 115, 0.3);
+        }
+        .game-stage {
+            width: 100%;
+            max-width: 420px;
+            background: radial-gradient(circle at center, #1b2433 0%, #0f141c 100%);
+            padding: 20px 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+        .round-info-bar {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .timer-display {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+        .round-id {
+            font-size: 12px;
+            color: #7b8a9e;
+        }
+        
+        .wheel-container {
+            width: 100%;
+            height: 80px;
+            background: #111721;
+            border: 2px solid #2a3547;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+        }
+        .wheel-pointer {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 100%;
+            background: #ffd700;
+            z-index: 10;
+            box-shadow: 0 0 10px #ffd700;
+        }
+        .wheel-strip {
+            display: flex;
+            gap: 0px;
+            position: absolute;
+            left: 0;
+            /* முடிவில் படு மென்மையாக ஸ்லோவாக வந்து நிற்கும் அனிமேஷன் கவ் (Curve) */
+            transition: transform 5s cubic-bezier(0.05, 0.9, 0.1, 1);
+        }
+        .wheel-box {
+            width: 70px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            flex-shrink: 0;
+            border-right: 1px solid rgba(0,0,0,0.3);
+        }
+        .box-RED { background: #e74c3c; }
+        .box-BLACK { background: #2c3e50; }
+        .box-GREEN { background: #2ecc71; color: #000; }
+
+        .history-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+        .history-chip {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .bet-control-section {
+            width: 100%;
+            max-width: 420px;
+            padding: 14px;
+        }
+        .input-group-label {
+            font-size: 13px;
+            color: #8f9cae;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+        .bet-input-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .bet-input-box {
+            flex: 1;
+            background: #171d27;
+            border: 2px solid #2a3547;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+        }
+        .bet-input-box input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: #2ed573;
+            font-size: 20px;
+            font-weight: 900;
+            text-align: center;
+            outline: none;
+        }
+        
+        .quick-chips-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 6px;
+            margin-bottom: 15px;
+        }
+        .chip-btn {
+            background: #232c3d;
+            color: #b0bec5;
+            border: 1px solid #2e3a4e;
+            padding: 8px 0;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 11px;
+            cursor: pointer;
+            text-align: center;
+        }
+        .chip-btn:hover {
+            background: #2ed573;
+            color: #0f141c;
+            border-color: #2ed573;
+        }
+
+        .color-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
+        .color-btn {
+            padding: 16px 10px;
+            border-radius: 8px;
+            border: 2px solid transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .color-btn.selected {
+            border-color: #ffd700;
+            box-shadow: 0 0 12px rgba(255, 215, 0, 0.5);
+        }
+        .btn-red-choice { background: #e74c3c; color: white; }
+        .btn-white-choice { background: #2ecc71; color: black; }
+        .btn-black-choice { background: #2c3e50; color: white; }
+
+        .btn-title { font-size: 15px; font-weight: 900; }
+        .btn-mult { font-size: 13px; opacity: 0.9; margin-top: 4px; font-weight: bold; }
+
+        .place-bet-action {
+            width: 100%;
+            margin-top: 15px;
+            padding: 14px;
+            background: #2ed573;
+            color: #0f141c;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 900;
+            cursor: pointer;
+        }
+        .place-bet-action:disabled {
+            background: #3a475c;
+            color: #6c7a8e;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-header">
+        <div class="brand-title">DREAM 66</div>
+        <div class="balance-chip" id="walletBalance">₹ 0.00</div>
+    </div>
+
+    <div class="game-stage">
+        <div class="round-info-bar">
+            <div>
+                <div class="timer-display" id="timer">00:15</div>
+                <div style="font-size: 12px; color: #2ed573;" id="statusText">Make your bets</div>
+            </div>
+            <div class="round-id" id="roundId">Round ID: 1</div>
+        </div>
+
+        <div class="wheel-container">
+            <div class="wheel-pointer"></div>
+            <div class="wheel-strip" id="wheelStrip"></div>
+        </div>
+
+        <div class="history-row" id="historyRow"></div>
+    </div>
+
+    <div class="bet-control-section">
+        <div class="input-group-label">Bet amount (Min ₹10)</div>
+        <div class="bet-input-row">
+            <div class="bet-input-box">
+                <input type="number" id="betAmountInput" value="10" min="10" step="10">
+            </div>
+        </div>
+
+        <div class="quick-chips-grid">
+            <button class="chip-btn" onclick="setBet(10)">10</button>
+            <button class="chip-btn" onclick="setBet(50)">50</button>
+            <button class="chip-btn" onclick="setBet(100)">100</button>
+            <button class="chip-btn" onclick="setBet(300)">300</button>
+            <button class="chip-btn" onclick="setBet(500)">500</button>
+            <button class="chip-btn" onclick="setBet(1000)">1000</button>
+        </div>
+
+        <div class="input-group-label">Choose color</div>
+        <div class="color-grid">
+            <div class="color-btn btn-red-choice" onclick="selectColor('RED', 2.0)" id="btn-RED">
+                <span class="btn-title">RED</span>
+                <span class="btn-mult">2.00x</span>
+            </div>
+            <div class="color-btn btn-white-choice" onclick="selectColor('GREEN', 14.0)" id="btn-GREEN">
+                <span class="btn-title">GREEN</span>
+                <span class="btn-mult">14.00x</span>
+            </div>
+            <div class="color-btn btn-black-choice" onclick="selectColor('BLACK', 2.0)" id="btn-BLACK">
+                <span class="btn-title">BLACK</span>
+                <span class="btn-mult">2.00x</span>
+            </div>
+        </div>
+
+        <button class="place-bet-action" id="placeBetBtn" onclick="confirmBet()">CONFIRM BET</button>
+    </div>
+    <script>
+        let wallet = 0.00;
+        let currentRound = 1;
+        let selectedChoice = null;
+        let selectedMult = 1.0;
+        let timeLeft = 15; // 15 விநாடிகளாக மாற்றப்பட்டுள்ளது
+        let isBettingOpen = true;
+        let currentBet = null;
+
+        const pattern = ['RED', 'BLACK', 'RED', 'BLACK', 'GREEN', 'RED', 'BLACK', 'RED', 'BLACK', 'GREEN'];
+        const itemWidth = 70;
+
+        function initWheel() {
+            const strip = document.getElementById('wheelStrip');
+            strip.innerHTML = '';
+            for(let i=0; i<60; i++) {
+                pattern.forEach(color => {
+                    let box = document.createElement('div');
+                    box.className = 'wheel-box box-' + color;
+                    box.textContent = color === 'GREEN' ? '★' : '';
+                    strip.appendChild(box);
+                });
+            }
+        }
+
+        function updateWalletUI() {
+            document.getElementById('walletBalance').textContent = '₹ ' + wallet.toLocaleString('en-IN', {minimumFractionDigits: 2});
+        }
+
+        function setBet(amount) {
+            document.getElementById('betAmountInput').value = amount;
+        }
+
+        function selectColor(color, mult) {
+            if (!isBettingOpen) return;
+            selectedChoice = color;
+            selectedMult = mult;
+
+            document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('selected'));
+            document.getElementById('btn-' + color).classList.add('selected');
+        }
+
+        function confirmBet() {
+            if (!isBettingOpen) return;
+            const amt = parseFloat(document.getElementById('betAmountInput').value);
+            
+            if (isNaN(amt) || amt < 10) {
+                alert('குறைந்தபட்ச பெட் தொகை ₹10 இருக்க வேண்டும்!');
+                return;
+            }
+            if (amt > wallet) {
+                alert('போதிய பேலன்ஸ் இல்லை!');
+                return;
+            }
+            if (!selectedChoice) {
+                alert('தயவுசெய்து ஒரு கலரைத் தேர்ந்தெடுக்கவும்!');
+                return;
+            }
+
+            wallet -= amt;
+            updateWalletUI();
+
+            currentBet = {
+                color: selectedChoice,
+                mult: selectedMult,
+                amount: amt
+            };
+
+            document.getElementById('placeBetBtn').disabled = true;
+            document.getElementById('placeBetBtn').textContent = 'BET PLACED (₹' + amt + ')';
+        }
+
+        function startTimer() {
+            setInterval(() => {
+                if (timeLeft > 0) {
+                    timeLeft--;
+                    let minStr = timeLeft < 10 ? '0' + timeLeft : timeLeft;
+                    document.getElementById('timer').textContent = '00:' + minStr;
+                } else {
+                    if (isBettingOpen) {
+                        resolveRound();
+                    } else {
+                        resetRound();
+                    }
+                }
+            }, 1000);
+        }
+
+        function resolveRound() {
+            isBettingOpen = false;
+            document.getElementById('statusText').textContent = 'Rolling...';
+            document.getElementById('statusText').style.color = '#ffa502';
+
+            // 60% House Edge / 40% User RTP லாஜிக்
+            let resultColor = 'BLACK';
+            let rand = Math.random();
+            if (rand < 0.45) resultColor = 'RED';
+            else if (rand < 0.90) resultColor = 'BLACK';
+            else resultColor = 'GREEN';
+
+            const strip = document.getElementById('wheelStrip');
+            const patternLength = pattern.length;
+            
+            let targetIndexInPattern = pattern.indexOf(resultColor);
+            if(targetIndexInPattern === -1) targetIndexInPattern = 0;
+
+            // படுவேகமாகச் சுற்றி, இறுதியில் பாக்ஸின் மிடிலில் வந்து ரொம்ப ஸ்மூத்தாக ஸ்லோ ஆகும் கணக்கீடு
+            let targetIndex = (patternLength * 45) + targetIndexInPattern;
+            let containerWidth = document.querySelector('.wheel-container').offsetWidth;
+            let offset = (targetIndex * itemWidth) - (containerWidth / 2) + (itemWidth / 2);
+
+            strip.style.transition = 'transform 5s cubic-bezier(0.05, 0.9, 0.1, 1)';
+            strip.style.transform = `translateX(-${offset}px)`;
+
+            setTimeout(() => {
+                const hist = document.getElementById('historyRow');
+                let chip = document.createElement('div');
+                chip.className = 'history-chip box-' + resultColor;
+                chip.textContent = resultColor === 'GREEN' ? '★' : resultColor[0];
+                hist.insertBefore(chip, hist.firstChild);
+                while(hist.children.length > 3) hist.removeChild(hist.lastChild);
+
+                if (currentBet) {
+                    if (currentBet.color === resultColor) {
+                        let rawProfit = (currentBet.amount * currentBet.mult) - currentBet.amount;
+                        let userShare = rawProfit * 0.40; // 40% User RTP
+                        let finalPayout = currentBet.amount + userShare;
+
+                        wallet += finalPayout;
+                        updateWalletUI();
+                        document.getElementById('statusText').textContent = 'WON ₹' + finalPayout.toFixed(2);
+                        document.getElementById('statusText').style.color = '#2ed573';
+                    } else {
+                        document.getElementById('statusText').textContent = 'LOST ₹' + currentBet.amount.toFixed(2);
+                        document.getElementById('statusText').style.color = '#ff4757';
+                    }
+                }
+                timeLeft = 3; // ரிசல்ட் காட்டியபின் 3 விநாடிகள் இடைவெளி
+            }, 5000); // 5 விநாடிகள் அனிமேஷன் நேரம்
+        }
+
+        function resetRound() {
+            isBettingOpen = true;
+            timeLeft = 15;
+            currentBet = null;
+            selectedChoice = null;
+
+            const strip = document.getElementById('wheelStrip');
+            strip.style.transition = 'none';
+            strip.style.transform = 'translateX(0px)';
+
+            document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('selected'));
+            document.getElementById('placeBetBtn').disabled = false;
+            document.getElementById('placeBetBtn').textContent = 'CONFIRM BET';
+            document.getElementById('statusText').textContent = 'Make your bets';
+            document.getElementById('statusText').style.color = '#2ed573';
+
+            currentRound++;
+            document.getElementById('roundId').textContent = 'Round ID: ' + currentRound;
+        }
+
+        initWheel();
+        startTimer();
+    </script>
+</body>
+</html>
