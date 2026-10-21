@@ -2,80 +2,79 @@
 <html lang="ta">
 <head>
     <meta charset="UTF-8">
-    <!-- Mobile Zoom Lock and Screen Scalability Fix -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DREAM 66 - Pro Casino Platform</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; touch-action: manipulation; }
-        body { background-color: #050102; color: #ffffff; display: flex; justify-content: center; align-items: center; min-height: 100vh; user-select: none; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+        body { background-color: #050102; color: #ffffff; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
         .app-container { width: 100%; max-width: 410px; background: #0f0205; border-radius: 16px; border: 2px solid #2b060c; overflow: hidden; position: relative; min-height: 750px; box-shadow: 0 15px 40px rgba(255, 42, 75, 0.3); }
-        
-        .screen { display: none !important; padding: 12px; padding-bottom: 80px; max-height: 680px; overflow-y: auto; }
+        .screen { display: none; padding: 12px; padding-bottom: 80px; max-height: 680px; overflow-y: auto; }
         .screen.active { display: block !important; }
-        
         .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; background: linear-gradient(180deg, #180306, #0f0205); border-bottom: 1px solid #26050b; }
         .brand-title { color: #ff1f40; font-weight: 900; font-size: 22px; font-style: italic; text-shadow: 0 0 10px rgba(255,31,64,0.5); }
         
-        /* Animated Neon Title & Motivational Slogan */
-        .neon-logo-box { text-align: center; margin: 15px 0 10px 0; }
-        .neon-main-title { font-size: 26px; font-weight: 900; font-style: italic; color: #ff1f40; text-transform: uppercase; letter-spacing: 2px; animation: neonGlow 1.5s infinite alternate; }
-        .neon-sub-title { font-size: 11px; color: #ffd700; font-weight: 600; margin-top: 4px; text-transform: uppercase; letter-spacing: 1px; }
-
+        /* Premium Animated Logo */
+        .animated-logo {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 900;
+            font-style: italic;
+            color: #ff1f40;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+            animation: neonGlow 1.5s infinite alternate;
+        }
         @keyframes neonGlow {
             0% { text-shadow: 0 0 5px #ff1f40, 0 0 10px #ff1f40, 0 0 20px #ff1f40; transform: scale(1); }
-            100% { text-shadow: 0 0 10px #ffd700, 0 0 20px #ff1f40, 0 0 30px #ff1f40; transform: scale(1.02); }
+            100% { text-shadow: 0 0 10px #ffd700, 0 0 20px #ff1f40, 0 0 30px #ff1f40; transform: scale(1.03); }
         }
 
-        /* Auth Styles with Golden Focus Glow */
-        .auth-container { padding: 15px; text-align: center; }
-        .auth-box { background: #1a0408; border: 1px solid #3d0a14; padding: 18px; border-radius: 14px; margin-top: 5px; text-align: left; }
-        .auth-input { width: 100%; padding: 11px; background: #0f0205; border: 1px solid #4a0d17; color: #ffd700; border-radius: 8px; outline: none; font-size: 13px; margin-bottom: 10px; transition: all 0.3s ease; }
-        .auth-input:focus { border-color: #ffd700; box-shadow: 0 0 10px rgba(255, 215, 0, 0.6); }
-        
+        /* Auth Styles */
+        #loginScreen { display: block; padding: 20px; text-align: center; }
+        .auth-box { background: #1a0408; border: 1px solid #3d0a14; padding: 20px; border-radius: 14px; margin-top: 10px; text-align: left; }
+        .auth-input { width: 100%; padding: 11px; background: #0f0205; border: 1px solid #4a0d17; color: #ffd700; border-radius: 8px; outline: none; font-size: 13px; margin-bottom: 10px; }
         .auth-label { font-size: 11px; color: #ffb700; font-weight: 600; margin-bottom: 3px; display: block; }
         .switch-text { font-size: 12px; color: #aaa; margin-top: 12px; text-align: center; }
-        .switch-text span { color: #ff1f40; cursor: pointer; font-weight: bold; text-decoration: underline; }
+        .switch-text span { color: #ff1f40; cursor: pointer; font-weight: bold; }
         
         .otp-flex { display: flex; gap: 8px; margin-bottom: 10px; }
         .otp-flex input { flex: 1; margin-bottom: 0; }
         .otp-btn { background: linear-gradient(135deg, #ffb700, #cc9200); color: #000; border: none; padding: 0 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; white-space: nowrap; }
 
-        .live-ticker { background: #170306; border-bottom: 1px solid #2d070d; padding: 7px 12px; font-size: 12px; color: #ffd700; overflow: hidden; display: flex; align-items: center; height: 35px; white-space: nowrap; }
+        .live-ticker { background: #170306; border-bottom: 1px solid #2d070d; padding: 7px 12px; font-size: 12px; color: #ffd700; overflow: hidden; display: flex; align-items: center; height: 35px; white-space: nowrap; margin-bottom: 12px; border-radius: 6px; }
         .ticker-container { display: inline-block; white-space: nowrap; animation: smoothScroll 60s linear infinite; }
         .ticker-item { display: inline-block; margin-right: 50px; font-weight: 600; }
         @keyframes smoothScroll { 0% { transform: translateX(0%); } 100% { transform: translateX(-50%); } }
         
-        .categories { display: flex; gap: 18px; padding: 12px 16px; background: #120205; overflow-x: auto; white-space: nowrap; border-bottom: 1px solid #220409; }
-        .cat-item { color: #ffffff; font-size: 14px; font-weight: 700; cursor: pointer; opacity: 0.8; }
+        .categories { display: flex; gap: 18px; padding: 6px 4px; background: #120205; overflow-x: auto; white-space: nowrap; border-bottom: 1px solid #220409; margin-bottom: 10px; }
+        .cat-item { color: #ffffff; font-size: 13px; font-weight: 700; cursor: pointer; opacity: 0.8; }
         .cat-item.active { color: #ffb700; border-bottom: 2px solid #ffb700; opacity: 1; }
         
-        .games-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 12px; }
+        .games-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
         .game-card { background: #1f040a; border: 1px solid #3d0a14; border-radius: 10px; overflow: hidden; position: relative; cursor: pointer; text-align: center; transition: all 0.3s ease; }
         .game-card:hover, .game-card:active { border-color: #ffd700; background: linear-gradient(135deg, #2a1f02, #1f040a); box-shadow: 0 0 15px rgba(255, 215, 0, 0.6); transform: scale(0.95); }
         .game-tag { position: absolute; top: 5px; left: 5px; background: #ff1f40; color: #fff; font-size: 8px; font-weight: 900; padding: 2px 6px; border-radius: 3px; }
-        .game-img { width: 100%; height: 85px; background: #170205; display: flex; justify-content: center; align-items: center; font-size: 28px; }
-        .game-info { padding: 8px 4px; background: rgba(15, 2, 5, 0.9); }
+        .game-img { width: 100%; height: 75px; background: #170205; display: flex; justify-content: center; align-items: center; font-size: 26px; }
+        .game-info { padding: 6px 4px; background: rgba(15, 2, 5, 0.9); }
         .game-name { font-size: 10px; font-weight: 800; color: #ffffff; }
-        
-        .card { background: #1a0408; border: 1px solid #360912; border-radius: 12px; padding: 14px; margin-bottom: 12px; }
-        .utr-input { width: 100%; padding: 9px; background: #0f0205; border: 1px solid #4a0d17; color: #ffd700; border-radius: 6px; outline: none; font-size: 13px; margin-top: 5px; }
-        .utr-input:focus { border-color: #ffd700; box-shadow: 0 0 10px rgba(255, 215, 0, 0.6); }
+
+        .card { background: #1a0408; border: 1px solid #360912; border-radius: 12px; padding: 12px; margin-bottom: 12px; }
+        .red-btn { width: 100%; background: linear-gradient(135deg, #ff1f40, #a8001b); color: white; border: none; padding: 11px; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; margin-top: 8px; }
         
         .wallet-tabs { display: flex; background: #180306; border-radius: 10px; padding: 4px; margin-bottom: 12px; border: 1px solid #2b060c; }
         .w-tab { flex: 1; text-align: center; padding: 10px; font-size: 13px; font-weight: bold; color: #7a686e; cursor: pointer; border-radius: 8px; transition: 0.3s; }
         .w-tab.active { background: #ffb700; color: #000; }
         
-        .amount-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 12px 0; }
-        .amt-chip { background: #1f040a; border: 1px solid #4a0d17; padding: 10px 4px; text-align: center; border-radius: 8px; font-size: 12px; font-weight: bold; color: #ffd700; cursor: pointer; position: relative; }
+        .amount-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 8px 0; }
+        .amt-chip { background: #1f040a; border: 1px solid #4a0d17; padding: 8px; text-align: center; border-radius: 6px; font-size: 12px; font-weight: bold; color: #ffd700; cursor: pointer; }
         .amt-chip:hover, .amt-chip.active { background: #ff1f40; color: #fff; border-color: #ff1f40; }
-        .bonus-tag { font-size: 8px; display: block; color: #00ff66; font-weight: 800; margin-top: 2px; }
-
-        .proceed-btn { width: 100%; background: linear-gradient(135deg, #0052d4, #4364f7, #6fb1fc); color: white; border: none; padding: 13px; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer; margin-top: 15px; display: flex; justify-content: center; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(67, 100, 247, 0.4); }
-        .red-btn { width: 100%; background: linear-gradient(135deg, #ff1f40, #a8001b); color: white; border: none; padding: 11px; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; margin-top: 8px; }
+        .utr-input { width: 100%; padding: 9px; background: #0f0205; border: 1px solid #4a0d17; color: #ffd700; border-radius: 6px; outline: none; font-size: 13px; margin-top: 5px; }
 
         .support-banner { background: linear-gradient(135deg, #1f040a, #2b060c); border: 1px solid #4a0d17; border-radius: 14px; padding: 16px; display: flex; align-items: center; margin-bottom: 14px; }
         .support-icon-box { width: 50px; height: 50px; background: #ff1f40; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; margin-right: 14px; box-shadow: 0 0 12px rgba(255,31,64,0.6); }
         .support-menu-item { background: #150306; border: 1px solid #31070e; border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 13px; font-weight: 600; color: #ffffff; transition: 0.2s; }
+        .support-menu-item:hover { background: #22050a; border-color: #ff1f40; }
 
         .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
         .stat-card { background: #150306; border: 1px solid #3d0a14; padding: 10px 6px; border-radius: 8px; text-align: center; }
@@ -89,17 +88,15 @@
     </style>
 </head>
 <body>
-<div class="app-container" id="app">
+    <div class="app-container" id="app">
     <div class="top-bar">
         <div class="brand-title">DREAM 66</div>
     </div>
 
-    <!-- 1. Login Screen with Motivational Text & Neon Animation -->
-    <div id="loginScreen" class="screen active auth-container">
-        <div class="neon-logo-box">
-            <div class="neon-main-title">DREAM 66</div>
-            <div class="neon-sub-title">👑 Welcome Back to Royal Casino 👑</div>
-        </div>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="screen active">
+        <div class="animated-logo">DREAM 66</div>
+        <p style="font-size: 11px; color: #aaa; margin-bottom: 10px; text-align: center;">Secure Casino Portal</p>
         
         <div class="auth-box">
             <label class="auth-label">Mobile Number</label>
@@ -108,22 +105,20 @@
             <label class="auth-label">Password</label>
             <input type="password" id="loginPassword" class="auth-input" placeholder="Enter Password" autocomplete="new-password">
             
-            <button class="red-btn" onclick="handleUserLogin()">🚀 Login Now</button>
+            <button class="red-btn" onclick="handleUserLogin()" style="padding: 11px; font-size: 14px;">🚀 Login Now</button>
             
             <div class="switch-text">
-                Don't have an account? <span onclick="switchAuthScreen('register')">Register here</span>
+                Don't have an account? <span onclick="switchToRegister()">Register here</span>
             </div>
         </div>
     </div>
 
-    <!-- 2. Register Screen with Motivational Text & Neon Animation -->
-    <div id="registerScreen" class="screen auth-container">
-        <div class="neon-logo-box">
-            <div class="neon-main-title">DREAM 66</div>
-            <div class="neon-sub-title">🔥 Create VIP Account & Win Big 🔥</div>
-        </div>
+    <!-- Register Screen -->
+    <div id="registerScreen" class="screen">
+        <div class="animated-logo">DREAM 66</div>
+        <p style="font-size: 10px; color: #aaa; margin-bottom: 8px; text-align: center;">Create New Account</p>
         
-        <div class="auth-box">
+        <div class="auth-box" style="margin-top: 2px;">
             <label class="auth-label">Full Name</label>
             <input type="text" id="regFullName" class="auth-input" placeholder="Enter your full name" autocomplete="off">
             
@@ -142,17 +137,17 @@
             <label class="auth-label">Confirm Password</label>
             <input type="password" id="regConfirmPassword" class="auth-input" placeholder="Confirm password" autocomplete="new-password">
             
-            <button class="red-btn" onclick="handleUserRegister()">🚀 Create Account</button>
+            <button class="red-btn" onclick="handleUserRegister()" style="padding: 11px; font-size: 14px;">🚀 Create Account</button>
             
             <div class="switch-text">
-                Already have an account? <span onclick="switchAuthScreen('login')">Login here</span>
+                Already have an account? <span onclick="switchToLogin()">Login here</span>
             </div>
         </div>
     </div>
-    
-    <!-- 3. Home / Casino Screen -->
+
+    <!-- 1. Home Screen -->
     <div id="casinoScreen" class="screen">
-        <div class="live-ticker" style="margin-bottom: 12px; border-radius: 6px;">
+        <div class="live-ticker">
             <div style="overflow: hidden; width: 100%;">
                 <div class="ticker-container" id="tickerContainer"></div>
             </div>
@@ -167,50 +162,41 @@
         <div class="games-grid" id="gamesGridContainer"></div>
     </div>
 
-    <!-- 4. Wallet Screen -->
+    <!-- 2. Wallet Screen -->
     <div id="walletScreen" class="screen">
         <div class="wallet-tabs">
             <div class="w-tab active" id="tabDepositBtn" onclick="switchWalletTab('deposit')">Deposit</div>
             <div class="w-tab" id="tabWithdrawBtn" onclick="switchWalletTab('withdraw')">Withdraw</div>
         </div>
-
         <div id="depositSectionWallet">
-            <div class="card" style="text-align: center;">
-                <p style="font-size: 13px; font-weight: 700; color: #ffd700; margin-bottom: 6px;">Select Deposit Amount</p>
-                
+            <div class="card" style="text-align: center; padding: 20px 15px;">
+                <p style="font-size: 13px; font-weight: 700; margin-bottom: 12px; color: #ffd700;">Select Deposit Amount</p>
                 <div class="amount-grid" id="depAmountGrid">
-                    <div class="amt-chip active" onclick="setDepositAmount(100, this)">₹100<span class="bonus-tag">+₹50 Bonus</span></div>
-                    <div class="amt-chip" onclick="setDepositAmount(300, this)">₹300<span class="bonus-tag">+₹100 Bonus</span></div>
-                    <div class="amt-chip" onclick="setDepositAmount(500, this)">₹500<span class="bonus-tag">+₹150 Bonus</span></div>
-                    <div class="amt-chip" onclick="setDepositAmount(1000, this)">₹1000<span class="bonus-tag">+₹200 Bonus</span></div>
-                    <div class="amt-chip" onclick="setDepositAmount(2000, this)">₹2000<span class="bonus-tag">+₹200 Bonus</span></div>
-                    <div class="amt-chip" onclick="setDepositAmount(3000, this)">₹3000<span class="bonus-tag">+₹200 Bonus</span></div>
-                    <div class="amt-chip" onclick="setDepositAmount(5000, this)">₹5000<span class="bonus-tag">+₹300 Bonus</span></div>
-                    <div class="amt-chip" onclick="setDepositAmount(7000, this)">₹7000<span class="bonus-tag">+₹500 Bonus</span></div>
-                    <div class="amt-chip" onclick="setDepositAmount(10000, this)">₹10000<span class="bonus-tag">+₹800 Bonus</span></div>
+                    <div class="amt-chip active" onclick="setDepositAmount(100, this)">₹100</div>
+                    <div class="amt-chip" onclick="setDepositAmount(500, this)">₹500</div>
+                    <div class="amt-chip" onclick="setDepositAmount(1000, this)">₹1000</div>
+                    <div class="amt-chip" onclick="setDepositAmount(2000, this)">₹2000</div>
+                    <div class="amt-chip" onclick="setDepositAmount(3000, this)">₹3000</div>
+                    <div class="amt-chip" onclick="setDepositAmount(5000, this)">₹5000</div>
                 </div>
-
-                <button class="proceed-btn" onclick="goToPaymentPage()">
-                    🚀 Proceed to Secure Pay
-                </button>
+                <button class="red-btn" onclick="proceedToPaymentGateway()" style="background: linear-gradient(135deg, #0052cc, #003d99); margin-top: 15px; padding: 12px;">🚀 Proceed to Secure Pay</button>
             </div>
         </div>
-
         <div id="withdrawSectionWallet" style="display: none;">
-            <div style="background: #1a0408; border: 1px solid #360912; border-radius: 12px; padding: 12px;">
-                <p style="font-size: 12px; font-weight: 700; margin-bottom: 8px; color: #ffd700; text-align: center;">Withdrawal Request</p>
+            <div class="card">
+                <p style="font-size: 13px; font-weight: 700; margin-bottom: 10px; color: #ffd700; text-align: center;">Withdrawal Request Form</p>
                 <input type="text" id="withdrawAmount" class="utr-input" placeholder="Enter Withdrawal Amount (₹)" style="margin-bottom:8px;">
                 <input type="text" id="bankHolderName" class="utr-input" placeholder="Bank Holder Name" style="margin-bottom:8px;">
-                <input type="text" id="accNumber" class="utr-input" placeholder="Account Number" style="margin-bottom:8px;">
-                <input type="text" id="confirmAccNumber" class="utr-input" placeholder="Confirm Account Number" style="margin-bottom:8px;">
-                <input type="text" id="ifscCode" class="utr-input" placeholder="IFSC Code" style="margin-bottom:8px;">
+                <input type="text" id="accNumber" class="utr-input" placeholder="Bank Account Number" style="margin-bottom:8px;">
+                <input type="text" id="confirmAccNumber" class="utr-input" placeholder="Confirm Bank Account Number" style="margin-bottom:8px;">
+                <input type="text" id="ifscCode" class="utr-input" placeholder="IFSC Code" style="margin-bottom:6px;">
                 <p style="font-size: 11px; color: #ffb700; margin-bottom: 10px; font-weight: 600;">⚡ Commission Charge: 6% Applicable</p>
                 <button class="red-btn" onclick="submitWithdrawalRequest()">Submit Withdrawal</button>
             </div>
         </div>
     </div>
 
-    <!-- 5. Support Screen -->
+    <!-- 3. Support Screen (Live Chat & Contact Us removed) -->
     <div id="supportScreen" class="screen">
         <div style="margin-bottom: 14px; text-align: center;">
             <h2 style="font-size: 18px; font-weight: bold; color: #ff1f40;">Support Center</h2>
@@ -219,28 +205,18 @@
             <div class="support-icon-box">🎧</div>
             <div>
                 <div style="font-size: 15px; font-weight: bold; color: #fff;">Need Help?</div>
-                <div style="font-size: 11px; color: #aaa;">We are available 24/7 to assist you</div>
+                <div style="font-size: 11px; color: #aaa;">We are here to assist you</div>
             </div>
         </div>
-        
-        <div class="support-menu-item" onclick="showDetailedFAQ()">
-            <div><span>❓</span> FAQ & Help Guide</div><span>➔</span>
+        <div class="support-menu-item" onclick="alert('FAQ:\n1. How to deposit? Go to Wallet -> Select Amount.\n2. How to withdraw? Submit bank details in Withdraw tab.')">
+            <div><span>❓</span> FAQ</div><span>➔</span>
         </div>
-        
-        <div class="support-menu-item" onclick="showDetailedPrivacyPolicy()">
-            <div><span>🛡️</span> Privacy Policy & Terms</div><span>➔</span>
-        </div>
-        
-        <div class="support-menu-item" onclick="openWhatsAppSupport()">
-            <div><span>📞</span> Contact Admin Support</div><span>➔</span>
-        </div>
-        
-        <div class="support-menu-item" onclick="openWhatsAppSupport()">
-            <div><span>💬</span> Live Chat via WhatsApp</div><span>➔</span>
+        <div class="support-menu-item" onclick="alert('🛡️ Terms & Privacy Policy (Dream 66):\n\n1. வயது வரம்பு: 18 வயது நிரம்பியவர்கள் மட்டுமே விளையாட அனுமதிக்கப்படுவர்.\n\n2. பிராடு / மோசடி தடை: மல்டிபிள் அக்கவுண்ட்ஸ், ஹேக்கிங், ஸ்கிரிப்ட் அல்லது ஃபேக் ஐடி போன்ற பிராடு (Fraud) வேலைகளில் ஈடுபட்டால் எந்த முன்னறிவிப்புமின்றி அக்கவுண்ட் உடனடியாக நிரந்தரமாக பிளாக் செய்யப்படும்.\n\n3. கணக்கு பாதுகாப்பு: உங்களது லாகின் பாஸ்வோர்ட் மற்றும் ஓடிபி (OTP) விவரங்களை யாருடனும் பகிர வேண்டாம். ஏற்படும் இழப்புகளுக்கு தள நிர்வாகம் பொறுப்பல்ல.\n\n4. நிதி ஆபத்து: ஆன்லைன் கேமிங் மற்றும் கேசினோ விளையாட்டுகளில் பண இழப்பு ஏற்படும் ஆபத்து உள்ளது. பயனர்கள் தங்களது சொந்த விருப்பத்தின் பேரிலும் ரிஸ்க்-ன் அடிப்படையிலும் விளையாட வேண்டும்.')">
+            <div><span>🛡️</span> Privacy Policy & Rules</div><span>➔</span>
         </div>
     </div>
 
-    <!-- 6. Menu Screen -->
+    <!-- 4. Menu Screen -->
     <div id="menuScreen" class="screen">
         <div class="card" style="background: linear-gradient(135deg, #2a080f, #1a0408); padding: 15px;">
             <div style="display: flex; align-items: center; margin-bottom: 12px;">
@@ -251,6 +227,7 @@
                 </div>
             </div>
             
+            <!-- User Stats: Total Deposit, Withdraw, Played -->
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-title">Total Deposit</div>
@@ -267,17 +244,14 @@
             </div>
         </div>
 
-        <div class="support-menu-item" onclick="openLuckySpinWheel()">
-            <div><span>🎡</span> Daily Lucky Spin Wheel</div><span style="color: #ffd700; font-size: 11px; font-weight: bold;">Play</span>
-        </div>
         <div class="support-menu-item" onclick="claimDailyBonus()">
-            <div><span>🎁</span> Daily Login Bonus (₹50)</div><span style="color: #ffd700; font-size: 11px; font-weight: bold;">Claim</span>
+            <div><span>🎁</span> Daily Bonus (₹50)</div><span style="color: #ffd700; font-size: 11px; font-weight: bold;">Claim</span>
         </div>
-        <div class="support-menu-item" onclick="openAdvancedReferSystem()">
-            <div><span>🔗</span> Advanced Refer & Earn</div><span style="color: #00ff66; font-size: 11px; font-weight: bold;">Up to ₹200/ref</span>
+        <div class="support-menu-item" onclick="alert('Refer & Earn:\nShare your referral link and earn ₹100 per invite!')">
+            <div><span>🔗</span> Refer & Earn (₹100)</div><span>➔</span>
         </div>
-        <div class="support-menu-item" onclick="openDailyPlayTargetBonus()">
-            <div><span>🎯</span> Daily Play Target Bonus</div><span style="color: #ffd700; font-size: 11px; font-weight: bold;">Check</span>
+        <div class="support-menu-item" onclick="alert('Transaction History:\nNo recent transactions found.')">
+            <div><span>📜</span> History</div><span>➔</span>
         </div>
         <button class="red-btn" onclick="handleLogout()" style="background: #333; margin-top: 15px;">🔒 Logout</button>
     </div>
@@ -290,7 +264,6 @@
         <button class="nav-item" onclick="navigateTo('menuScreen'); setActiveNav(this)"><span>👤</span>Menu</button>
     </div>
 </div>
-
 <script>
     let selectedDepAmt = 100;
     let generatedOtpStore = ""; 
@@ -305,54 +278,46 @@
             document.getElementById('profileUserId').innerText = `User ID: ${savedUid}`;
             document.getElementById('profileUserName').innerText = `Name: ${savedName}`;
             updateUserStatsDisplay();
-            switchAuthScreen('none');
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('registerScreen').style.display = 'none';
             document.getElementById('bottomNav').style.display = 'flex';
             navigateTo('casinoScreen');
-        } else {
-            switchAuthScreen('login');
         }
     }
 
-    // Prevent Double-Tap Zoom
-    document.addEventListener('touchstart', function(event) {
-        if (event.touches.length > 1) {
-            event.preventDefault();
-        }
-    }, { passive: false });
-
-    function switchAuthScreen(target) {
-        let loginEl = document.getElementById('loginScreen');
-        let regEl = document.getElementById('registerScreen');
-
-        if(target === 'register') {
-            loginEl.classList.remove('active');
-            regEl.classList.add('active');
-        } else if(target === 'login') {
-            regEl.classList.remove('active');
-            loginEl.classList.add('active');
-        } else {
-            loginEl.classList.remove('active');
-            regEl.classList.remove('active');
-        }
+    function switchToRegister() {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('registerScreen').style.display = 'block';
     }
 
+    function switchToLogin() {
+        document.getElementById('registerScreen').style.display = 'none';
+        document.getElementById('loginScreen').style.display = 'block';
+    }
+
+    // SMSFast OTP 
     function sendSMSFastOTP() {
         let phone = document.getElementById('regPhone').value.trim();
         if(phone.length < 10) {
-            alert("Please enter a valid 10-digit mobile number!");
+            alert("தயவுசெய்து சரியான 10 இலக்க மொபைல் எண்ணை உள்ளிடவும்!");
             return;
         }
 
         generatedOtpStore = Math.floor(100000 + Math.random() * 900000).toString();
-        alert(`✅ OTP sent successfully via SMSFast!\n(Demo OTP: ${generatedOtpStore})`);
+        let apiKey = "YOUR_SMSFAST_API_KEY"; 
+        let smsMessage = `Your Dream66 Verification OTP is: ${generatedOtpStore}`;
+        
+        console.log(`Sending OTP ${generatedOtpStore} to ${phone} via SMSFast`);
+        alert(`✅ SMSFast மூலமாக OTP அனுப்பப்பட்டது!\n(டெமோ OTP: ${generatedOtpStore})`);
     }
 
+    // Login Handling
     function handleUserLogin() {
         let phone = document.getElementById('loginUserPhone').value.trim();
         let pass = document.getElementById('loginPassword').value.trim();
 
         if(phone.length < 10 || !pass) {
-            alert("Please enter a valid mobile number and password!");
+            alert("தயவுசெய்து சரியான மொபைல் எண் மற்றும் பாஸ்வோர்ட்டை உள்ளிடவும்!");
             return;
         }
 
@@ -369,11 +334,13 @@
         document.getElementById('profileUserName').innerText = `Name: ${localStorage.getItem('dream66_name')}`;
         updateUserStatsDisplay();
 
-        switchAuthScreen('none');
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('registerScreen').style.display = 'none';
         document.getElementById('bottomNav').style.display = 'flex';
         navigateTo('casinoScreen');
     }
 
+    // Register Handling with OTP Validation
     function handleUserRegister() {
         let name = document.getElementById('regFullName').value.trim();
         let phone = document.getElementById('regPhone').value.trim();
@@ -382,17 +349,17 @@
         let confirmPass = document.getElementById('regConfirmPassword').value.trim();
 
         if(!name || phone.length < 10 || !userOtp || !pass) {
-            alert("Please fill in all required fields and enter the OTP!");
+            alert("தயவுசெய்து அனைத்து விவரங்களையும் மற்றும் OTP-ஐ சரியாக நிரப்பவும்!");
             return;
         }
 
         if(userOtp !== generatedOtpStore) {
-            alert("⚠️ Invalid OTP! Please enter the correct verification code.");
+            alert("⚠️ தவறான OTP (Invalid OTP)! தயவுசெய்து சரியான OTP-ஐ உள்ளிடவும்.");
             return;
         }
 
         if(pass !== confirmPass) {
-            alert("⚠️ Passwords do not match!");
+            alert("⚠️ பாஸ்வோர்டுகள் (Passwords) பொருந்தவில்லை!");
             return;
         }
 
@@ -403,6 +370,7 @@
         localStorage.setItem('dream66_phone', phone);
         localStorage.setItem('dream66_uid', customUserId);
         
+        // Initialize stats if not exist
         if(!localStorage.getItem('dream66_deposit')) localStorage.setItem('dream66_deposit', '0');
         if(!localStorage.getItem('dream66_withdraw')) localStorage.setItem('dream66_withdraw', '0');
         if(!localStorage.getItem('dream66_played')) localStorage.setItem('dream66_played', '0');
@@ -411,9 +379,10 @@
         document.getElementById('profileUserName').innerText = `Name: ${name}`;
         updateUserStatsDisplay();
 
-        alert("🎉 Account created successfully!");
+        alert("🎉 கணக்கு வெற்றிகரமாக உருவாக்கப்பட்டது!");
 
-        switchAuthScreen('none');
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('registerScreen').style.display = 'none';
         document.getElementById('bottomNav').style.display = 'flex';
         navigateTo('casinoScreen');
     }
@@ -422,9 +391,11 @@
         localStorage.clear();
         document.getElementById('bottomNav').style.display = 'none';
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        switchAuthScreen('login');
+        document.getElementById('registerScreen').style.display = 'none';
+        document.getElementById('loginScreen').style.display = 'block';
     }
 
+    // Update Stats on Menu
     function updateUserStatsDisplay() {
         let dep = localStorage.getItem('dream66_deposit') || '0';
         let wit = localStorage.getItem('dream66_withdraw') || '0';
@@ -435,32 +406,13 @@
         document.getElementById('statPlayed').innerText = `₹${pla}`;
     }
 
-    function openLuckySpinWheel() {
-        let lastSpin = localStorage.getItem('dream66_last_spin_date');
-        let today = new Date().toLocaleDateString();
-
-        if(lastSpin === today) {
-            alert("⚠️ You have already used your Daily Lucky Spin today! Come back tomorrow.");
-            return;
-        }
-
-        let prizes = [20, 50, 100, 200, 500, 10];
-        let wonAmt = prizes[Math.floor(Math.random() * prizes.length)];
-        
-        localStorage.setItem('dream66_last_spin_date', today);
-        let currentDep = parseInt(localStorage.getItem('dream66_deposit') || '0') + wonAmt;
-        localStorage.setItem('dream66_deposit', currentDep);
-        updateUserStatsDisplay();
-
-        alert(`🎡 LUCKY SPIN RESULT:\n\n🎉 Congratulations! You won ₹${wonAmt} bonus cash from the Lucky Spin Wheel!`);
-    }
-
+    // Daily Bonus ₹50 Claim Logic
     function claimDailyBonus() {
         let lastClaim = localStorage.getItem('dream66_last_bonus_date');
         let today = new Date().toLocaleDateString();
 
         if(lastClaim === today) {
-            alert("⚠️ You have already claimed today's daily bonus! Come back tomorrow.");
+            alert("⚠️ நீங்கள் இன்றைய டெய்லி போனஸை ஏற்கனவே பெற்றுவிட்டீர்கள்! நாளை மீண்டும் முயற்சிக்கவும்.");
             return;
         }
 
@@ -469,69 +421,10 @@
         localStorage.setItem('dream66_deposit', currentDep);
         updateUserStatsDisplay();
 
-        alert("🎉 Congratulations! Daily bonus of ₹50 has been successfully credited to your account!");
+        alert("🎉 வாழ்த்துக்கள்! டெய்லி போனஸ் ₹50 உங்கள் கணக்கில் வெற்றிகரமாக சேர்க்கப்பட்டது!");
     }
 
-    function openAdvancedReferSystem() {
-        let uid = localStorage.getItem('dream66_uid') || 'User1234';
-        let refLink = `https://dream66.casino/register?ref=${uid}`;
-        
-        let referInfo = 
-            "🔗 ADVANCED MULTI-TIER REFERRAL PROGRAM\n\n" +
-            "Share your exclusive referral link with friends and earn high commission tiers:\n" +
-            "• Tier 1 (1 to 5 Referrals): Earn ₹100 per successful invite.\n" +
-            "• Tier 2 (6 to 15 Referrals): Earn ₹150 per successful invite.\n" +
-            "• Tier 3 (16+ Referrals): Earn ₹200 per invite + VIP Weekly Bonus!\n\n" +
-            `Your Referral Link:\n${refLink}`;
-        
-        alert(referInfo);
-    }
-
-    function openDailyPlayTargetBonus() {
-        let played = parseInt(localStorage.getItem('dream66_played') || '0');
-        
-        let targetInfo = 
-            "🎯 DAILY PLAY TARGET BONUS SYSTEM\n\n" +
-            `Your Total Play Today: ₹${played}\n\n` +
-            "Available Reward Milestones:\n" +
-            "1. Play ₹1,000 → Get ₹50 Bonus\n" +
-            "2. Play ₹5,000 → Get ₹250 Bonus\n" +
-            "3. Play ₹10,000 → Get ₹600 Bonus\n\n" +
-            "Keep playing your favorite games to automatically unlock and claim your target bonuses!";
-        
-        alert(targetInfo);
-    }
-
-    function showDetailedPrivacyPolicy() {
-        let policyText = 
-            "DREAM 66 - PRIVACY POLICY & TERMS OF SERVICE\n\n" +
-            "1. INTRODUCTION & ELIGIBILITY:\n" +
-            "Welcome to Dream 66. By accessing and using our platform, you agree to comply with and be bound by the following terms and conditions. All users must be at least 18 years of age (18+) or of legal age in their respective jurisdictions to participate in gaming activities.\n\n" +
-            "2. ACCOUNT SECURITY & USER RESPONSIBILITY:\n" +
-            "Users are strictly responsible for maintaining the absolute confidentiality of their account credentials, passwords, and OTP verifications. The platform administration shall not be held liable for any financial losses or unauthorized access arising from user negligence or sharing credentials with third parties.\n\n" +
-            "3. FRAUD PREVENTION & ANTI-CHEATING:\n" +
-            "We maintain a zero-tolerance policy toward fraudulent activities, multiple account manipulation, automated scripts, bot utilization, or exploiting software vulnerabilities. Any detected fraudulent behavior will result in an immediate and permanent ban of the account along with the forfeiture of all remaining balances.\n\n" +
-            "4. FINANCIAL RISKS & DISCLAIMER:\n" +
-            "Online gaming and casino participation involve substantial financial risk. Users acknowledge that they may lose funds while participating. All deposits and bets are placed voluntarily at the user's sole discretion and risk. Please play responsibly.";
-        
-        alert(policyText);
-    }
-
-    function showDetailedFAQ() {
-        let faqText = 
-            "DREAM 66 - FREQUENTLY ASKED QUESTIONS (FAQ)\n\n" +
-            "Q1: How do I deposit funds into my Dream 66 account?\n" +
-            "A: Navigate to the Wallet section, select your preferred deposit amount from the available chips, click on Proceed to Secure Pay, scan the QR code or copy the UPI ID to make payment, and submit your 12-digit UTR reference number.\n\n" +
-            "Q2: How long does it take for a deposit to reflect?\n" +
-            "A: Once you submit your valid 12-digit UTR number, deposits are typically processed and credited within 5 to 15 minutes after verification.\n\n" +
-            "Q3: What is the procedure for withdrawing my winnings?\n" +
-            "A: Go to Wallet -> Withdraw tab, fill in your bank account details and submit. Processing will take place subject to a standard 6% service charge.\n\n" +
-            "Q4: What should I do if my payment fails?\n" +
-            "A: Contact our 24/7 customer support team via WhatsApp with your payment screenshot and UTR number.";
-        
-        alert(faqText);
-    }
-
+    // Live Ticker Data
     const gamesForTicker = ["JetX", "Aviator", "Arrow", "Coin Tree", "Crazy Time", "Dice", "Diver", "Double", "Goblin", "Hilo", "Plinko", "Roma", "Roulette", "Teen Patti"];
     let tickerHtml = "";
     for (let i = 1; i <= 15; i++) {
@@ -542,21 +435,22 @@
     }
     document.getElementById('tickerContainer').innerHTML = tickerHtml + tickerHtml;
 
+    // All Games Data (14 Games)
     const allGamesData = [
         { id: 1, name: "JetX", cat: "Hot", tag: "HOT", icon: "🚀", link: "jetx.html" },
         { id: 2, name: "Aviator", cat: "Hot", tag: "HOT", icon: "✈", link: "aviator.html" },
         { id: 3, name: "Arrow", cat: "Hot", tag: "HOT", icon: "🎯", link: "arrow.html" },
         { id: 4, name: "Coin Tree", cat: "JDB", tag: "JDB", icon: "🌳", link: "cointree.html" },
         { id: 5, name: "Crazy Time", cat: "Live", tag: "LIVE", icon: "🎡", link: "crazytime.html" },
-        { id: 6, name: "Dice", cat: "Hot", tag: "HOT", icon: "🎲", link: "dice.html" },
+        { id: 6, name: "Dice", cat: "Slots", tag: "SLOTS", icon: "🎲", link: "dice.html" },
         { id: 7, name: "Diver", cat: "Hot", tag: "HOT", icon: "🤿", link: "diver.html" },
-        { id: 8, name: "Double", cat: "Slots", tag: "SLOTS", icon: "✖2", link: "double.html" },
+        { id: 8, name: "Double", cat: "Slots", tag: "SLOTS", icon: "🪙", link: "double.html" },
         { id: 9, name: "Goblin", cat: "JDB", tag: "JDB", icon: "👺", link: "goblin.html" },
         { id: 10, name: "Hilo", cat: "Slots", tag: "SLOTS", icon: "📊", link: "hilo.html" },
-        { id: 11, name: "Plinko", cat: "JDB", tag: "JDB", icon: "🔴", link: "plinko.html" },
-        { id: 12, name: "Roma", cat: "Slots", tag: "SLOTS", icon: "🛡️", link: "roma.html" },
+        { id: 11, name: "Plinko", cat: "Hot", tag: "HOT", icon: "🔵", link: "plinko.html" },
+        { id: 12, name: "Roma", cat: "Slots", tag: "SLOTS", icon: "🏛️", link: "roma.html" },
         { id: 13, name: "Roulette", cat: "Live", tag: "LIVE", icon: "🎰", link: "roulette.html" },
-        { id: 14, name: "Teen Patti", cat: "Hot", tag: "HOT", icon: "🃏", link: "teenpatti.html" }
+        { id: 14, name: "Teen Patti", cat: "Live", tag: "LIVE", icon: "🃏", link: "teenpatti.html" }
     ];
 
     function renderGames(games) {
@@ -566,27 +460,28 @@
                 <div class="game-card" onclick="window.location.href='${g.link}'">
                     <div class="game-tag">${g.tag}</div>
                     <div class="game-img">${g.icon}</div>
-                    <div class="game-info">
-                        <div class="game-name">${g.name}</div>
-                    </div>
+                    <div class="game-info"><div class="game-name">${g.name}</div></div>
                 </div>
             `;
         });
         document.getElementById('gamesGridContainer').innerHTML = gridHtml;
     }
-
     renderGames(allGamesData);
 
     function filterGames(category, element) {
         document.querySelectorAll('.cat-item').forEach(el => el.classList.remove('active'));
         element.classList.add('active');
-        if(category === 'All') {
-            renderGames(allGamesData);
-        } else {
-            let filtered = allGamesData.filter(g => g.cat === category);
-            renderGames(filtered);
-        }
+        if(category === 'All') { renderGames(allGamesData); } 
+        else { renderGames(allGamesData.filter(g => g.cat === category)); }
     }
+
+    function setDepositAmount(amt, element) {
+        selectedDepAmt = amt;
+        document.querySelectorAll('#depAmountGrid .amt-chip').forEach(el => el.classList.remove('active'));
+        element.classList.add('active');
+    }
+
+    function proceedToPaymentGateway() { window.location.href = `payment.html?amount=${selectedDepAmt}`; }
 
     function navigateTo(screenId) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -612,16 +507,6 @@
         }
     }
 
-    function setDepositAmount(amt, element) {
-        selectedDepAmt = amt;
-        document.querySelectorAll('#depAmountGrid .amt-chip').forEach(el => el.classList.remove('active'));
-        element.classList.add('active');
-    }
-
-    function goToPaymentPage() {
-        window.location.href = `payment.html?amount=${selectedDepAmt}`;
-    }
-
     function submitWithdrawalRequest() {
         let amount = document.getElementById('withdrawAmount').value;
         let holderName = document.getElementById('bankHolderName').value;
@@ -634,17 +519,10 @@
             return;
         }
         if(accNo !== confirmAccNo) {
-            alert("⚠️ வங்கி கணக்கு எண்கள் பொருந்தவில்லை!");
+            alert("⚠️ வங்கி கணக்கு எண்கள் (Account Numbers) பொருந்தவில்லை!");
             return;
         }
         alert("Withdrawal request submitted successfully!");
-    }
-
-    function openWhatsAppSupport() {
-        let phoneNumber = "916379227658";
-        let message = "Hello DREAM 66 Support, I need assistance.";
-        let url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-        window.open(url, '_blank');
     }
 </script>
 </body>
