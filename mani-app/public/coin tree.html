@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DREAM 66 - Coin Tree</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background: linear-gradient(180deg, #102030 0%, #050b14 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            overflow-x: hidden;
+        }
+        /* Top Header */
+        .header {
+            width: 100%;
+            max-width: 420px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 10px 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+        .back-btn {
+            background: linear-gradient(135deg, #ff416c, #ff4b2b);
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 700;
+            text-decoration: none;
+            font-size: 12px;
+        }
+        .title {
+            font-size: 15px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ffd700, #ff8c00, #fff);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 10px rgba(255,215,0,0.5);
+        }
+        .balance-box {
+            font-size: 13px;
+            color: #00ffcc;
+            font-weight: 700;
+        }
+
+        /* Game Container */
+        .game-viewport {
+            width: 100%;
+            max-width: 420px;
+            background: linear-gradient(180deg, #1b4931 0%, #0f281b 100%);
+            border-radius: 16px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+            border: 2px solid #2ec4b6;
+            position: relative;
+        }
+
+        /* Tree Animation Box */
+        .tree-visual-box {
+            width: 100%;
+            height: 160px;
+            background: radial-gradient(circle at center, #ffd70033 0%, transparent 70%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .golden-tree-img {
+            font-size: 65px;
+            animation: treeGlow 2s infinite alternate;
+            filter: drop-shadow(0 0 15px #ffd700);
+        }
+        @keyframes treeGlow {
+            0% { transform: scale(1); filter: drop-shadow(0 0 10px #ffd700); }
+            100% { transform: scale(1.05); filter: drop-shadow(0 0 20px #ff8c00); }
+        }
+        .tree-title-banner {
+            font-size: 14px;
+            font-weight: 900;
+            color: #ffd700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: -5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+        }
+
+        /* Paytable Bar */
+        .paytable-bar {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #ffd70066;
+            border-radius: 8px;
+            padding: 6px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 10px;
+            color: #ffd700;
+            font-weight: 700;
+        }
+        .pay-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Slot Reels Frame */
+        .slots-frame {
+            width: 100%;
+            background: #0d2318;
+            border: 4px solid #d4af37;
+            border-radius: 12px;
+            padding: 8px;
+            display: flex;
+            justify-content: space-between;
+            gap: 6px;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.8);
+        }
+        .slot-reel {
+            flex: 1;
+            height: 95px;
+            background: linear-gradient(180deg, #ffffff 0%, #e0e0e0 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            box-shadow: inset 0 4px 8px rgba(0,0,0,0.4);
+            border: 2px solid #b8860b;
+        }
+
+        /* Win Display */
+        .win-display {
+            margin-top: 8px;
+            font-size: 13px;
+            font-weight: 800;
+            color: #ffd700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            min-height: 20px;
+        }
+
+        /* Bottom Controls Bar */
+        .control-footer {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding: 8px 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+            border-radius: 0 0 14px 14px;
+        }
+        .ctrl-btn-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(0,0,0,0.3);
+            padding: 4px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .ctrl-label { font-size: 9px; color: #aaa; text-transform: uppercase; font-weight: 700; }
+        .ctrl-val-row { display: flex; align-items: center; gap: 6px; margin-top: 2px; }
+        .ctrl-val { font-size: 13px; font-weight: 800; color: #ffd700; }
+        .tiny-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: #fff;
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 10px;
+            cursor: pointer;
+        }
+
+        /* JILI Spin Button */
+        .jili-spin-btn {
+            width: 65px;
+            height: 65px;
+            background: radial-gradient(circle, #ffd700 0%, #ff8c00 100%);
+            border: 3px solid #fff;
+            border-radius: 50%;
+            color: #000;
+            font-weight: 900;
+            font-size: 13px;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(255,215,0,0.8);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-transform: uppercase;
+            transition: 0.1s;
+        }
+        .jili-spin-btn:active { transform: scale(0.92); }
+
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <a href="index.html" class="back-btn">← Back</a>
+        <div class="title">🪙 JILI COIN TREE 🪙</div>
+        <div class="balance-box">₹<span id="balance">0.00</span></div>
+    </div>
+
+    <div class="game-viewport">
+        <!-- Tree Animation Section -->
+        <div class="tree-visual-box">
+            <div class="golden-tree-img">🌳</div>
+            <div class="tree-title-banner">Ta Ji Da Li</div>
+        </div>
+
+        <!-- Paytable Information Bar -->
+        <div class="paytable-bar">
+            <div class="pay-item">🌳🌳🌳 <b>888</b></div>
+            <div class="pay-item">🪙🪙🪙 <b>88</b></div>
+            <div class="pay-item">🧧🧧🧧 <b>58</b></div>
+        </div>
+
+        <!-- Slot Reels Area -->
+        <div class="slots-frame">
+            <div class="slot-reel" id="reel1">🪙</div>
+            <div class="slot-reel" id="reel2">🌳</div>
+            <div class="slot-reel" id="reel3">🪙</div>
+        </div>
+
+        <!-- Win Notification -->
+        <div class="win-display" id="winText">WIN ₹0.00</div>
+
+        <!-- Bottom Actions Footer -->
+        <div class="control-footer">
+            <div class="ctrl-btn-group">
+                <span class="ctrl-label">Bet (₹)</span>
+                <div class="ctrl-val-row">
+                    <button class="tiny-btn" onclick="adjustBet(-10)">-</button>
+                    <span class="ctrl-val" id="betDisplay">10</span>
+                    <button class="tiny-btn" onclick="adjustBet(10)">+</button>
+                </div>
+            </div>
+
+            <!-- JILI Spin Action Button -->
+            <button class="jili-spin-btn" id="spinBtn" onclick="spinSlots()">
+                <span>SPIN</span>
+            </button>
+
+            <div class="ctrl-btn-group">
+                <span class="ctrl-label">Wallet</span>
+                <div class="ctrl-val-row">
+                    <span class="ctrl-val" id="walletDisplay">₹0.00</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // LocalStorage initialized cleanly
+        let balance = parseFloat(localStorage.getItem('user_balance'));
+        if (isNaN(balance)) {
+            balance = 0.00;
+        }
+
+        let currentBet = 10;
+        
+        updateUI();
+
+        function updateUI() {
+            document.getElementById('balance').innerText = balance.toFixed(2);
+            document.getElementById('walletDisplay').innerText = '₹' + balance.toFixed(2);
+            document.getElementById('betDisplay').innerText = currentBet;
+            localStorage.setItem('user_balance', balance.toFixed(2));
+        }
+
+        function adjustBet(amount) {
+            currentBet += amount;
+            if (currentBet < 10) currentBet = 10;
+            if (balance > 0 && currentBet > balance) currentBet = Math.floor(balance / 10) * 10 || 10;
+            updateUI();
+        }
+
+        const symbols = ['🪙', '🌳', '🧧', '💎', '💰'];
+
+        function spinSlots() {
+            if (balance <= 0 || balance < currentBet) {
+                document.getElementById('winText').innerText = "Insufficient Balance!";
+                return;
+            }
+
+            balance -= currentBet;
+            updateUI();
+
+            document.getElementById('spinBtn').disabled = true;
+            document.getElementById('winText').innerText = "Spinning...";
+
+            let r1 = document.getElementById('reel1');
+            let r2 = document.getElementById('reel2');
+            let r3 = document.getElementById('reel3');
+
+            let counter = 0;
+            let rollInterval = setInterval(() => {
+                r1.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+                r2.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+                r3.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+                counter++;
+
+                if (counter > 12) {
+                    clearInterval(rollInterval);
+                    finalizeSpin(r1, r2, r3);
+                }
+            }, 80);
+        }
+
+        function finalizeSpin(r1, r2, r3) {
+            // Economic Logic: 60% Company Profit / 40% User Win RTP
+            const rand = Math.random() * 100;
+            let winAmount = 0;
+            let finalSym = '🪙';
+
+            if (rand < 60) {
+                // 60% Company wins (No match)
+                r1.innerText = '🪙';
+                r2.innerText = '🧧';
+                r3.innerText = '💎';
+                document.getElementById('winText').innerText = "Better luck next time!";
+            } else {
+                // 40% User wins (RTP)
+                finalSym = Math.random() > 0.5 ? '🌳' : '🪙';
+                r1.innerText = finalSym;
+                r2.innerText = finalSym;
+                r3.innerText = finalSym;
+
+                let multiplier = finalSym === '🌳' ? 50 : 10;
+                winAmount = currentBet * multiplier;
+                balance += winAmount;
+                document.getElementById('winText').innerText = `JACKPOT WIN! ₹${winAmount.toFixed(2)}`;
+            }
+
+            updateUI();
+            document.getElementById('spinBtn').disabled = false;
+        }
+    </script>
+</body>
+</html>
