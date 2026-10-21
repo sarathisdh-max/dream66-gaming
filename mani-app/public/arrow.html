@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DREAM 66 - Forest Fortune</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background: linear-gradient(180deg, #3a86ff 0%, #1d3557 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            overflow-x: hidden;
+        }
+        /* Top Header */
+        .header {
+            width: 100%;
+            max-width: 440px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px 18px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        .back-btn {
+            background: linear-gradient(135deg, #ff416c, #ff4b2b);
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            text-decoration: none;
+            font-size: 13px;
+        }
+        .title {
+            font-size: 16px;
+            font-weight: 800;
+            color: #ffd700;
+            letter-spacing: 0.5px;
+        }
+        .balance-box {
+            font-size: 14px;
+            color: #00ffcc;
+            font-weight: 700;
+        }
+
+        /* Game Scene Wrapper */
+        .game-viewport {
+            width: 100%;
+            max-width: 440px;
+            background: radial-gradient(circle at center, #4aa8d8 0%, #143642 100%);
+            border-radius: 20px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            position: relative;
+        }
+
+        /* Fast Game Toggle Bar */
+        .fast-game-bar {
+            width: 100%;
+            display: flex;
+            justify-content: flex-start;
+            margin-bottom: 5px;
+        }
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.35);
+            padding: 4px 10px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            gap: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 34px;
+            height: 18px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc; transition: .3s; border-radius: 18px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 12px; width: 12px; left: 3px; bottom: 3px;
+            background-color: white; transition: .3s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: #2ec4b6; }
+        input:checked + .slider:before { transform: translateX(16px); }
+
+        /* Target Board Area */
+        .target-area {
+            position: relative;
+            width: 220px;
+            height: 220px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px 0;
+        }
+        .target-board {
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, #d4a373 0%, #b08968 60%, #7f5539 100%);
+            border-radius: 50%;
+            border: 6px solid #4a3525;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5), inset 0 0 15px rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: transform 0.2s;
+        }
+        .target-ring-1 {
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, #faedcd 0%, #d4a373 100%);
+            border-radius: 50%;
+            border: 3px solid #8d6b4f;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .target-ring-2 {
+            width: 105px;
+            height: 105px;
+            background: radial-gradient(circle, #ccd5ae 0%, #90be6d 100%);
+            border-radius: 50%;
+            border: 3px solid #606c38;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .target-ring-3 {
+            width: 65px;
+            height: 65px;
+            background: #2b2d42;
+            border-radius: 50%;
+            border: 2px solid #8d6b4f;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00ffcc;
+            font-weight: 800;
+            font-size: 13px;
+            position: relative;
+        }
+        .target-bullseye {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, #ff416c, #d90429);
+            border-radius: 50%;
+            border: 2px solid #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffd700;
+            font-weight: 900;
+            font-size: 11px;
+            box-shadow: 0 0 10px rgba(255,0,0,0.8);
+            position: absolute;
+        }
+        .multiplier-label {
+            position: absolute;
+            font-size: 11px;
+            font-weight: 800;
+            color: #fff;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+            top: 6px;
+        }
+
+        /* Wooden Stats Panel */
+        .stats-panel {
+            width: 100%;
+            background: linear-gradient(180deg, #8d6b4f 0%, #583101 100%);
+            border: 2px solid #b08968;
+            border-radius: 12px;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.4);
+        }
+        .stat-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .stat-group.right { align-items: flex-end; }
+        .stat-title { font-size: 11px; color: #f3c68f; font-weight: 700; text-transform: uppercase; }
+        .stat-value { font-size: 16px; color: #fff; font-weight: 800; }
+
+        /* Difficulty Selector */
+        .difficulty-box {
+            width: 100%;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 10px;
+            padding: 8px 12px;
+            margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            font-weight: 700;
+        }
+        .diff-select {
+            background: transparent;
+            border: none;
+            color: #ffd700;
+            font-weight: 800;
+            font-size: 13px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        /* Bottom Controls Bar */
+        .bottom-control-bar {
+            width: 100%;
+            background: linear-gradient(180deg, #7f5539 0%, #4a3525 100%);
+            border: 2px solid #b08968;
+            border-radius: 14px;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            gap: 8px;
+        }
+        .ctrl-group {
+            flex: 1;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .ctrl-title { font-size: 9px; color: #d4a373; font-weight: 700; text-transform: uppercase; }
+        .ctrl-val-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: 2px;
+        }
+        .ctrl-val { font-size: 14px; font-weight: 800; color: #ffd700; }
+        .mini-btn {
+            background: rgba(255,255,255,0.15);
+            border: none;
+            color: #fff;
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 11px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .mini-btn:active { background: rgba(255,255,255,0.3); }
+
+        /* Central Tap/Hold Button */
+        .tap-btn-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .tap-hold-btn {
+            width: 75px;
+            height: 75px;
+            background: linear-gradient(135deg, #2ec4b6, #028090);
+            border: 3px solid #ffd700;
+            border-radius: 50%;
+            color: #fff;
+            font-weight: 900;
+            font-size: 11px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-transform: uppercase;
+            line-height: 1.1;
+            transition: 0.1s;
+        }
+        .tap-hold-btn:active { transform: scale(0.93); }
+
+        /* Game Message */
+        .message-box {
+            margin-top: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            min-height: 22px;
+            color: #ffd700;
+            text-align: center;
+            text-shadow: 0 0 8px rgba(0,0,0,0.8);
+        }
+        .footer-tag {
+            font-size: 10px;
+            color: rgba(255,255,255,0.4);
+            margin-top: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <a href="index.html" class="back-btn">← Back</a>
+        <div class="title">🎯 FOREST FORTUNE</div>
+        <div class="balance-box">₹<span id="balance">0.00</span></div>
+    </div>
+
+    <div class="game-viewport">
+        <!-- Fast Game Switch Bar -->
+        <div class="fast-game-bar">
+            <div class="toggle-container">
+                <span>Fast Game</span>
+                <label class="switch">
+                    <input type="checkbox" id="fastGameToggle" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Archery Target Board (X0.2 -> X3 -> X5 -> X50) -->
+        <div class="target-area" id="targetArea">
+            <div class="target-board" id="targetBoard">
+                <div class="multiplier-label">X0.2</div>
+                <div class="target-ring-1">
+                    <div style="font-size: 10px; font-weight:800; color:#583101; position:absolute; top:4px;">X3</div>
+                    <div class="target-ring-2">
+                        <div style="font-size: 10px; font-weight:800; color:#fff; position:absolute; top:3px;">X5</div>
+                        <div class="target-ring-3">
+                            <div class="target-bullseye" id="bullseye">X50</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wooden Stats Box -->
+        <div class="stats-panel">
+            <div class="stat-group">
+                <span class="stat-title">Total Bet</span>
+                <span class="stat-value" id="displayBet">₹10</span>
+            </div>
+            <div class="stat-group right">
+                <span class="stat-title">Wallet Balance</span>
+                <span class="stat-value" id="displayBalance">₹0.00</span>
+            </div>
+        </div>
+
+        <!-- Difficulty Selection -->
+        <div class="difficulty-box">
+            <span>Difficulty Mode</span>
+            <select class="diff-select" id="diffSelect">
+                <option value="easy">Easy (High Win)</option>
+                <option value="medium" selected>Medium (Balanced)</option>
+                <option value="hard">Hard (Jackpot)</option>
+            </select>
+        </div>
+
+        <!-- Bottom Controls Bar -->
+        <div class="bottom-control-bar">
+            <!-- Bet Adjuster -->
+            <div class="ctrl-group">
+                <span class="ctrl-title">Bet (₹)</span>
+                <div class="ctrl-val-row">
+                    <button class="mini-btn" onclick="adjustBet(-10)">-</button>
+                    <span class="ctrl-val" id="betVal">10</span>
+                    <button class="mini-btn" onclick="adjust_bet_dummy(10)">+</button>
+                </div>
+            </div>
+
+            <!-- Action Button -->
+            <div class="tap-btn-wrapper">
+                <button class="tap-hold-btn" id="shootBtn" onclick="shootArrow()">
+                    TAP<br>OR<br>HOLD
+                </button>
+            </div>
+
+            <!-- Arrows Count Adjuster -->
+            <div class="ctrl-group">
+                <span class="ctrl-title">Arrows</span>
+                <div class="ctrl-val-row">
+                    <button class="mini-btn" onclick="adjustArrows(-1)">-</button>
+                    <span class="ctrl-val" id="arrowsVal">10</span>
+                    <button class="mini-btn" onclick="adjustArrows(1)">+</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="message-box" id="message">Aim and shoot to win multipliers!</div>
+    </div>
+
+    <div class="footer-tag">DREAM 66 Casino Ecosystem</div>
+
+    <script>
+        // Force reset wallet balance to 0.00 to avoid carrying over old test balances
+        if (!localStorage.getItem('initialized_forest')) {
+            localStorage.setItem('user_balance', '0.00');
+            localStorage.setItem('initialized_forest', 'true');
+        }
+
+        let balance = parseFloat(localStorage.getItem('user_balance')) || 0.00;
+        let currentBet = 10;
+        let arrowsCount = 10;
+
+        updateUI();
+
+        function updateUI() {
+            document.getElementById('balance').innerText = balance.toFixed(2);
+            document.getElementById('displayBalance').innerText = '₹' + balance.toFixed(2);
+            document.getElementById('displayBet').innerText = '₹' + currentBet;
+            document.getElementById('betVal').innerText = currentBet;
+            document.getElementById('arrowsVal').innerText = arrowsCount;
+            localStorage.setItem('user_balance', balance);
+        }
+
+        function adjustBet(amount) {
+            currentBet += amount;
+            if (currentBet < 10) currentBet = 10;
+            if (balance > 0 && currentBet > balance) currentBet = balance;
+            updateUI();
+        }
+
+        function adjust_bet_dummy(amount) {
+            adjustBet(amount);
+        }
+
+        function adjustArrows(change) {
+            arrowsCount += change;
+            if (arrowsCount < 1) arrowsCount = 1;
+            if (arrowsCount > 20) arrowsCount = 20;
+            updateUI();
+        }
+
+        function shootArrow() {
+            if (balance <= 0 || balance < currentBet) {
+                showMsg("Insufficient Balance! Please top up.", "#ff416c");
+                return;
+            }
+
+            // Deduct bet from wallet
+            balance -= currentBet;
+            updateUI();
+
+            lockControls(true);
+            showMsg("🎯 Arrow flying...", "#ffd700");
+
+            const board = document.getElementById('targetBoard');
+            board.style.transform = "scale(1.08) rotate(5deg)";
+
+            const isFast = document.getElementById('fastGameToggle').checked;
+            const delay = isFast ? 300 : 800;
+
+            setTimeout(() => {
+                board.style.transform = "scale(1) rotate(0deg)";
+
+                // Economic Logic: 60% Company Profit / 40% User Win RTP
+                const rand = Math.random() * 100;
+                let multiplier = 0;
+                let msgText = "";
+                let msgColor = "";
+
+                if (rand < 60) {
+                    // 60% Company Wins
+                    multiplier = 0; 
+                    msgText = "⚡ Better luck next time! Company wins.";
+                    msgColor = "#ff416c";
+                } else if (rand < 82) {
+                    // 40% User Win Tier: X0.2 or X3
+                    multiplier = Math.random() > 0.5 ? 0.2 : 3;
+                    const winAmt = currentBet * multiplier;
+                    msgText = `🎉 Hit! Won X${multiplier} (₹${winAmt.toFixed(2)})`;
+                    msgColor = "#00ffcc";
+                } else if (rand < 96) {
+                    // 40% User Win Tier: X5
+                    multiplier = 5;
+                    const winAmt = currentBet * multiplier;
+                    msgText = `🔥 Great Hit! Won X5 (₹${winAmt.toFixed(2)})`;
+                    msgColor = "#00ffcc";
+                } else {
+                    // Jackpot Tier: X50 Bullseye!
+                    multiplier = 50;
+                    const winAmt = currentBet * multiplier;
+                    msgText = `👑 BULLSEYE JACKPOT! Won X50 (₹${winAmt.toFixed(2)})`;
+                    msgColor = "#ffd700";
+                }
+
+                const winAmount = currentBet * multiplier;
+                balance += winAmount;
+                updateUI();
+
+                showMsg(msgText, msgColor);
+                lockControls(false);
+            }, delay);
+        }
+
+        function showMsg(text, color) {
+            const msg = document.getElementById('message');
+            msg.innerText = text;
+            msg.style.color = color;
+        }
+
+        function lockControls(lock) {
+            document.getElementById('shootBtn').disabled = lock;
+        }
+    </script>
+</body>
+</html>
