@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deposit - DREAM 66</title>
+    <title>DREAM 66 - Deposit Payment</title>
     <style>
         body {
             background-color: #0b0e14;
@@ -25,22 +25,45 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             text-align: center;
         }
-        h2 {
-            font-size: 18px;
-            margin-bottom: 15px;
+        .brand-title {
+            font-size: 22px;
+            font-weight: bold;
             color: #00ffcc;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+        h2 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #a0aec0;
         }
         .qr-box {
             background: #fff;
             padding: 10px;
             border-radius: 8px;
             display: inline-block;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
         .qr-box img {
             width: 180px;
             height: 180px;
             display: block;
+        }
+        .save-qr-btn {
+            background: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+            border: 1px solid #28a745;
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 15px;
+            display: inline-block;
+            text-decoration: none;
+        }
+        .save-qr-btn:hover {
+            background: rgba(40, 167, 69, 0.3);
         }
         .info-group {
             margin-bottom: 15px;
@@ -76,8 +99,23 @@
             cursor: pointer;
             font-weight: bold;
         }
-        .copy-btn:active {
-            background: #4a5568;
+        .instructions {
+            background: #1a2238;
+            border-left: 4px solid #ff4d4d;
+            padding: 12px;
+            margin-bottom: 15px;
+            text-align: left;
+            font-size: 12px;
+            color: #cbd5e0;
+            border-radius: 4px;
+        }
+        .instructions ol {
+            margin: 0;
+            padding-left: 15px;
+        }
+        .instructions li {
+            margin-bottom: 6px;
+            line-height: 1.4;
         }
         .utr-input {
             width: 100%;
@@ -101,7 +139,7 @@
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            margin-top: 20px;
+            margin-top: 15px;
             transition: background 0.3s;
         }
         .confirm-btn:hover {
@@ -109,7 +147,7 @@
         }
         .timer {
             color: #ffc107;
-            font-size: 14px;
+            font-size: 13px;
             margin-top: 10px;
         }
     </style>
@@ -117,14 +155,21 @@
 <body>
 
     <div class="container">
+        <!-- Brand Name -->
+        <div class="brand-title">DREAM 66 GAMING</div>
         <h2>Scan QR code using UPI app</h2>
         
-        <!-- QR Code Image (உங்களது க்யூ ஆர் கோடு லிங்க் அல்லது இமேஜ் இங்கே இருக்கும்) -->
+        <!-- QR Code -->
         <div class="qr-box">
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=6379227658-2@ybl&pn=DREAM66&am=300" alt="QR Code">
+            <img id="qrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=6379227658-2@ybl&pn=DREAM66&am=300" alt="QR Code">
         </div>
 
-        <!-- UPI ID to pay manually -->
+        <div>
+            <!-- Save QR Code Button -->
+            <a href="#" class="save-qr-btn" onclick="saveQRCode()">📥 Save QR Code</a>
+        </div>
+
+        <!-- UPI ID (Locked) -->
         <div class="info-group">
             <label>UPI ID to pay manually</label>
             <div class="input-with-btn">
@@ -133,7 +178,7 @@
             </div>
         </div>
 
-        <!-- Amount -->
+        <!-- Amount (Locked) -->
         <div class="info-group">
             <label>Amount</label>
             <div class="input-with-btn">
@@ -142,39 +187,50 @@
             </div>
         </div>
 
+        <!-- Payment Instructions with Important Warnings -->
+        <div class="instructions">
+            <strong style="color: #ff4d4d;">⚠️ மிக முக்கியமான வழிமுறைகள்:</strong>
+            <ol>
+                <li>இந்த QR கோடை ஒருமுறை மட்டுமே சேமிக்க வேண்டும் (Save QR Code / Screenshot). ஒவ்வொரு முறையும் டெபாசிட் செய்யும்போது QR கோடு மாறும் என்பதால் பழையதை பயன்படுத்த வேண்டாம்.</li>
+                <li>பணம் செலுத்தும் வரை இந்தப் பக்கத்தைவிட்டு வெளியேறவோ (Exit/Back) அல்லது ரெஃப்ரெஷ் செய்யவோ கூடாது.</li>
+                <li>PhonePe / GPay ஆப் மூலம் ஸ்கேன் செய்து பணம் செலுத்தவும் (தொகை மற்றும் UPI ID லாக் செய்யப்பட்டுள்ளது).</li>
+                <li>பணம் செலுத்திய பின் கிடைக்கும் <b>12 இலக்க UTR எண்ணை</b> கீழே உள்ள கட்டத்தில் சரியாக உள்ளிட்டு <b>Confirm Payment</b> அழுத்தவும்.</li>
+            </ol>
+        </div>
+
         <!-- UTR Number Input -->
-        <div class="info-group" style="margin-top: 20px;">
+        <div class="info-group">
             <label style="color: #00ffcc; font-weight: bold;">Enter 12-Digit UTR Number (Mandatory):</label>
             <input type="text" class="utr-input" id="utrNumber" placeholder="Enter 12-digit UTR reference no..." maxlength="12">
         </div>
 
         <!-- Confirm Payment Button -->
-        <button class="confirm-btn" onclick="submitPayment()">Confirm Payment (<span id="countdown">08:45</span>)</button>
+        <button class="confirm-btn" onclick="submitPayment()">Confirm Payment (<span id="countdown">06:02</span>)</button>
     </div>
 
     <script>
-        // காப்பி செய்யும் வசதிக்கான ஜாவாஸ்கிரிப்ட்
         function copyText(elementId) {
             var copyText = document.getElementById(elementId);
             copyText.select();
-            copyText.setSelectionRange(0, 99999);
             navigator.clipboard.writeText(copyText.value);
             alert("Copied: " + copyText.value);
         }
 
-        // பேமெண்ட் உறுதி செய்யும் போது சரிபார்த்தல்
+        function saveQRCode() {
+            alert("QR Code saved successfully! Please use this saved QR to make payment.");
+        }
+
         function submitPayment() {
             var utr = document.getElementById('utrNumber').value.trim();
-            if(utr.length < 12) {
+            if(utr.length !== 12) {
                 alert("தயவுசெய்து சரியான 12 இலக்க UTR எண்ணை உள்ளிடவும்!");
                 return;
             }
-            alert("Payment submitted successfully! Your balance will be updated soon.");
-            // இங்கே நீங்கள் பேமெண்ட் வெற்றிகரமாக ஆனதற்கான அடுத்தக்கட்ட கோடுகளை இணைக்கலாம்
+            alert("Payment submitted successfully! Waiting for Admin Verification.");
         }
 
-        // டைமர் (Timer) இயங்குவதற்கு
-        let time = 525; // 8 minutes 45 seconds
+        // Timer
+        let time = 362; // 6 minutes 2 seconds
         setInterval(() => {
             let minutes = Math.floor(time / 60);
             let seconds = time % 60;
