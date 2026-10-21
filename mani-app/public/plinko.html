@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>DREAM 66 - Plinko 1000 Ultimate</title>
     <style>
         * {
@@ -10,28 +10,34 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            touch-action: manipulation;
         }
         body {
             background: radial-gradient(circle at center, #12002b 0%, #05000e 100%);
             color: #fff;
-            min-height: 100vh;
+            height: 100vh;
+            height: 100dvh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
-            padding: 6px;
-            overflow-x: hidden;
+            padding: 4px;
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+            left: 0;
+            top: 0;
         }
 
         .header {
             width: 100%;
-            max-width: 420px;
+            max-width: 400px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             background: rgba(25, 5, 45, 0.9);
-            padding: 8px 12px;
-            border-radius: 12px;
+            padding: 6px 10px;
+            border-radius: 10px;
             border: 1px solid #00ffcc;
             box-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
         }
@@ -39,29 +45,29 @@
             background: linear-gradient(135deg, #ff007f, #7928ca);
             color: white;
             border: none;
-            padding: 5px 10px;
+            padding: 4px 8px;
             border-radius: 6px;
             cursor: pointer;
             font-weight: 700;
             text-decoration: none;
-            font-size: 11px;
+            font-size: 10px;
         }
         .title {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 900;
             background: linear-gradient(135deg, #ffd700, #00ffcc);
             background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        .balance-box { font-size: 12px; color: #00ffcc; font-weight: 800; }
+        .balance-box { font-size: 11px; color: #00ffcc; font-weight: 800; }
 
         .game-viewport {
             width: 100%;
-            max-width: 420px;
+            max-width: 400px;
             background: rgba(18, 5, 38, 0.95);
-            border-radius: 16px;
-            padding: 10px;
+            border-radius: 14px;
+            padding: 8px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -72,92 +78,93 @@
 
         #plinkoCanvas {
             background: radial-gradient(circle, #1a0836 0%, #090117 100%);
-            border-radius: 12px;
+            border-radius: 10px;
             box-shadow: inset 0 0 20px rgba(0,0,0,0.9);
-            margin-bottom: 6px;
+            margin-bottom: 4px;
+            width: 100%;
+            max-width: 330px;
+            height: 230px;
         }
 
         .status-banner {
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 800;
             color: #ffd700;
-            min-height: 16px;
-            margin-bottom: 6px;
+            min-height: 14px;
+            margin-bottom: 4px;
             text-transform: uppercase;
         }
 
         .settings-bar {
             width: 100%;
             display: flex;
-            gap: 6px;
-            margin-bottom: 6px;
+            gap: 4px;
+            margin-bottom: 4px;
         }
         .setting-box {
             flex: 1;
             background: rgba(30, 10, 60, 0.8);
             border: 1px solid #00ffcc;
-            border-radius: 8px;
-            padding: 4px 6px;
+            border-radius: 6px;
+            padding: 3px 6px;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
-        .setting-label { font-size: 8px; color: #aaa; font-weight: 700; text-transform: uppercase; }
+        .setting-label { font-size: 7px; color: #aaa; font-weight: 700; text-transform: uppercase; }
         .setting-select {
             background: transparent;
             border: none;
             color: #00ffcc;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 900;
             outline: none;
             cursor: pointer;
             text-align: center;
             width: 100%;
-            margin-top: 2px;
         }
         .setting-select option { background: #12002b; color: #fff; }
 
         .chips-scroll-container {
             width: 100%;
             display: flex;
-            gap: 5px;
+            gap: 4px;
             overflow-x: auto;
-            padding-bottom: 4px;
-            margin-bottom: 8px;
+            padding-bottom: 2px;
+            margin-bottom: 6px;
+            scrollbar-width: none;
         }
-        .chips-scroll-container::-webkit-scrollbar { height: 3px; }
-        .chips-scroll-container::-webkit-scrollbar-thumb { background: #00ffcc; border-radius: 2px; }
+        .chips-scroll-container::-webkit-scrollbar { display: none; }
 
         .chip-pill {
-            min-width: 44px;
-            height: 28px;
+            min-width: 36px;
+            height: 24px;
             background: linear-gradient(135deg, #28084b, #12002b);
             border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 14px;
+            border-radius: 12px;
             color: #fff;
-            font-size: 10px;
+            font-size: 9px;
             font-weight: 900;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
-            transition: 0.15s;
         }
         .chip-pill.active-chip {
             background: linear-gradient(135deg, #00ffcc, #0088cc);
             color: #000;
             border-color: #fff;
-            box-shadow: 0 0 10px rgba(0, 255, 204, 0.8);
-            transform: scale(1.08);
+            box-shadow: 0 0 8px rgba(0, 255, 204, 0.8);
+            transform: scale(1.05);
         }
 
         .action-panel {
             width: 100%;
             background: rgba(20, 5, 40, 0.9);
-            border-radius: 10px;
+            border-radius: 8px;
             border: 1px solid rgba(255,255,255,0.1);
-            padding: 8px 12px;
+            padding: 6px 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -165,19 +172,19 @@
         .drop-btn {
             background: linear-gradient(135deg, #ff007f, #7928ca);
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
             color: #fff;
-            padding: 9px 26px;
+            padding: 8px 22px;
             font-weight: 900;
-            font-size: 12px;
+            font-size: 11px;
             cursor: pointer;
-            box-shadow: 0 0 15px rgba(255, 0, 127, 0.6);
+            box-shadow: 0 0 12px rgba(255, 0, 127, 0.6);
             text-transform: uppercase;
         }
         .drop-btn:active { transform: scale(0.95); }
 
-        .bet-info { font-size: 10px; text-align: right; }
-        .bet-val { font-size: 14px; color: #ffd700; font-weight: 900; }
+        .bet-info { font-size: 9px; text-align: right; }
+        .bet-val { font-size: 13px; color: #ffd700; font-weight: 900; }
     </style>
 </head>
 <body>
@@ -189,7 +196,7 @@
     </div>
 
     <div class="game-viewport">
-        <canvas id="plinkoCanvas" width="350" height="270"></canvas>
+        <canvas id="plinkoCanvas" width="330" height="230"></canvas>
         <div class="status-banner" id="statusBanner">SELECT CHIP & DROP BALLS!</div>
 
         <div class="settings-bar">
@@ -262,7 +269,7 @@
         }
 
         const rows = 8;
-        const pinRadius = 2.5;
+        const pinRadius = 2.2;
 
         function drawBoard() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -270,12 +277,12 @@
 
             for (let r = 0; r < rows; r++) {
                 const count = r + 3;
-                const spacing = 28;
+                const spacing = 26;
                 const startX = (canvas.width - (count - 1) * spacing) / 2;
 
                 for (let c = 0; c < count; c++) {
                     const x = startX + c * spacing;
-                    const y = 20 + r * 19;
+                    const y = 18 + r * 17;
                     ctx.beginPath();
                     ctx.arc(x, y, pinRadius, 0, Math.PI * 2);
                     ctx.fill();
@@ -289,27 +296,27 @@
             if (risk === 'low') { multsArray = lowMults; barColor = '#0088cc'; }
             else if (risk === 'med') { multsArray = medMults; barColor = '#00cc66'; }
 
-            drawActiveSlotRow(multsArray, barColor, canvas.height - 30);
+            drawActiveSlotRow(multsArray, barColor, canvas.height - 25);
         }
 
         function drawActiveSlotRow(multsArray, color, slotY) {
             const slots = multsArray.length;
-            const slotWidth = 30;
+            const slotWidth = 28;
             const startSlotX = (canvas.width - slots * slotWidth) / 2;
 
             for (let i = 0; i < slots; i++) {
                 ctx.fillStyle = color;
-                ctx.fillRect(startSlotX + i * slotWidth + 1, slotY, slotWidth - 2, 24);
+                ctx.fillRect(startSlotX + i * slotWidth + 1, slotY, slotWidth - 2, 20);
                 
                 ctx.strokeStyle = '#ffd700';
                 ctx.lineWidth = 1;
-                ctx.strokeRect(startSlotX + i * slotWidth + 1, slotY, slotWidth - 2, 24);
+                ctx.strokeRect(startSlotX + i * slotWidth + 1, slotY, slotWidth - 2, 20);
 
                 ctx.fillStyle = '#fff';
-                ctx.font = 'bold 10px Segoe UI';
+                ctx.font = 'bold 9px Segoe UI';
                 ctx.textAlign = 'center';
                 let label = multsArray[i] >= 1000 ? '1k' : multsArray[i] + 'x';
-                ctx.fillText(label, startSlotX + i * slotWidth + slotWidth / 2, slotY + 16);
+                ctx.fillText(label, startSlotX + i * slotWidth + slotWidth / 2, slotY + 13);
             }
         }
 
@@ -335,12 +342,10 @@
                 let multsArray = risk === 'low' ? lowMults : (risk === 'med' ? medMults : highMults);
 
                 for(let b=0; b<ballsCount; b++) {
-                    // 60% House Margin / 40% User RTP Logic
                     const luck = Math.random() * 100;
-                    let targetIndex = 5; // Center Loss
+                    let targetIndex = 5; 
 
                     if (luck >= 60) {
-                        // 40% Win Chance
                         const winOptions = [0, 1, 9, 10];
                         targetIndex = winOptions[Math.floor(Math.random() * winOptions.length)];
                     }
