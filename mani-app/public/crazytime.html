@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DREAM 66 - Crazy Time Live</title>
     <style>
         * {
@@ -10,23 +10,17 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            touch-action: manipulation;
         }
         body {
             background: linear-gradient(180deg, #120024 0%, #05000a 100%);
             color: #fff;
-            height: 100vh;
-            height: 100dvh;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            padding: 4px;
-            overflow: hidden;
-            position: fixed;
-            width: 100%;
-            left: 0;
-            top: 0;
+            justify-content: space-between;
+            padding: 8px;
+            overflow-x: hidden;
         }
 
         /* Top Header */
@@ -36,18 +30,17 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(20, 0, 40, 0.9);
-            padding: 8px 14px;
+            background: rgba(20, 0, 40, 0.85);
+            padding: 8px 12px;
             border-radius: 12px;
             border: 1px solid #ffd700;
-            box-shadow: 0 0 12px rgba(255,215,0,0.4);
-            margin-bottom: 6px;
+            box-shadow: 0 0 10px rgba(255,215,0,0.3);
         }
         .back-btn {
             background: linear-gradient(135deg, #ff416c, #ff4b2b);
             color: white;
             border: none;
-            padding: 5px 12px;
+            padding: 5px 10px;
             border-radius: 6px;
             cursor: pointer;
             font-weight: 700;
@@ -55,7 +48,7 @@
             font-size: 11px;
         }
         .title {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 900;
             background: linear-gradient(135deg, #ffd700, #ff007f, #00ffcc);
             background-clip: text;
@@ -64,25 +57,22 @@
             text-shadow: 0 0 8px rgba(255,215,0,0.5);
         }
         .balance-box {
-            font-size: 13px;
+            font-size: 12px;
             color: #00ffcc;
-            font-weight: 900;
+            font-weight: 800;
         }
 
-        /* Main Game Stage Viewport - Full Screen Luxury */
+        /* Main Game Stage Viewport */
         .game-viewport {
             width: 100%;
             max-width: 420px;
-            height: 100%;
-            max-height: 760px;
             background: linear-gradient(180deg, #2a0845 0%, #100120 100%);
-            border-radius: 18px;
+            border-radius: 16px;
             padding: 10px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.9);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.9);
             border: 2px solid #ff007f;
             position: relative;
         }
@@ -93,19 +83,20 @@
             height: 42px;
             background: #0d001a;
             border: 2px solid #ffd700;
-            border-radius: 10px;
+            border-radius: 8px;
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 15px;
-            box-shadow: inset 0 0 12px rgba(255,215,0,0.4);
+            margin-bottom: 6px;
+            box-shadow: inset 0 0 10px rgba(255,215,0,0.4);
         }
         .slot-reel {
             font-size: 13px;
             font-weight: 900;
             color: #ffd700;
             background: rgba(255,255,255,0.05);
-            padding: 4px 12px;
+            padding: 3px 10px;
             border-radius: 6px;
             border: 1px solid rgba(255,255,255,0.2);
         }
@@ -113,20 +104,21 @@
         /* Canvas Wheel Container */
         .wheel-container {
             width: 100%;
-            height: 200px;
+            height: 220px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             position: relative;
-            background: radial-gradient(circle, rgba(255,0,127,0.3) 0%, transparent 75%);
+            background: radial-gradient(circle, rgba(255,0,127,0.25) 0%, transparent 75%);
+            margin-bottom: 6px;
         }
         .pointer-pin {
             width: 0; 
             height: 0; 
-            border-left: 11px solid transparent;
-            border-right: 11px solid transparent;
-            border-top: 20px solid #ffd700;
+            border-left: 12px solid transparent;
+            border-right: 12px solid transparent;
+            border-top: 22px solid #ffd700;
             position: absolute;
             top: 2px;
             z-index: 10;
@@ -134,19 +126,21 @@
         }
         #wheelCanvas {
             border-radius: 50%;
-            border: 5px solid #ffd700;
-            box-shadow: 0 0 25px rgba(255,215,0,0.9);
+            border: 6px solid #ffd700;
+            box-shadow: 0 0 25px rgba(255,215,0,0.8);
             transition: transform 3.5s cubic-bezier(0.15, 0.85, 0.25, 1);
         }
 
         /* Status & Win Display Banner */
         .status-banner {
             font-size: 12px;
-            font-weight: 900;
+            font-weight: 800;
             color: #ffd700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            min-height: 18px;
             text-align: center;
+            margin-bottom: 6px;
         }
 
         /* Evolution Style Ticket Betting Grid */
@@ -154,26 +148,28 @@
             width: 100%;
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 6px;
+            gap: 5px;
+            margin-bottom: 6px;
         }
         .ticket-card {
-            border-radius: 10px;
-            padding: 8px 2px;
+            border-radius: 8px;
+            padding: 6px 2px;
             display: flex;
             flex-direction: column;
             align-items: center;
             cursor: pointer;
             transition: 0.2s;
             border: 2px solid rgba(255,255,255,0.3);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.5);
+            position: relative;
         }
         .ticket-card.selected {
             border-color: #ffffff;
             box-shadow: 0 0 15px #ffd700;
-            transform: scale(1.06);
+            transform: scale(1.05);
         }
 
-        /* Ticket Colors */
+        /* Ticket Colors Matching Wheel Colors */
         .t-1 { background: linear-gradient(135deg, #0088cc, #004466); color: #fff; }
         .t-2 { background: linear-gradient(135deg, #cc9900, #664d00); color: #fff; }
         .t-5 { background: linear-gradient(135deg, #cc0066, #660033); color: #fff; }
@@ -186,12 +182,12 @@
         .ticket-title { font-size: 11px; font-weight: 900; }
         .ticket-payout { font-size: 8px; font-weight: 700; margin-top: 2px; opacity: 0.9; }
 
-        /* Control Footer */
+        /* Chips Controls Footer */
         .control-footer {
             width: 100%;
-            background: rgba(10, 0, 20, 0.9);
+            background: rgba(10, 0, 20, 0.85);
             border-top: 1px solid rgba(255,255,255,0.15);
-            padding: 8px 10px;
+            padding: 8px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -199,16 +195,16 @@
         }
         .chips-group {
             display: flex;
-            gap: 6px;
+            gap: 4px;
         }
         .chip-btn {
-            width: 32px;
-            height: 32px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             border: 2px dashed #fff;
             background: radial-gradient(circle, #ff007f 0%, #880e4f 100%);
             color: #fff;
-            font-size: 10px;
+            font-size: 9px;
             font-weight: 900;
             cursor: pointer;
             display: flex;
@@ -220,13 +216,13 @@
             border-style: solid;
             border-color: #ffd700;
             transform: scale(1.15);
-            box-shadow: 0 0 10px #ffd700;
+            box-shadow: 0 0 8px #ffd700;
         }
 
         /* Large Spin Action Button */
         .spin-action-btn {
-            width: 64px;
-            height: 64px;
+            width: 62px;
+            height: 62px;
             background: radial-gradient(circle, #ffd700 0%, #ff8c00 100%);
             border: 3px solid #fff;
             border-radius: 50%;
@@ -249,20 +245,20 @@
             align-items: flex-end;
             font-size: 10px;
         }
-        .bet-amt-val { font-size: 14px; font-weight: 900; color: #ffd700; }
+        .bet-amt-val { font-size: 13px; font-weight: 800; color: #ffd700; }
     </style>
 </head>
 <body>
 
+    <!-- Header Bar -->
+    <div class="header">
+        <a href="index.html" class="back-btn">← Back</a>
+        <div class="title">🎡 CRAZY TIME LIVE</div>
+        <div class="balance-box">₹<span id="balance">0.00</span></div>
+    </div>
+
     <!-- Main Game Viewport -->
     <div class="game-viewport">
-
-        <!-- Header Bar -->
-        <div class="header">
-            <a href="https://dream66-gaming-1.onrender.com" class="back-btn">← Back</a>
-            <div class="title">🎡 CRAZY TIME LIVE</div>
-            <div class="balance-box">₹<span id="balance">0.00</span></div>
-        </div>
 
         <!-- Top Slot Reel Area -->
         <div class="top-slot-container">
@@ -273,7 +269,7 @@
         <!-- Canvas Based Accurate Wheel -->
         <div class="wheel-container">
             <div class="pointer-pin"></div>
-            <canvas id="wheelCanvas" width="180" height="180"></canvas>
+            <canvas id="wheelCanvas" width="200" height="200"></canvas>
         </div>
 
         <!-- Status & Win Banner -->
@@ -337,6 +333,7 @@
     </div>
 
     <script>
+        // Segment Details with Exact Canvas Drawing
         const segments = [
             { label: '1X', color: '#0088cc' },
             { label: '2X', color: '#cc9900' },
@@ -362,6 +359,7 @@
             for (let i = 0; i < numSegments; i++) {
                 const angle = i * arcSize - Math.PI / 2;
                 
+                // Draw Segment Slice
                 ctx.beginPath();
                 ctx.fillStyle = segments[i].color;
                 ctx.moveTo(centerX, centerY);
@@ -372,6 +370,7 @@
                 ctx.strokeStyle = '#ffd700';
                 ctx.stroke();
 
+                // Draw Perfectly Centered Text
                 ctx.save();
                 ctx.translate(centerX, centerY);
                 ctx.rotate(angle + arcSize / 2);
@@ -379,16 +378,17 @@
                 ctx.fillStyle = '#ffffff';
                 ctx.font = 'bold 10px Segoe UI';
                 ctx.shadowColor = '#000000';
-                ctx.shadowBlur = 3;
-                ctx.fillText(segments[i].label, radius - 10, 3);
+                ctx.shadowBlur = 4;
+                ctx.fillText(segments[i].label, radius - 12, 4);
                 ctx.restore();
             }
 
+            // Center Wheel Knob Logo
             ctx.beginPath();
-            ctx.arc(centerX, centerY, 26, 0, 2 * Math.PI);
+            ctx.arc(centerX, centerY, 28, 0, 2 * Math.PI);
             ctx.fillStyle = '#100120';
             ctx.fill();
-            ctx.lineWidth = 2;
+            ctx.lineWidth = 3;
             ctx.strokeStyle = '#ffd700';
             ctx.stroke();
 
@@ -401,7 +401,7 @@
 
         drawWheel();
 
-        // Balance strictly starting at 0.00 as requested
+        // Game Logic Setup
         let balance = parseFloat(localStorage.getItem('user_balance')) || 0.00;
         let currentBet = 10;
         let selectedTicketName = '1';
