@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DREAM 66 - Plinko 1000 Ultimate</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background: radial-gradient(circle at center, #12002b 0%, #05000e 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px;
+            overflow-x: hidden;
+        }
+
+        .header {
+            width: 100%;
+            max-width: 420px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(25, 5, 45, 0.9);
+            padding: 8px 12px;
+            border-radius: 12px;
+            border: 1px solid #00ffcc;
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
+        }
+        .back-btn {
+            background: linear-gradient(135deg, #ff007f, #7928ca);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 700;
+            text-decoration: none;
+            font-size: 11px;
+        }
+        .title {
+            font-size: 15px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ffd700, #00ffcc);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .balance-box { font-size: 12px; color: #00ffcc; font-weight: 800; }
+
+        .game-viewport {
+            width: 100%;
+            max-width: 420px;
+            background: rgba(18, 5, 38, 0.95);
+            border-radius: 16px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.9);
+            border: 1.5px solid #ff007f;
+            position: relative;
+        }
+
+        #plinkoCanvas {
+            background: radial-gradient(circle, #1a0836 0%, #090117 100%);
+            border-radius: 12px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.9);
+            margin-bottom: 6px;
+        }
+
+        .status-banner {
+            font-size: 11px;
+            font-weight: 800;
+            color: #ffd700;
+            min-height: 16px;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .settings-bar {
+            width: 100%;
+            display: flex;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+        .setting-box {
+            flex: 1;
+            background: rgba(30, 10, 60, 0.8);
+            border: 1px solid #00ffcc;
+            border-radius: 8px;
+            padding: 4px 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .setting-label { font-size: 8px; color: #aaa; font-weight: 700; text-transform: uppercase; }
+        .setting-select {
+            background: transparent;
+            border: none;
+            color: #00ffcc;
+            font-size: 11px;
+            font-weight: 900;
+            outline: none;
+            cursor: pointer;
+            text-align: center;
+            width: 100%;
+            margin-top: 2px;
+        }
+        .setting-select option { background: #12002b; color: #fff; }
+
+        .chips-scroll-container {
+            width: 100%;
+            display: flex;
+            gap: 5px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            margin-bottom: 8px;
+        }
+        .chips-scroll-container::-webkit-scrollbar { height: 3px; }
+        .chips-scroll-container::-webkit-scrollbar-thumb { background: #00ffcc; border-radius: 2px; }
+
+        .chip-pill {
+            min-width: 44px;
+            height: 28px;
+            background: linear-gradient(135deg, #28084b, #12002b);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 14px;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 900;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: 0.15s;
+        }
+        .chip-pill.active-chip {
+            background: linear-gradient(135deg, #00ffcc, #0088cc);
+            color: #000;
+            border-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.8);
+            transform: scale(1.08);
+        }
+
+        .action-panel {
+            width: 100%;
+            background: rgba(20, 5, 40, 0.9);
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .drop-btn {
+            background: linear-gradient(135deg, #ff007f, #7928ca);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            padding: 9px 26px;
+            font-weight: 900;
+            font-size: 12px;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(255, 0, 127, 0.6);
+            text-transform: uppercase;
+        }
+        .drop-btn:active { transform: scale(0.95); }
+
+        .bet-info { font-size: 10px; text-align: right; }
+        .bet-val { font-size: 14px; color: #ffd700; font-weight: 900; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <a href="index.html" class="back-btn">← Back</a>
+        <div class="title">🔮 PLINKO 1000</div>
+        <div class="balance-box">₹<span id="balance">0.00</span></div>
+    </div>
+
+    <div class="game-viewport">
+        <canvas id="plinkoCanvas" width="350" height="270"></canvas>
+        <div class="status-banner" id="statusBanner">SELECT CHIP & DROP BALLS!</div>
+
+        <div class="settings-bar">
+            <div class="setting-box">
+                <span class="setting-label">Risk Level</span>
+                <select class="setting-select" id="riskSelect" onchange="drawBoard()">
+                    <option value="low">Low Risk</option>
+                    <option value="med">Medium Risk</option>
+                    <option value="high" selected>High Risk (1000X)</option>
+                </select>
+            </div>
+            <div class="setting-box">
+                <span class="setting-label">Balls Amount</span>
+                <select class="setting-select" id="ballsSelect" onchange="updateUI()">
+                    <option value="1">1 Ball</option>
+                    <option value="2">2 Balls</option>
+                    <option value="5">5 Balls</option>
+                    <option value="10">10 Balls</option>
+                    <option value="20">20 Balls</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="chips-scroll-container">
+            <div class="chip-pill active-chip" onclick="setChip(10, this)">10</div>
+            <div class="chip-pill" onclick="setChip(20, this)">20</div>
+            <div class="chip-pill" onclick="setChip(50, this)">50</div>
+            <div class="chip-pill" onclick="setChip(100, this)">100</div>
+            <div class="chip-pill" onclick="setChip(200, this)">200</div>
+            <div class="chip-pill" onclick="setChip(500, this)">500</div>
+            <div class="chip-pill" onclick="setChip(1000, this)">1000</div>
+            <div class="chip-pill" onclick="setChip(2000, this)">2000</div>
+        </div>
+
+        <div class="action-panel">
+            <button class="drop-btn" id="dropBtn" onclick="startPlinkoGame()">DROP BALL</button>
+            <div class="bet-info">
+                <span style="color:#aaa;">TOTAL BET</span><br>
+                <span class="bet-val" id="betDisplay">₹10</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let balance = parseFloat(localStorage.getItem('user_balance')) || 0.00;
+        let currentBet = 10;
+        const canvas = document.getElementById('plinkoCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const lowMults =  [15, 6, 2, 1.2, 1.1, 0.5, 1.1, 1.2, 2, 6, 15];
+        const medMults =  [200, 50, 20, 5, 2, 0.2, 2, 5, 20, 50, 200];
+        const highMults = [1000, 135, 20, 10, 2, 0.2, 2, 10, 20, 135, 1000];
+
+        updateUI();
+
+        function updateUI() {
+            let ballsCount = parseInt(document.getElementById('ballsSelect').value) || 1;
+            let totalBetAmount = currentBet * ballsCount;
+
+            document.getElementById('balance').innerText = balance.toFixed(2);
+            document.getElementById('betDisplay').innerText = '₹' + totalBetAmount;
+            localStorage.setItem('user_balance', balance.toFixed(2));
+        }
+
+        function setChip(amount, element) {
+            document.querySelectorAll('.chip-pill').forEach(c => c.classList.remove('active-chip'));
+            element.classList.add('active-chip');
+            currentBet = amount;
+            updateUI();
+        }
+
+        const rows = 8;
+        const pinRadius = 2.5;
+
+        function drawBoard() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#00ffcc';
+
+            for (let r = 0; r < rows; r++) {
+                const count = r + 3;
+                const spacing = 28;
+                const startX = (canvas.width - (count - 1) * spacing) / 2;
+
+                for (let c = 0; c < count; c++) {
+                    const x = startX + c * spacing;
+                    const y = 20 + r * 19;
+                    ctx.beginPath();
+                    ctx.arc(x, y, pinRadius, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            let risk = document.getElementById('riskSelect').value;
+            let multsArray = highMults;
+            let barColor = '#ff007f';
+
+            if (risk === 'low') { multsArray = lowMults; barColor = '#0088cc'; }
+            else if (risk === 'med') { multsArray = medMults; barColor = '#00cc66'; }
+
+            drawActiveSlotRow(multsArray, barColor, canvas.height - 30);
+        }
+
+        function drawActiveSlotRow(multsArray, color, slotY) {
+            const slots = multsArray.length;
+            const slotWidth = 30;
+            const startSlotX = (canvas.width - slots * slotWidth) / 2;
+
+            for (let i = 0; i < slots; i++) {
+                ctx.fillStyle = color;
+                ctx.fillRect(startSlotX + i * slotWidth + 1, slotY, slotWidth - 2, 24);
+                
+                ctx.strokeStyle = '#ffd700';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(startSlotX + i * slotWidth + 1, slotY, slotWidth - 2, 24);
+
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 10px Segoe UI';
+                ctx.textAlign = 'center';
+                let label = multsArray[i] >= 1000 ? '1k' : multsArray[i] + 'x';
+                ctx.fillText(label, startSlotX + i * slotWidth + slotWidth / 2, slotY + 16);
+            }
+        }
+
+        drawBoard();
+
+        function startPlinkoGame() {
+            let ballsCount = parseInt(document.getElementById('ballsSelect').value);
+            let totalCost = currentBet * ballsCount;
+
+            if (balance <= 0 || balance < totalCost) {
+                document.getElementById('statusBanner').innerText = "INSUFFICIENT BALANCE!";
+                return;
+            }
+
+            balance -= totalCost;
+            updateUI();
+
+            let risk = document.getElementById('riskSelect').value;
+            document.getElementById('statusBanner').innerText = `DROPPING ${ballsCount} BALL(S)...`;
+
+            setTimeout(() => {
+                let totalWin = 0;
+                let multsArray = risk === 'low' ? lowMults : (risk === 'med' ? medMults : highMults);
+
+                for(let b=0; b<ballsCount; b++) {
+                    // 60% House Margin / 40% User RTP Logic
+                    const luck = Math.random() * 100;
+                    let targetIndex = 5; // Center Loss
+
+                    if (luck >= 60) {
+                        // 40% Win Chance
+                        const winOptions = [0, 1, 9, 10];
+                        targetIndex = winOptions[Math.floor(Math.random() * winOptions.length)];
+                    }
+
+                    let mult = multsArray[targetIndex];
+                    totalWin += currentBet * mult;
+                }
+
+                balance += totalWin;
+                updateUI();
+                document.getElementById('statusBanner').innerText = `TOTAL WIN: ₹${totalWin.toFixed(2)}`;
+                drawBoard();
+            }, 800);
+        }
+    </script>
+</body>
+</html>
