@@ -1,0 +1,557 @@
+<!-- Back Button -->
+<button onclick="goBackHome()" style="position: absolute; top: 10px; left: 10px; background: linear-gradient(135deg, #ff4d4d, #cc0000); color: white; border: none; padding: 5px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 11px; z-index: 9999; box-shadow: 0 2px 5px rgba(0,0,0,0.4);">
+    ← Back
+</button>
+
+<script>
+    function goBackHome() {
+        playClickSound();
+        window.location.href = 'http://localhost:5000';
+    }
+
+    function playClickSound() {
+        try {
+            let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            let oscillator = audioCtx.createOscillator();
+            let gainNode = audioCtx.createGain();
+            
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(500, audioCtx.currentTime);
+            gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            oscillator.start();
+            oscillator.stop(audioCtx.currentTime + 0.08);
+        } catch(e) {
+            console.log("Audio error");
+        }
+    }
+
+    document.addEventListener('click', function(e) {
+        if(e.target.tagName === 'BUTTON') {
+            playClickSound();
+        }
+    });
+</script>
+
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dream 66 - Teen Patti Single Card</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            min-height: 100vh;
+            background-color: #0f141c;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .app-header {
+            width: 100%;
+            max-width: 420px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background-color: #171d27;
+            border-bottom: 1px solid #232c3d;
+            margin-top: 35px;
+        }
+        .brand-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #d4af37;
+        }
+        .balance-chip {
+            background: #111721;
+            border: 1px solid #2a3547;
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 13px;
+            font-weight: bold;
+            color: #2ed573;
+        }
+        .game-stage {
+            width: 100%;
+            max-width: 420px;
+            background: radial-gradient(circle at center, #1b2433 0%, #0f141c 100%);
+            padding: 15px 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .round-info-bar {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 0 10px;
+        }
+        .timer-display {
+            font-size: 22px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+        .round-id {
+            font-size: 11px;
+            color: #7b8a9e;
+        }
+        .card-history-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin: 10px 0;
+        }
+        .main-card {
+            width: 110px;
+            height: 155px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 8px;
+            color: #d63031;
+            font-weight: bold;
+        }
+        .main-card.black {
+            color: #2d3436;
+        }
+        .card-corner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            line-height: 1;
+        }
+        .card-val { font-size: 18px; }
+        .card-suit-sm { font-size: 14px; }
+        .card-center-symbol { font-size: 42px; align-self: center; }
+        .card-corner.bottom { transform: rotate(180deg); }
+        
+        /* 3 பாக்ஸ்கள் மட்டும் வரும் ஹிஸ்டரி பாக்ஸ் */
+        .history-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            background: #151c28;
+            padding: 6px;
+            border-radius: 8px;
+            border: 1px solid #232c3d;
+            height: 155px;
+            justify-content: space-between;
+        }
+        .history-card-mini {
+            width: 36px;
+            height: 42px;
+            background: #ffffff;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+            color: #d63031;
+            border: 1px solid #ccc;
+        }
+        .history-card-mini.black { color: #2d3436; }
+
+        .bet-control-section {
+            width: 100%;
+            max-width: 420px;
+            padding: 12px;
+        }
+        .input-group-label {
+            font-size: 12px;
+            color: #8f9cae;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+        .bet-input-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .bet-input-box {
+            flex: 1;
+            background: #171d27;
+            border: 1px solid #2a3547;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+        }
+        .bet-input-box input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            outline: none;
+        }
+        .btn-quick {
+            background: #232c3d;
+            color: #b0bec5;
+            border: 1px solid #2e3a4e;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .grid-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .option-btn {
+            background: #1e2634;
+            border: 1px solid #2c384d;
+            border-radius: 8px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .option-btn.selected {
+            border-color: #ffd700;
+            background: #283346;
+            box-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+        }
+        .option-btn.red-btn {
+            background: #8b2626;
+            border-color: #a83232;
+        }
+        .option-btn.red-btn.selected {
+            border-color: #ff6b6b;
+            background: #a83232;
+        }
+        .option-title { font-size: 13px; font-weight: bold; color: #ffffff; }
+        .option-multiplier { font-size: 11px; color: #8f9cae; margin-top: 2px; }
+        
+        .joker-btn {
+            grid-column: span 2;
+            background: linear-gradient(135deg, #c08218, #e5a93c);
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+        }
+        .joker-btn.selected { border: 2px solid #ffffff; }
+        .joker-btn .option-title { color: #0f141c; font-size: 15px; font-weight: bold; }
+        .joker-btn .option-multiplier { color: #3d2600; font-weight: bold; }
+
+        .place-bet-action {
+            width: 100%;
+            margin-top: 12px;
+            padding: 12px;
+            background: #2ed573;
+            color: #0f141c;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .place-bet-action:disabled {
+            background: #3a475c;
+            color: #6c7a8e;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-header">
+        <div class="brand-title">DREAM 66</div>
+        <div class="balance-chip" id="walletBalance">₹ 0.00</div>
+    </div>
+
+    <div class="game-stage">
+        <div class="round-info-bar">
+            <div>
+                <div class="timer-display" id="timer">00:10</div>
+                <div style="font-size: 10px; color: #2ed573;" id="statusText">Make your bets</div>
+            </div>
+            <div class="round-id" id="roundId">Round ID: 1</div>
+        </div>
+
+        <div class="card-history-wrapper">
+            <div class="main-card" id="currentCard">
+                <div class="card-corner">
+                    <span class="card-val" id="cardValTop">7</span>
+                    <span class="card-suit-sm" id="cardSuitTop">♦</span>
+                </div>
+                <div class="card-center-symbol" id="cardSuitCenter">♦</div>
+                <div class="card-corner bottom">
+                    <span class="card-val" id="cardValBot">7</span>
+                    <span class="card-suit-sm" id="cardSuitBot">♦</span>
+                </div>
+            </div>
+
+            <!-- கரெக்ட்டா 3 கார்டுகள் மட்டும் வரும் பாக்ஸ் -->
+            <div class="history-stack" id="historyStack">
+                <div class="history-card-mini"><span>7</span><span>♦</span></div>
+                <div class="history-card-mini black"><span>J</span><span>♠</span></div>
+                <div class="history-card-mini"><span>10</span><span>♣</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bet-control-section">
+        <div class="input-group-label">Bet amount</div>
+        <div class="bet-input-row">
+            <button class="btn-quick" onclick="setMinBet()">MIN</button>
+            <div class="bet-input-box">
+                <input type="number" id="betAmountInput" value="1" min="1" step="1">
+            </div>
+            <button class="btn-quick" onclick="setMaxBet()">MAX</button>
+        </div>
+
+        <div class="input-group-label">Choose result</div>
+        <div class="grid-options">
+            <div class="option-btn" onclick="selectOption('HI', 1.57)" id="opt-HI">
+                <div class="option-title">HI OR SAME</div>
+                <div class="option-multiplier">1.57x</div>
+            </div>
+            <div class="option-btn" onclick="selectOption('LO', 2.22)" id="opt-LO">
+                <div class="option-title">LO OR SAME</div>
+                <div class="option-multiplier">2.22x</div>
+            </div>
+
+            <div class="option-btn red-btn" onclick="selectOption('RED', 2.00)" id="opt-RED">
+                <div class="option-title">Red</div>
+                <div class="option-multiplier">2.00x</div>
+            </div>
+            <div class="option-btn" onclick="selectOption('BLACK', 2.00)" id="opt-BLACK">
+                <div class="option-title">Black</div>
+                <div class="option-multiplier">2.00x</div>
+            </div>
+
+            <div class="option-btn" onclick="selectOption('LOW_RANK', 1.50)" id="opt-LOW_RANK">
+                <div class="option-title">2-9</div>
+                <div class="option-multiplier">1.50x</div>
+            </div>
+            <div class="option-btn" onclick="selectOption('HIGH_RANK', 3.00)" id="opt-HIGH_RANK">
+                <div class="option-title">J,Q,K,A</div>
+                <div class="option-multiplier">3.00x</div>
+            </div>
+
+            <div class="option-btn" onclick="selectOption('KA', 6.00)" id="opt-KA">
+                <div class="option-title">K,A</div>
+                <div class="option-multiplier">6.00x</div>
+            </div>
+            <div class="option-btn" onclick="selectOption('ACE', 12.00)" id="opt-ACE">
+                <div class="option-title">A</div>
+                <div class="option-multiplier">12.00x</div>
+            </div>
+
+            <div class="joker-btn" onclick="selectOption('JOKER', 24.00)" id="opt-JOKER">
+                <div class="option-title">JOKER</div>
+                <div class="option-multiplier">24.00x</div>
+            </div>
+        </div>
+
+        <button class="place-bet-action" id="placeBetBtn" onclick="confirmBet()">CONFIRM BET</button>
+    </div>
+    <script>
+        let wallet = 0.00; // வாலட் பேலன்ஸ் 0
+        let currentRound = 1; // ரவுண்ட் ஐடி 1-ல் இருந்து ஸ்டார்ட்
+        
+        let selectedOption = null;
+        let selectedMultiplier = 1.0;
+        let timeLeft = 10;
+        let isBettingOpen = true;
+        let currentBet = null;
+
+        const suits = ['♦', '♥', '♠', '♣'];
+        const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+        
+        let currentCardObj = { val: '7', suit: '♦', color: 'red', rank: 5 };
+
+        function updateWalletUI() {
+            document.getElementById('walletBalance').textContent = '₹ ' + wallet.toLocaleString('en-IN', {minimumFractionDigits: 2});
+        }
+
+        function setMinBet() {
+            document.getElementById('betAmountInput').value = 1;
+        }
+
+        function setMaxBet() {
+            document.getElementById('betAmountInput').value = Math.max(1, wallet);
+        }
+
+        function selectOption(optKey, mult) {
+            if (!isBettingOpen) return;
+            selectedOption = optKey;
+            selectedMultiplier = mult;
+
+            document.querySelectorAll('.option-btn, .joker-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+
+            const target = document.getElementById('opt-' + optKey);
+            if (target) target.classList.add('selected');
+        }
+
+        function confirmBet() {
+            if (!isBettingOpen) return;
+            const amt = parseFloat(document.getElementById('betAmountInput').value);
+            if (isNaN(amt) || amt < 1) {
+                alert('குறைந்தபட்ச பெட் தொகை ₹1');
+                return;
+            }
+            if (amt > wallet) {
+                alert('போதிய பேலன்ஸ் இல்லை!');
+                return;
+            }
+            if (!selectedOption) {
+                alert('தயவுசெய்து ஒரு ஆப்ஷனைத் தேர்ந்தெடுக்கவும்!');
+                return;
+            }
+
+            wallet -= amt;
+            updateWalletUI();
+
+            currentBet = {
+                option: selectedOption,
+                multiplier: selectedMultiplier,
+                amount: amt
+            };
+
+            document.getElementById('placeBetBtn').disabled = true;
+            document.getElementById('placeBetBtn').textContent = 'BET PLACED (₹' + amt + ')';
+        }
+
+        function startTimer() {
+            setInterval(() => {
+                if (timeLeft > 0) {
+                    timeLeft--;
+                    document.getElementById('timer').textContent = '00:' + (timeLeft < 10 ? '0' : '') + timeLeft;
+                } else {
+                    if (isBettingOpen) {
+                        resolveRound();
+                    } else {
+                        resetRound();
+                    }
+                }
+            }, 1000);
+        }
+
+        function resolveRound() {
+            isBettingOpen = false;
+            document.getElementById('statusText').textContent = 'Revealing Card...';
+            document.getElementById('statusText').style.color = '#ffa502';
+
+            const newSuit = suits[Math.floor(Math.random() * suits.length)];
+            const newValIdx = Math.floor(Math.random() * values.length);
+            const newVal = values[newValIdx];
+            const isRed = (newSuit === '♦' || newSuit === '♥');
+
+            const nextCardObj = {
+                val: newVal,
+                suit: newSuit,
+                color: isRed ? 'red' : 'black',
+                rank: newValIdx
+            };
+
+            // துல்லியமாக 3 கார்டுகள் மட்டும் இருக்கும் ஹிஸ்டரி அப்டேட்
+            const historyStack = document.getElementById('historyStack');
+            const mini = document.createElement('div');
+            mini.className = 'history-card-mini ' + (currentCardObj.color === 'black' ? 'black' : '');
+            mini.innerHTML = `<span>${currentCardObj.val}</span><span>${currentCardObj.suit}</span>`;
+            historyStack.insertBefore(mini, historyStack.firstChild);
+            
+            while (historyStack.children.length > 3) {
+                historyStack.removeChild(historyStack.lastChild);
+            }
+
+            // UI கார்டு அப்டேட்
+            const cardEl = document.getElementById('currentCard');
+            cardEl.className = 'main-card ' + (nextCardObj.color === 'black' ? 'black' : '');
+            document.getElementById('cardValTop').textContent = nextCardObj.val;
+            document.getElementById('cardValBot').textContent = nextCardObj.val;
+            document.getElementById('cardSuitTop').textContent = nextCardObj.suit;
+            document.getElementById('cardSuitBot').textContent = nextCardObj.suit;
+            document.getElementById('cardSuitCenter').textContent = nextCardObj.suit;
+
+            // 60% House Profit / 40% User RTP கணக்கீடு மற்றும் கரெக்ட் வின்/லாஸ் நோட்டிபிகேஷன்
+            if (currentBet) {
+                let isWin = checkWinCondition(currentBet.option, currentCardObj, nextCardObj);
+                if (isWin) {
+                    let rawWinAmt = currentBet.amount * currentBet.multiplier;
+                    let profit = rawWinAmt - currentBet.amount;
+                    let userProfitShare = profit * 0.40; // 40% யூசர் லாபம்
+                    let finalPayout = currentBet.amount + userProfitShare;
+
+                    wallet += finalPayout;
+                    updateWalletUI();
+                    document.getElementById('statusText').textContent = 'WON ₹' + finalPayout.toFixed(2);
+                    document.getElementById('statusText').style.color = '#2ed573';
+                } else {
+                    document.getElementById('statusText').textContent = 'LOST ₹' + currentBet.amount.toFixed(2);
+                    document.getElementById('statusText').style.color = '#ff4757';
+                }
+            }
+
+            currentCardObj = nextCardObj;
+            timeLeft = 3;
+        }
+
+        function checkWinCondition(option, prevCard, nextCard) {
+            if (option === 'HI') return nextCard.rank >= prevCard.rank;
+            if (option === 'LO') return nextCard.rank <= prevCard.rank;
+            if (option === 'RED') return nextCard.color === 'red';
+            if (option === 'BLACK') return nextCard.color === 'black';
+            if (option === 'LOW_RANK') return nextCard.rank <= 7;
+            if (option === 'HIGH_RANK') return nextCard.rank >= 8;
+            if (option === 'KA') return nextCard.val === 'K' || nextCard.val === 'A';
+            if (option === 'ACE') return nextCard.val === 'A';
+            if (option === 'JOKER') return Math.random() < 0.05;
+            return false;
+        }
+
+        function resetRound() {
+            isBettingOpen = true;
+            timeLeft = 10;
+            currentBet = null;
+            selectedOption = null;
+
+            document.querySelectorAll('.option-btn, .joker-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+
+            document.getElementById('placeBetBtn').disabled = false;
+            document.getElementById('placeBetBtn').textContent = 'CONFIRM BET';
+            document.getElementById('statusText').textContent = 'Make your bets';
+            document.getElementById('statusText').style.color = '#2ed573';
+            
+            // ரவுண்ட் ஐடி 1, 2, 3 என வரிசையாக அதிகரிக்கும்
+            currentRound++;
+            document.getElementById('roundId').textContent = 'Round ID: ' + currentRound;
+        }
+
+        startTimer();
+    </script>
+</body>
+</html>
