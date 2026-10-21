@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DREAM 66 - 7 Up 7 Down Live</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background: #0d0104;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px;
+            overflow-x: hidden;
+        }
+
+        /* Header Bar */
+        .header {
+            width: 100%;
+            max-width: 420px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(35, 5, 12, 0.9);
+            padding: 8px 12px;
+            border-radius: 10px;
+            border: 1px solid #ffd700;
+        }
+        .back-btn {
+            background: linear-gradient(135deg, #ff416c, #ff4b2b);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 700;
+            text-decoration: none;
+            font-size: 11px;
+        }
+        .title {
+            font-size: 14px;
+            font-weight: 900;
+            color: #ffd700;
+            text-shadow: 0 0 5px rgba(255,215,0,0.5);
+        }
+        .balance-box { font-size: 12px; color: #00ffcc; font-weight: 800; }
+
+        /* Game Main Stage Viewport */
+        .game-viewport {
+            width: 100%;
+            max-width: 420px;
+            background: radial-gradient(circle at center, #570a1a 0%, #1f0107 100%);
+            border-radius: 16px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.9);
+            border: 2px solid #ff2a55;
+            position: relative;
+        }
+
+        /* Glass Dome Stage for 2 Dice */
+        .dice-dome-stage {
+            width: 100%;
+            height: 100px;
+            background: radial-gradient(circle, rgba(255,42,85,0.2) 0%, transparent 80%);
+            border: 1px dashed rgba(255,215,0,0.4);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 6px;
+            position: relative;
+        }
+        .glass-dome {
+            width: 95px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.12);
+            border: 2px solid rgba(255, 215, 0, 0.6);
+            border-radius: 40px 40px 10px 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            box-shadow: 0 0 15px rgba(255,215,0,0.3);
+            transition: transform 0.1s;
+        }
+        .glass-dome.shaking {
+            animation: domeShake 0.1s infinite alternate;
+        }
+        @keyframes domeShake {
+            0% { transform: translate(2px, 2px); }
+            100% { transform: translate(-2px, -2px); }
+        }
+
+        .dice {
+            width: 25px;
+            height: 25px;
+            background: #fff;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 15px;
+            color: #b00;
+            box-shadow: 0 3px 6px #000;
+        }
+
+        .status-banner {
+            font-size: 10px;
+            font-weight: 800;
+            color: #ffd700;
+            margin-top: 4px;
+            text-transform: uppercase;
+        }
+
+        /* Main 3 Big Betting Zones (2~6, 7, 8~12) */
+        .main-zones {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 0.8fr 1fr;
+            gap: 5px;
+            margin-bottom: 6px;
+        }
+        .zone-card {
+            border-radius: 8px;
+            padding: 8px 4px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.15s;
+            border: 2px solid rgba(255,255,255,0.2);
+            position: relative;
+        }
+        .zone-card.selected {
+            border-color: #ffd700;
+            box-shadow: 0 0 12px #ffd700;
+            transform: scale(1.02);
+        }
+        .z-down { background: linear-gradient(135deg, #1b263b, #0d1b2a); color: #77aaff; }
+        .z-seven { background: linear-gradient(135deg, #1b4332, #081c15); color: #52b788; }
+        .z-up { background: linear-gradient(135deg, #590d22, #2b0910); color: #ff758f; }
+
+        .zone-title { font-size: 13px; font-weight: 900; }
+        .zone-sub { font-size: 9px; opacity: 0.9; margin-top: 2px; }
+
+        /* Exact Numbers Grid (2 to 12) */
+        .numbers-grid {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 4px;
+            margin-bottom: 8px;
+        }
+        .num-card {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 6px;
+            padding: 5px 2px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+        .num-card.selected {
+            background: rgba(255, 215, 0, 0.3);
+            border-color: #ffd700;
+            box-shadow: 0 0 8px #ffd700;
+        }
+        .num-val { font-size: 11px; font-weight: 900; color: #fff; }
+        .num-payout { font-size: 8px; color: #ffd700; }
+
+        /* Curved Chips Bar (Exact Casino Look) */
+        .chips-arc-container {
+            width: 100%;
+            background: rgba(10, 0, 5, 0.85);
+            border-radius: 12px;
+            border-top: 1px solid rgba(255,215,0,0.3);
+            padding: 10px 4px 6px 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chips-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            width: 100%;
+        }
+
+        .chip-item {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px dashed #fff;
+            color: #fff;
+            font-size: 9px;
+            font-weight: 900;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.6);
+            transition: transform 0.15s, border 0.15s;
+        }
+
+        .chip-10 { background: radial-gradient(circle, #28a745 0%, #145a23 100%); }
+        .chip-20 { background: radial-gradient(circle, #17a2b8 0%, #0c5460 100%); }
+        .chip-50 { background: radial-gradient(circle, #007bff 0%, #004085 100%); }
+        .chip-100 { background: radial-gradient(circle, #ffc107 0%, #856404 100%); color: #000; }
+        .chip-200 { background: radial-gradient(circle, #fd7e14 0%, #8a4100 100%); }
+        .chip-500 { background: radial-gradient(circle, #dc3545 0%, #721c24 100%); }
+
+        .chip-item.active-chip {
+            border: 3px solid #ffd700;
+            transform: scale(1.25);
+            box-shadow: 0 0 12px #ffd700;
+            z-index: 5;
+        }
+
+        /* Action Buttons Row (UNDO, DOUBLE, ROLL) */
+        .action-row {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 8px;
+        }
+        .btn-sub-action {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255,255,255,0.25);
+            color: #ccc;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 9px;
+            font-weight: 800;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+        .btn-sub-action:active { background: rgba(255, 255, 255, 0.25); }
+
+        .roll-main-btn {
+            background: linear-gradient(135deg, #ffd700, #ff8c00);
+            border: 2px solid #fff;
+            color: #000;
+            padding: 8px 24px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: 0 0 12px rgba(255,215,0,0.8);
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Bar -->
+    <div class="header">
+        <a href="index.html" class="back-btn">← Back</a>
+        <div class="title">🎲 7 UP 7 DOWN</div>
+        <div class="balance-box">₹<span id="balance">0.00</span></div>
+    </div>
+
+    <!-- Main Viewport -->
+    <div class="game-viewport">
+
+        <!-- Glass Dome Stage -->
+        <div class="dice-dome-stage">
+            <div class="glass-dome" id="dome">
+                <div class="dice" id="d1">3</div>
+                <div class="dice" id="d2">4</div>
+            </div>
+            <div class="status-banner" id="statusBanner">SELECT CHIP & PLACE BET!</div>
+        </div>
+
+        <!-- 3 Main Bet Zones -->
+        <div class="main-zones">
+            <div class="zone-card z-down selected" onclick="selectBet('DOWN', 1, this)">
+                <div class="zone-title">2 ~ 6</div>
+                <div class="zone-sub">DOWN (1:1)</div>
+            </div>
+            <div class="zone-card z-seven" onclick="selectBet('SEVEN', 4, this)">
+                <div class="zone-title">7</div>
+                <div class="zone-sub">(1:4)</div>
+            </div>
+            <div class="zone-card z-up" onclick="selectBet('UP', 1, this)">
+                <div class="zone-title">8 ~ 12</div>
+                <div class="zone-sub">UP (1:1)</div>
+            </div>
+        </div>
+
+        <!-- Exact Numbers Grid -->
+        <div class="numbers-grid">
+            <div class="num-card" onclick="selectBet('NUM 2', 26, this)"><div class="num-val">2</div><div class="num-payout">1:26</div></div>
+            <div class="num-card" onclick="selectBet('NUM 3', 12, this)"><div class="num-val">3</div><div class="num-payout">1:12</div></div>
+            <div class="num-card" onclick="selectBet('NUM 4', 8, this)"><div class="num-val">4</div><div class="num-payout">1:8</div></div>
+            <div class="num-card" onclick="selectBet('NUM 5', 6, this)"><div class="num-val">5</div><div class="num-payout">1:6</div></div>
+            <div class="num-card" onclick="selectBet('NUM 6', 5, this)"><div class="num-val">6</div><div class="num-payout">1:5</div></div>
+            <div class="num-card" onclick="selectBet('NUM 8', 5, this)"><div class="num-val">8</div><div class="num-payout">1:5</div></div>
+            <div class="num-card" onclick="selectBet('NUM 9', 6, this)"><div class="num-val">9</div><div class="num-payout">1:6</div></div>
+            <div class="num-card" onclick="selectBet('NUM 10', 8, this)"><div class="num-val">10</div><div class="num-payout">1:8</div></div>
+            <div class="num-card" onclick="selectBet('NUM 11', 12, this)"><div class="num-val">11</div><div class="num-payout">1:12</div></div>
+            <div class="num-card" onclick="selectBet('NUM 12', 26, this)"><div class="num-val">12</div><div class="num-payout">1:26</div></div>
+        </div>
+
+        <!-- Casino Curved Chips Bar (Exact Matches Photo) -->
+        <div class="chips-arc-container">
+            <div class="chips-row">
+                <div class="chip-item chip-10 active-chip" onclick="setChip(10, this)">10</div>
+                <div class="chip-item chip-20" onclick="setChip(20, this)">20</div>
+                <div class="chip-item chip-50" onclick="setChip(50, this)">50</div>
+                <div class="chip-item chip-100" onclick="setChip(100, this)">100</div>
+                <div class="chip-item chip-200" onclick="setChip(200, this)">200</div>
+                <div class="chip-item chip-500" onclick="setChip(500, this)">500</div>
+            </div>
+
+            <div class="action-row">
+                <button class="btn-sub-action" onclick="resetBet()">↺ UNDO</button>
+                <button class="roll-main-btn" id="rollBtn" onclick="start7UpRoll()">ROLL (₹<span id="betDisplay">10</span>)</button>
+                <button class="btn-sub-action" onclick="doubleBet()">x2 DOUBLE</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let balance = parseFloat(localStorage.getItem('user_balance')) || 0.00;
+        let currentBet = 10;
+        let selectedBetName = 'DOWN';
+        let selectedPayout = 1;
+
+        updateUI();
+
+        function updateUI() {
+            document.getElementById('balance').innerText = balance.toFixed(2);
+            document.getElementById('betDisplay').innerText = currentBet;
+            localStorage.setItem('user_balance', balance.toFixed(2));
+        }
+
+        function setChip(amount, element) {
+            document.querySelectorAll('.chip-item').forEach(c => c.classList.remove('active-chip'));
+            element.classList.add('active-chip');
+            currentBet = amount;
+            updateUI();
+        }
+
+        function selectBet(name, payout, element) {
+            document.querySelectorAll('.zone-card, .num-card').forEach(b => b.classList.remove('selected'));
+            element.classList.add('selected');
+            selectedBetName = name;
+            selectedPayout = payout;
+            document.getElementById('statusBanner').innerText = `SELECTED: ${name} (${payout}:1)`;
+        }
+
+        function doubleBet() {
+            currentBet *= 2;
+            updateUI();
+        }
+
+        function resetBet() {
+            currentBet = 10;
+            document.querySelectorAll('.chip-item').forEach(c => c.classList.remove('active-chip'));
+            document.querySelector('.chip-10').classList.add('active-chip');
+            updateUI();
+        }
+
+        function start7UpRoll() {
+            if (balance <= 0 || balance < currentBet) {
+                document.getElementById('statusBanner').innerText = "INSUFFICIENT BALANCE!";
+                return;
+            }
+
+            balance -= currentBet;
+            updateUI();
+
+            document.getElementById('rollBtn').disabled = true;
+            document.getElementById('dome').classList.add('shaking');
+            document.getElementById('statusBanner').innerText = "ROLLING DICE...";
+
+            let count = 0;
+            let anim = setInterval(() => {
+                document.getElementById('d1').innerText = Math.floor(Math.random() * 6) + 1;
+                document.getElementById('d2').innerText = Math.floor(Math.random() * 6) + 1;
+                count++;
+                if (count > 15) {
+                    clearInterval(anim);
+                    document.getElementById('dome').classList.remove('shaking');
+                    finalize7UpResult();
+                }
+            }, 80);
+        }
+
+        function finalize7UpResult() {
+            const luck = Math.random() * 100;
+            let d1 = 1, d2 = 2;
+
+            // Economic Logic: 60% House Margin / 40% User RTP
+            if (luck < 60) {
+                // Force Loss
+                if (selectedBetName === 'DOWN') {
+                    d1 = 4; d2 = 5; // Sum 9 (UP)
+                } else if (selectedBetName === 'UP') {
+                    d1 = 1; d2 = 3; // Sum 4 (DOWN)
+                } else {
+                    d1 = 2; d2 = 3; // Sum 5
+                }
+            } else {
+                // Force Win
+                if (selectedBetName === 'DOWN') {
+                    d1 = 2; d2 = 3; // Sum 5 (DOWN)
+                } else if (selectedBetName === 'UP') {
+                    d1 = 5; d2 = 5; // Sum 10 (UP)
+                } else if (selectedBetName === 'SEVEN') {
+                    d1 = 3; d2 = 4; // Sum 7
+                } else {
+                    d1 = 1; d2 = 1;
+                }
+            }
+
+            document.getElementById('d1').innerText = d1;
+            document.getElementById('d2').innerText = d2;
+
+            let totalSum = d1 + d2;
+
+            if (luck >= 60) {
+                let winAmt = currentBet + (currentBet * selectedPayout);
+                balance += winAmt;
+                document.getElementById('statusBanner').innerText = `WIN! SUM IS ${totalSum} | WON ₹${winAmt.toFixed(2)}`;
+            } else {
+                document.getElementById('statusBanner').innerText = `HOUSE WINS! SUM WAS ${totalSum}`;
+            }
+
+            updateUI();
+            document.getElementById('rollBtn').disabled = false;
+        }
+    </script>
+</body>
+</html>
