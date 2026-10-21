@@ -3,7 +3,6 @@ const cors = require('cors');
 const path = require('path');
 const http = require('http');
 const { Server } = require('socket.io');
-const mongoose = require('mongoose');
 require('dotenv').config();
 
 const app = express();
@@ -24,6 +23,7 @@ app.use(cors());
 app.use(express.static(path.join(__dirname, 'mani-app', 'public')));
 
 // MongoDB Connection
+const mongoose = require('mongoose');
 const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://sarathisdh_db_user:Sarathi2007@cluster0.qmjrufz.mongodb.net/dream66?retryWrites=true&w=majority&appName=Cluster0";
 
 mongoose.connect(MONGO_URI)
@@ -79,7 +79,7 @@ let jetxNextTarget = 2.00;
 let aviatorManualSet = false;
 let jetxManualSet = false;
 
-// --- FINAL FIXED ROUTING FOR MANI-APP/PUBLIC ---
+// --- ROUTING FOR MANI-APP/PUBLIC ---
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'mani-app', 'public', 'index.html'));
 });
@@ -198,20 +198,18 @@ app.post('/api/withdraw', async (req, res) => {
         }
 
         let maxPerWithdraw = 1000;
-        let maxDailyCount = 2;
-
         switch (user.vipLevel) {
-            case 1: maxPerWithdraw = 1000; maxDailyCount = 2; break;
-            case 2: maxPerWithdraw = 3000; maxDailyCount = 3; break;
-            case 3: maxPerWithdraw = 5000; maxDailyCount = 4; break;
-            case 4: maxPerWithdraw = 10000; maxDailyCount = 5; break;
-            case 5: maxPerWithdraw = 20000; maxDailyCount = 7; break;
-            case 6: maxPerWithdraw = 30000; maxDailyCount = 10; break;
-            case 7: maxPerWithdraw = 50000; maxDailyCount = 15; break;
-            case 8: maxPerWithdraw = 70000; maxDailyCount = 20; break;
-            case 9: maxPerWithdraw = 80000; maxDailyCount = 25; break;
-            case 10: maxPerWithdraw = 100000; maxDailyCount = 30; break;
-            default: maxPerWithdraw = 500000; maxDailyCount = 60; break;
+            case 1: maxPerWithdraw = 1000; break;
+            case 2: maxPerWithdraw = 3000; break;
+            case 3: maxPerWithdraw = 5000; break;
+            case 4: maxPerWithdraw = 10000; break;
+            case 5: maxPerWithdraw = 20000; break;
+            case 6: maxPerWithdraw = 30000; break;
+            case 7: maxPerWithdraw = 50000; break;
+            case 8: maxPerWithdraw = 70000; break;
+            case 9: maxPerWithdraw = 80000; break;
+            case 10: maxPerWithdraw = 100000; break;
+            default: maxPerWithdraw = 500000; break;
         }
 
         if (numAmount > maxPerWithdraw) {
