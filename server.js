@@ -20,7 +20,7 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json());
 app.use(cors());
 
-// Static files route for public folder
+// Static files route
 app.use(express.static(path.join(__dirname, 'mani-app', 'public')));
 
 // MongoDB Connection
@@ -79,12 +79,12 @@ let jetxNextTarget = 2.00;
 let aviatorManualSet = false;
 let jetxManualSet = false;
 
-// --- FIXED ROUTING FOR GAMES & PAGES (Prevents Homepage Redirect Issues) ---
+// --- EXะCT ROUTING FOR MANI-APP/PUBLIC STRUCTURE ---
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'mani-app', 'public', 'index.html'));
 });
 
-// Dedicated route for 13 games inside public/games folder
+// Dedicated route for 13 games inside mani-app/public/games
 app.get('/games/:gameName', (req, res) => {
     let gameName = req.params.gameName;
     if (!gameName.includes('.')) gameName += '.html';
@@ -97,7 +97,7 @@ app.get('/games/:gameName', (req, res) => {
     });
 });
 
-// General pages route (payment.html, profile.html, etc.)
+// General pages route (payment.html, profile.html, etc.) inside mani-app/public
 app.get('/:page', (req, res, next) => {
     let pageName = req.params.page;
     if (pageName === 'games') return next();
@@ -116,7 +116,7 @@ app.get('/:page', (req, res, next) => {
 app.post('/api/send-otp', (req, res) => {
     const { phone } = req.body;
     if (!phone || phone.length !== 10) {
-        return res.status(400).json({ success: false, message: 'சரியான 10 இலக்க மொபைல் எண்ணை உள்ளிடவும்.' });
+        return res.status(400).json({ success: false, message: 'சரியான 10 இலக்க மொபைல் எண்ண을 உள்ளிடவும்.' });
     }
     const otp = Math.floor(100000 + Math.random() * 900000);
     otpStorage[phone] = otp;
@@ -338,7 +338,7 @@ app.post('/api/admin/action', async (req, res) => {
     }
 });
 
-app.get('/api/admin/detailed-stats', async (row, res) => {
+app.get('/api/admin/detailed-stats', async (req, res) => {
     try {
         const users = await User.find({}, { password: 0 });
         res.status(200).json({ success: true, users, totalUsersCount: users.length });
@@ -350,7 +350,7 @@ app.get('/api/admin/detailed-stats', async (row, res) => {
 app.get('/api/admin/pending-transactions', async (req, res) => {
     try {
         const pendingDeposits = await Transaction.find({ type: 'Deposit', status: 'Pending' }).sort({ date: -1 });
-        const pendingWithdrawals = awaitTransaction.find({ type: 'Withdrawal', status: 'Pending' }).sort({ date: -1 });
+        const pendingWithdrawals = await Transaction.find({ type: 'Withdrawal', status: 'Pending' }).sort({ date: -1 });
         res.status(200).json({ success: true, pendingDeposits, pendingWithdrawals });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
