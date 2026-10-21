@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>DREAM 66 - Crazy Time Live</title>
     <style>
         * {
@@ -10,17 +10,24 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            touch-action: manipulation;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* ஸ்கிரீன் ஜூம் மற்றும் தேவையில்லாத ஸ்க்ரோலிங்கைத் தவிர்க்க */
+            position: fixed;
         }
         body {
             background: linear-gradient(180deg, #120024 0%, #05000a 100%);
             color: #fff;
-            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
-            padding: 8px;
-            overflow-x: hidden;
+            padding: 6px;
         }
 
         /* Top Header */
@@ -31,7 +38,7 @@
             justify-content: space-between;
             align-items: center;
             background: rgba(20, 0, 40, 0.85);
-            padding: 8px 12px;
+            padding: 6px 12px;
             border-radius: 12px;
             border: 1px solid #ffd700;
             box-shadow: 0 0 10px rgba(255,215,0,0.3);
@@ -68,7 +75,7 @@
             max-width: 420px;
             background: linear-gradient(180deg, #2a0845 0%, #100120 100%);
             border-radius: 16px;
-            padding: 10px;
+            padding: 8px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -80,7 +87,7 @@
         /* Top Slot Section */
         .top-slot-container {
             width: 100%;
-            height: 42px;
+            height: 38px;
             background: #0d001a;
             border: 2px solid #ffd700;
             border-radius: 8px;
@@ -88,15 +95,15 @@
             justify-content: center;
             align-items: center;
             gap: 15px;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
             box-shadow: inset 0 0 10px rgba(255,215,0,0.4);
         }
         .slot-reel {
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 900;
             color: #ffd700;
             background: rgba(255,255,255,0.05);
-            padding: 3px 10px;
+            padding: 2px 8px;
             border-radius: 6px;
             border: 1px solid rgba(255,255,255,0.2);
         }
@@ -104,43 +111,43 @@
         /* Canvas Wheel Container */
         .wheel-container {
             width: 100%;
-            height: 220px;
+            height: 200px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             position: relative;
             background: radial-gradient(circle, rgba(255,0,127,0.25) 0%, transparent 75%);
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
         .pointer-pin {
             width: 0; 
             height: 0; 
-            border-left: 12px solid transparent;
-            border-right: 12px solid transparent;
-            border-top: 22px solid #ffd700;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 18px solid #ffd700;
             position: absolute;
-            top: 2px;
+            top: 0px;
             z-index: 10;
             filter: drop-shadow(0 2px 5px #000);
         }
         #wheelCanvas {
             border-radius: 50%;
-            border: 6px solid #ffd700;
+            border: 5px solid #ffd700;
             box-shadow: 0 0 25px rgba(255,215,0,0.8);
             transition: transform 3.5s cubic-bezier(0.15, 0.85, 0.25, 1);
         }
 
         /* Status & Win Display Banner */
         .status-banner {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 800;
             color: #ffd700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            min-height: 18px;
+            min-height: 16px;
             text-align: center;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
 
         /* Evolution Style Ticket Betting Grid */
@@ -148,12 +155,12 @@
             width: 100%;
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 5px;
-            margin-bottom: 6px;
+            gap: 4px;
+            margin-bottom: 4px;
         }
         .ticket-card {
-            border-radius: 8px;
-            padding: 6px 2px;
+            border-radius: 6px;
+            padding: 5px 2px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -165,8 +172,8 @@
         }
         .ticket-card.selected {
             border-color: #ffffff;
-            box-shadow: 0 0 15px #ffd700;
-            transform: scale(1.05);
+            box-shadow: 0 0 12px #ffd700;
+            transform: scale(1.03);
         }
 
         /* Ticket Colors Matching Wheel Colors */
@@ -179,15 +186,15 @@
         .t-ch { background: linear-gradient(135deg, #009933, #004d1a); color: #fff; }
         .t-ct { background: linear-gradient(135deg, #ff0055, #80002a); color: #fff; }
 
-        .ticket-title { font-size: 11px; font-weight: 900; }
-        .ticket-payout { font-size: 8px; font-weight: 700; margin-top: 2px; opacity: 0.9; }
+        .ticket-title { font-size: 10px; font-weight: 900; }
+        .ticket-payout { font-size: 7px; font-weight: 700; margin-top: 1px; opacity: 0.9; }
 
         /* Chips Controls Footer */
         .control-footer {
             width: 100%;
             background: rgba(10, 0, 20, 0.85);
             border-top: 1px solid rgba(255,255,255,0.15);
-            padding: 8px;
+            padding: 6px 8px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -198,8 +205,8 @@
             gap: 4px;
         }
         .chip-btn {
-            width: 28px;
-            height: 28px;
+            width: 26px;
+            height: 26px;
             border-radius: 50%;
             border: 2px dashed #fff;
             background: radial-gradient(circle, #ff007f 0%, #880e4f 100%);
@@ -215,22 +222,22 @@
         .chip-btn.active-chip {
             border-style: solid;
             border-color: #ffd700;
-            transform: scale(1.15);
-            box-shadow: 0 0 8px #ffd700;
+            transform: scale(1.1);
+            box-shadow: 0 0 6px #ffd700;
         }
 
         /* Large Spin Action Button */
         .spin-action-btn {
-            width: 62px;
-            height: 62px;
+            width: 55px;
+            height: 55px;
             background: radial-gradient(circle, #ffd700 0%, #ff8c00 100%);
             border: 3px solid #fff;
             border-radius: 50%;
             color: #000;
             font-weight: 900;
-            font-size: 12px;
+            font-size: 11px;
             cursor: pointer;
-            box-shadow: 0 0 18px rgba(255,215,0,0.9);
+            box-shadow: 0 0 15px rgba(255,215,0,0.9);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -243,9 +250,9 @@
             display: flex;
             flex-direction: column;
             align-items: flex-end;
-            font-size: 10px;
+            font-size: 9px;
         }
-        .bet-amt-val { font-size: 13px; font-weight: 800; color: #ffd700; }
+        .bet-amt-val { font-size: 12px; font-weight: 800; color: #ffd700; }
     </style>
 </head>
 <body>
@@ -269,7 +276,7 @@
         <!-- Canvas Based Accurate Wheel -->
         <div class="wheel-container">
             <div class="pointer-pin"></div>
-            <canvas id="wheelCanvas" width="200" height="200"></canvas>
+            <canvas id="wheelCanvas" width="180" height="180"></canvas>
         </div>
 
         <!-- Status & Win Banner -->
@@ -295,19 +302,19 @@
             </div>
 
             <div class="ticket-card t-cf" onclick="selectTicket('Coin Flip', 20, this)">
-                <span class="ticket-title" style="font-size:8px;">COIN FLIP</span>
+                <span class="ticket-title" style="font-size:7px;">COIN FLIP</span>
                 <span class="ticket-payout">BONUS</span>
             </div>
             <div class="ticket-card t-pa" onclick="selectTicket('Pachinko', 25, this)">
-                <span class="ticket-title" style="font-size:8px;">PACHINKO</span>
+                <span class="ticket-title" style="font-size:7px;">PACHINKO</span>
                 <span class="ticket-payout">BONUS</span>
             </div>
             <div class="ticket-card t-ch" onclick="selectTicket('Cash Hunt', 50, this)">
-                <span class="ticket-title" style="font-size:8px;">CASH HUNT</span>
+                <span class="ticket-title" style="font-size:7px;">CASH HUNT</span>
                 <span class="ticket-payout">BONUS</span>
             </div>
             <div class="ticket-card t-ct" onclick="selectTicket('Crazy Time', 100, this)">
-                <span class="ticket-title" style="font-size:8px;">CRAZY TIME</span>
+                <span class="ticket-title" style="font-size:7px;">CRAZY TIME</span>
                 <span class="ticket-payout">BONUS</span>
             </div>
         </div>
@@ -333,6 +340,16 @@
     </div>
 
     <script>
+        // Double-tap zoom தடுப்பதற்கான JavaScript பிளாக்
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function (event) {
+            let now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+
         // Segment Details with Exact Canvas Drawing
         const segments = [
             { label: '1X', color: '#0088cc' },
@@ -376,16 +393,16 @@
                 ctx.rotate(angle + arcSize / 2);
                 ctx.textAlign = 'right';
                 ctx.fillStyle = '#ffffff';
-                ctx.font = 'bold 10px Segoe UI';
+                ctx.font = 'bold 9px Segoe UI';
                 ctx.shadowColor = '#000000';
                 ctx.shadowBlur = 4;
-                ctx.fillText(segments[i].label, radius - 12, 4);
+                ctx.fillText(segments[i].label, radius - 10, 3);
                 ctx.restore();
             }
 
             // Center Wheel Knob Logo
             ctx.beginPath();
-            ctx.arc(centerX, centerY, 28, 0, 2 * Math.PI);
+            ctx.arc(centerX, centerY, 24, 0, 2 * Math.PI);
             ctx.fillStyle = '#100120';
             ctx.fill();
             ctx.lineWidth = 3;
@@ -393,16 +410,16 @@
             ctx.stroke();
 
             ctx.fillStyle = '#ffd700';
-            ctx.font = 'bold 8px Segoe UI';
+            ctx.font = 'bold 7px Segoe UI';
             ctx.textAlign = 'center';
             ctx.fillText('CRAZY', centerX, centerY - 2);
-            ctx.fillText('TIME', centerX, centerY + 8);
+            ctx.fillText('TIME', centerX, centerY + 7);
         }
 
         drawWheel();
 
-        // Game Logic Setup
-        let balance = parseFloat(localStorage.getItem('user_balance')) || 0.00;
+        // Game Logic Setup - Wallet Balance Sync
+        let balance = parseFloat(localStorage.getItem('dream66_deposit')) || parseFloat(localStorage.getItem('user_balance')) || 100.00;
         let currentBet = 10;
         let selectedTicketName = '1';
         let selectedTicketMult = 1;
@@ -414,6 +431,7 @@
             document.getElementById('balance').innerText = balance.toFixed(2);
             document.getElementById('betDisplay').innerText = '₹' + currentBet;
             localStorage.setItem('user_balance', balance.toFixed(2));
+            localStorage.setItem('dream66_deposit', balance.toFixed(2));
         }
 
         function setChip(amount, element) {
