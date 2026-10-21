@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DREAM 66 - Crazy Time Live</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            touch-action: manipulation;
+        }
+        body {
+            background: linear-gradient(180deg, #120024 0%, #05000a 100%);
+            color: #fff;
+            height: 100vh;
+            height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 6px;
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+            left: 0;
+            top: 0;
+        }
+
+        /* Top Header */
+        .header {
+            width: 100%;
+            max-width: 410px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(20, 0, 40, 0.85);
+            padding: 8px 12px;
+            border-radius: 12px;
+            border: 1px solid #ffd700;
+            box-shadow: 0 0 10px rgba(255,215,0,0.3);
+            margin-bottom: 6px;
+        }
+        .back-btn {
+            background: linear-gradient(135deg, #ff416c, #ff4b2b);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 700;
+            text-decoration: none;
+            font-size: 11px;
+        }
+        .title {
+            font-size: 14px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ffd700, #ff007f, #00ffcc);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 8px rgba(255,215,0,0.5);
+        }
+        .balance-box {
+            font-size: 12px;
+            color: #00ffcc;
+            font-weight: 800;
+        }
+
+        /* Main Game Stage Viewport */
+        .game-viewport {
+            width: 100%;
+            max-width: 410px;
+            background: linear-gradient(180deg, #2a0845 0%, #100120 100%);
+            border-radius: 16px;
+            padding: 8px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.9);
+            border: 2px solid #ff007f;
+            position: relative;
+        }
+
+        /* Top Slot Section */
+        .top-slot-container {
+            width: 100%;
+            height: 38px;
+            background: #0d001a;
+            border: 2px solid #ffd700;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 6px;
+            box-shadow: inset 0 0 10px rgba(255,215,0,0.4);
+        }
+        .slot-reel {
+            font-size: 12px;
+            font-weight: 900;
+            color: #ffd700;
+            background: rgba(255,255,255,0.05);
+            padding: 3px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        /* Canvas Wheel Container */
+        .wheel-container {
+            width: 100%;
+            height: 180px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: radial-gradient(circle, rgba(255,0,127,0.25) 0%, transparent 75%);
+            margin-bottom: 6px;
+        }
+        .pointer-pin {
+            width: 0; 
+            height: 0; 
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 18px solid #ffd700;
+            position: absolute;
+            top: 0px;
+            z-index: 10;
+            filter: drop-shadow(0 2px 5px #000);
+        }
+        #wheelCanvas {
+            border-radius: 50%;
+            border: 5px solid #ffd700;
+            box-shadow: 0 0 20px rgba(255,215,0,0.8);
+            transition: transform 3.5s cubic-bezier(0.15, 0.85, 0.25, 1);
+        }
+
+        /* Status & Win Display Banner */
+        .status-banner {
+            font-size: 11px;
+            font-weight: 800;
+            color: #ffd700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            min-height: 16px;
+            text-align: center;
+            margin-bottom: 6px;
+        }
+
+        /* Evolution Style Ticket Betting Grid */
+        .bet-grid {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+            margin-bottom: 6px;
+        }
+        .ticket-card {
+            border-radius: 8px;
+            padding: 5px 2px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 2px solid rgba(255,255,255,0.3);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.5);
+            position: relative;
+        }
+        .ticket-card.selected {
+            border-color: #ffffff;
+            box-shadow: 0 0 12px #ffd700;
+            transform: scale(1.05);
+        }
+
+        /* Ticket Colors Matching Wheel Colors */
+        .t-1 { background: linear-gradient(135deg, #0088cc, #004466); color: #fff; }
+        .t-2 { background: linear-gradient(135deg, #cc9900, #664d00); color: #fff; }
+        .t-5 { background: linear-gradient(135deg, #cc0066, #660033); color: #fff; }
+        .t-10 { background: linear-gradient(135deg, #6600cc, #330066); color: #fff; }
+        .t-cf { background: linear-gradient(135deg, #00b386, #004d39); color: #fff; }
+        .t-pa { background: linear-gradient(135deg, #e60000, #800000); color: #fff; }
+        .t-ch { background: linear-gradient(135deg, #009933, #004d1a); color: #fff; }
+        .t-ct { background: linear-gradient(135deg, #ff0055, #80002a); color: #fff; }
+
+        .ticket-title { font-size: 10px; font-weight: 900; }
+        .ticket-payout { font-size: 7px; font-weight: 700; margin-top: 1px; opacity: 0.9; }
+
+        /* Chips Controls Footer */
+        .control-footer {
+            width: 100%;
+            background: rgba(10, 0, 20, 0.85);
+            border-top: 1px solid rgba(255,255,255,0.15);
+            padding: 6px 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 0 0 14px 14px;
+        }
+        .chips-group {
+            display: flex;
+            gap: 4px;
+        }
+        .chip-btn {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            border: 2px dashed #fff;
+            background: radial-gradient(circle, #ff007f 0%, #880e4f 100%);
+            color: #fff;
+            font-size: 8px;
+            font-weight: 900;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.1s;
+        }
+        .chip-btn.active-chip {
+            border-style: solid;
+            border-color: #ffd700;
+            transform: scale(1.15);
+            box-shadow: 0 0 8px #ffd700;
+        }
+
+        /* Large Spin Action Button */
+        .spin-action-btn {
+            width: 58px;
+            height: 58px;
+            background: radial-gradient(circle, #ffd700 0%, #ff8c00 100%);
+            border: 3px solid #fff;
+            border-radius: 50%;
+            color: #000;
+            font-weight: 900;
+            font-size: 11px;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(255,215,0,0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-transform: uppercase;
+        }
+        .spin-action-btn:active { transform: scale(0.92); }
+
+        .bet-info-box {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            font-size: 9px;
+        }
+        .bet-amt-val { font-size: 12px; font-weight: 800; color: #ffd700; }
+    </style>
+</head>
+<body>
+
+    <!-- Header Bar -->
+    <div class="header">
+        <a href="https://dream66-gaming-1.onrender.com" class="back-btn">← Back</a>
+        <div class="title">🎡 CRAZY TIME LIVE</div>
+        <div class="balance-box">₹<span id="balance">0.00</span></div>
+    </div>
+
+    <!-- Main Game Viewport -->
+    <div class="game-viewport">
+
+        <!-- Top Slot Reel Area -->
+        <div class="top-slot-container">
+            <div class="slot-reel" id="topSlotBet">SPOT: 10X</div>
+            <div class="slot-reel" id="topSlotMult">MULT: 25X</div>
+        </div>
+
+        <!-- Canvas Based Accurate Wheel -->
+        <div class="wheel-container">
+            <div class="pointer-pin"></div>
+            <canvas id="wheelCanvas" width="160" height="160"></canvas>
+        </div>
+
+        <!-- Status & Win Banner -->
+        <div class="status-banner" id="statusBanner">SELECT TICKET & SPIN!</div>
+
+        <!-- Ticket Betting Grid -->
+        <div class="bet-grid">
+            <div class="ticket-card t-1 selected" onclick="selectTicket('1', 1, this)">
+                <span class="ticket-title">1</span>
+                <span class="ticket-payout">PAYS 1X</span>
+            </div>
+            <div class="ticket-card t-2" onclick="selectTicket('2', 2, this)">
+                <span class="ticket-title">2</span>
+                <span class="ticket-payout">PAYS 2X</span>
+            </div>
+            <div class="ticket-card t-5" onclick="selectTicket('5', 5, this)">
+                <span class="ticket-title">5</span>
+                <span class="ticket-payout">PAYS 5X</span>
+            </div>
+            <div class="ticket-card t-10" onclick="selectTicket('10', 10, this)">
+                <span class="ticket-title">10</span>
+                <span class="ticket-payout">PAYS 10X</span>
+            </div>
+
+            <div class="ticket-card t-cf" onclick="selectTicket('Coin Flip', 20, this)">
+                <span class="ticket-title" style="font-size:7px;">COIN FLIP</span>
+                <span class="ticket-payout">BONUS</span>
+            </div>
+            <div class="ticket-card t-pa" onclick="selectTicket('Pachinko', 25, this)">
+                <span class="ticket-title" style="font-size:7px;">PACHINKO</span>
+                <span class="ticket-payout">BONUS</span>
+            </div>
+            <div class="ticket-card t-ch" onclick="selectTicket('Cash Hunt', 50, this)">
+                <span class="ticket-title" style="font-size:7px;">CASH HUNT</span>
+                <span class="ticket-payout">BONUS</span>
+            </div>
+            <div class="ticket-card t-ct" onclick="selectTicket('Crazy Time', 100, this)">
+                <span class="ticket-title" style="font-size:7px;">CRAZY TIME</span>
+                <span class="ticket-payout">BONUS</span>
+            </div>
+        </div>
+
+        <!-- Control Footer -->
+        <div class="control-footer">
+            <div class="chips-group">
+                <button class="chip-btn active-chip" onclick="setChip(10, this)">10</button>
+                <button class="chip-btn" onclick="setChip(50, this)">50</button>
+                <button class="chip-btn" onclick="setChip(100, this)">100</button>
+            </div>
+
+            <button class="spin-action-btn" id="spinBtn" onclick="startStudioSpin()">
+                <span>SPIN</span>
+            </button>
+
+            <div class="bet-info-box">
+                <span style="color:#aaa;">TOTAL BET</span>
+                <span class="bet-amt-val" id="betDisplay">₹10</span>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const segments = [
+            { label: '1X', color: '#0088cc' },
+            { label: '2X', color: '#cc9900' },
+            { label: '5X', color: '#cc0066' },
+            { label: '10X', color: '#6600cc' },
+            { label: 'COIN FLIP', color: '#00b386' },
+            { label: 'PACHINKO', color: '#e60000' },
+            { label: 'CASH HUNT', color: '#009933' },
+            { label: 'CRAZY TIME', color: '#ff0055' }
+        ];
+
+        const canvas = document.getElementById('wheelCanvas');
+        const ctx = canvas.getContext('2d');
+        const numSegments = segments.length;
+        const arcSize = (2 * Math.PI) / numSegments; // Fixed syntax error here
+
+        function drawWheel() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = canvas.width / 2;
+
+            for (let i = 0; i < numSegments; i++) {
+                const angle = i * arcSize - Math.PI / 2;
+                
+                ctx.beginPath();
+                ctx.fillStyle = segments[i].color;
+                ctx.moveTo(centerX, centerY);
+                ctx.arc(centerX, centerY, radius, angle, angle + arcSize);
+                ctx.lineTo(centerX, centerY);
+                ctx.fill();
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = '#ffd700';
+                ctx.stroke();
+
+                ctx.save();
+                ctx.translate(centerX, centerY);
+                ctx.rotate(angle + arcSize / 2);
+                ctx.textAlign = 'right';
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 9px Segoe UI';
+                ctx.shadowColor = '#000000';
+                ctx.shadowBlur = 3;
+                ctx.fillText(segments[i].label, radius - 10, 3);
+                ctx.restore();
+            }
+
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 24, 0, 2 * Math.PI);
+            ctx.fillStyle = '#100120';
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#ffd700';
+            ctx.stroke();
+
+            ctx.fillStyle = '#ffd700';
+            ctx.font = 'bold 7px Segoe UI';
+            ctx.textAlign = 'center';
+            ctx.fillText('CRAZY', centerX, centerY - 2);
+            ctx.fillText('TIME', centerX, centerY + 7);
+        }
+
+        drawWheel();
+
+        let balance = parseFloat(localStorage.getItem('user_balance')) || 0.00;
+        let currentBet = 10;
+        let selectedTicketName = '1';
+        let selectedTicketMult = 1;
+        let currentRotation = 0;
+
+        updateUI();
+
+        function updateUI() {
+            document.getElementById('balance').innerText = balance.toFixed(2);
+            document.getElementById('betDisplay').innerText = '₹' + currentBet;
+            localStorage.setItem('user_balance', balance.toFixed(2));
+        }
+
+        function setChip(amount, element) {
+            document.querySelectorAll('.chip-btn').forEach(c => c.classList.remove('active-chip'));
+            element.classList.add('active-chip');
+            currentBet = amount;
+            updateUI();
+        }
+
+        function selectTicket(name, mult, element) {
+            document.querySelectorAll('.ticket-card').forEach(t => t.classList.remove('selected'));
+            element.classList.add('selected');
+            selectedTicketName = name;
+            selectedTicketMult = mult;
+            document.getElementById('statusBanner').innerText = `SELECTED: ${name} (${mult}X)`;
+        }
+
+        const topSlotSpots = ['1', '2', '5', '10', 'Coin Flip', 'Pachinko', 'Cash Hunt', 'Crazy Time'];
+        const topSlotMults = ['2X', '5X', '10X', '25X', '50X'];
+
+        function startStudioSpin() {
+            if (balance <= 0 || balance < currentBet) {
+                document.getElementById('statusBanner').innerText = "INSUFFICIENT BALANCE!";
+                return;
+            }
+
+            balance -= currentBet;
+            updateUI();
+
+            document.getElementById('spinBtn').disabled = true;
+            document.getElementById('statusBanner').innerText = "WHEEL SPINNING...";
+
+            let slotCount = 0;
+            let slotTimer = setInterval(() => {
+                let rSpot = topSlotSpots[Math.floor(Math.random() * topSlotSpots.length)];
+                let rMult = topSlotMults[Math.floor(Math.random() * topSlotMults.length)];
+                document.getElementById('topSlotBet').innerText = `SPOT: ${rSpot}`;
+                document.getElementById('topSlotMult').innerText = `MULT: ${rMult}`;
+                slotCount++;
+                if(slotCount > 10) clearInterval(slotTimer);
+            }, 100);
+
+            currentRotation += 1800 + Math.floor(Math.random() * 360);
+            document.getElementById('wheelCanvas').style.transform = `rotate(${currentRotation}deg)`;
+
+            setTimeout(() => {
+                finalizeStudioResult();
+            }, 3500);
+        }
+
+        function finalizeStudioResult() {
+            const luck = Math.random() * 100;
+            let winAmount = 0;
+
+            if (luck < 60) {
+                document.getElementById('statusBanner').innerText = "HOUSE WINS THIS ROUND!";
+            } else {
+                winAmount = currentBet * selectedTicketMult;
+                balance += winAmount;
+                document.getElementById('statusBanner').innerText = `JACKPOT WIN! WON ₹${winAmount.toFixed(2)}`;
+            }
+
+            updateUI();
+            document.getElementById('spinBtn').disabled = false;
+        }
+    </script>
+</body>
+</html>
