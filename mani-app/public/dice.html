@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>DREAM 66 - 7 Up 7 Down Live</title>
     <style>
         * {
@@ -10,17 +10,23 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            touch-action: manipulation;
         }
         body {
             background: #0d0104;
             color: #fff;
-            min-height: 100vh;
+            height: 100vh;
+            height: 100dvh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-between;
-            padding: 6px;
-            overflow-x: hidden;
+            justify-content: center;
+            padding: 4px;
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+            left: 0;
+            top: 0;
         }
 
         /* Header Bar */
@@ -34,6 +40,7 @@
             padding: 8px 12px;
             border-radius: 10px;
             border: 1px solid #ffd700;
+            margin-bottom: 4px;
         }
         .back-btn {
             background: linear-gradient(135deg, #ff416c, #ff4b2b);
@@ -52,18 +59,21 @@
             color: #ffd700;
             text-shadow: 0 0 5px rgba(255,215,0,0.5);
         }
-        .balance-box { font-size: 12px; color: #00ffcc; font-weight: 800; }
+        .balance-box { font-size: 12px; color: #00ffcc; font-weight: 900; }
 
-        /* Game Main Stage Viewport */
+        /* Game Main Stage Viewport - Full Screen Luxury */
         .game-viewport {
             width: 100%;
             max-width: 420px;
+            height: 100%;
+            max-height: 750px;
             background: radial-gradient(circle at center, #570a1a 0%, #1f0107 100%);
             border-radius: 16px;
             padding: 8px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: space-between;
             box-shadow: 0 10px 30px rgba(0,0,0,0.9);
             border: 2px solid #ff2a55;
             position: relative;
@@ -72,7 +82,7 @@
         /* Glass Dome Stage for 2 Dice */
         .dice-dome-stage {
             width: 100%;
-            height: 100px;
+            height: 95px;
             background: radial-gradient(circle, rgba(255,42,85,0.2) 0%, transparent 80%);
             border: 1px dashed rgba(255,215,0,0.4);
             border-radius: 12px;
@@ -80,12 +90,11 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            margin-bottom: 6px;
             position: relative;
         }
         .glass-dome {
             width: 95px;
-            height: 60px;
+            height: 55px;
             background: rgba(255, 255, 255, 0.12);
             border: 2px solid rgba(255, 215, 0, 0.6);
             border-radius: 40px 40px 10px 10px;
@@ -105,22 +114,22 @@
         }
 
         .dice {
-            width: 25px;
-            height: 25px;
+            width: 24px;
+            height: 24px;
             background: #fff;
             border-radius: 5px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 900;
-            font-size: 15px;
+            font-size: 14px;
             color: #b00;
             box-shadow: 0 3px 6px #000;
         }
 
         .status-banner {
             font-size: 10px;
-            font-weight: 800;
+            font-weight: 900;
             color: #ffd700;
             margin-top: 4px;
             text-transform: uppercase;
@@ -132,7 +141,6 @@
             display: grid;
             grid-template-columns: 1fr 0.8fr 1fr;
             gap: 5px;
-            margin-bottom: 6px;
         }
         .zone-card {
             border-radius: 8px;
@@ -161,7 +169,6 @@
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             gap: 4px;
-            margin-bottom: 8px;
         }
         .num-card {
             background: rgba(0, 0, 0, 0.4);
@@ -180,17 +187,17 @@
         .num-val { font-size: 11px; font-weight: 900; color: #fff; }
         .num-payout { font-size: 8px; color: #ffd700; }
 
-        /* Curved Chips Bar (Exact Casino Look) */
+        /* Curved Chips Bar */
         .chips-arc-container {
             width: 100%;
-            background: rgba(10, 0, 5, 0.85);
+            background: rgba(10, 0, 5, 0.9);
             border-radius: 12px;
             border-top: 1px solid rgba(255,215,0,0.3);
-            padding: 10px 4px 6px 4px;
+            padding: 8px 4px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .chips-row {
@@ -226,18 +233,18 @@
 
         .chip-item.active-chip {
             border: 3px solid #ffd700;
-            transform: scale(1.25);
-            box-shadow: 0 0 12px #ffd700;
+            transform: scale(1.2);
+            box-shadow: 0 0 10px #ffd700;
             z-index: 5;
         }
 
-        /* Action Buttons Row (UNDO, DOUBLE, ROLL) */
+        /* Action Buttons Row */
         .action-row {
             width: 100%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 8px;
+            padding: 0 4px;
         }
         .btn-sub-action {
             background: rgba(255, 255, 255, 0.1);
@@ -256,9 +263,9 @@
             background: linear-gradient(135deg, #ffd700, #ff8c00);
             border: 2px solid #fff;
             color: #000;
-            padding: 8px 24px;
+            padding: 8px 22px;
             border-radius: 20px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 900;
             cursor: pointer;
             box-shadow: 0 0 12px rgba(255,215,0,0.8);
@@ -268,15 +275,15 @@
 </head>
 <body>
 
-    <!-- Header Bar -->
-    <div class="header">
-        <a href="index.html" class="back-btn">← Back</a>
-        <div class="title">🎲 7 UP 7 DOWN</div>
-        <div class="balance-box">₹<span id="balance">0.00</span></div>
-    </div>
-
     <!-- Main Viewport -->
     <div class="game-viewport">
+
+        <!-- Header Bar -->
+        <div class="header">
+            <a href="https://dream66-gaming-1.onrender.com" class="back-btn">← Back</a>
+            <div class="title">🎲 7 UP 7 DOWN</div>
+            <div class="balance-box">₹<span id="balance">0.00</span></div>
+        </div>
 
         <!-- Glass Dome Stage -->
         <div class="dice-dome-stage">
@@ -317,7 +324,7 @@
             <div class="num-card" onclick="selectBet('NUM 12', 26, this)"><div class="num-val">12</div><div class="num-payout">1:26</div></div>
         </div>
 
-        <!-- Casino Curved Chips Bar (Exact Matches Photo) -->
+        <!-- Casino Curved Chips Bar -->
         <div class="chips-arc-container">
             <div class="chips-row">
                 <div class="chip-item chip-10 active-chip" onclick="setChip(10, this)">10</div>
@@ -338,6 +345,7 @@
     </div>
 
     <script>
+        // Balance strictly starting at 0.00
         let balance = parseFloat(localStorage.getItem('user_balance')) || 0.00;
         let currentBet = 10;
         let selectedBetName = 'DOWN';
@@ -408,24 +416,21 @@
             const luck = Math.random() * 100;
             let d1 = 1, d2 = 2;
 
-            // Economic Logic: 60% House Margin / 40% User RTP
             if (luck < 60) {
-                // Force Loss
                 if (selectedBetName === 'DOWN') {
-                    d1 = 4; d2 = 5; // Sum 9 (UP)
+                    d1 = 4; d2 = 5; 
                 } else if (selectedBetName === 'UP') {
-                    d1 = 1; d2 = 3; // Sum 4 (DOWN)
+                    d1 = 1; d2 = 3; 
                 } else {
-                    d1 = 2; d2 = 3; // Sum 5
+                    d1 = 2; d2 = 3; 
                 }
             } else {
-                // Force Win
                 if (selectedBetName === 'DOWN') {
-                    d1 = 2; d2 = 3; // Sum 5 (DOWN)
+                    d1 = 2; d2 = 3; 
                 } else if (selectedBetName === 'UP') {
-                    d1 = 5; d2 = 5; // Sum 10 (UP)
+                    d1 = 5; d2 = 5; 
                 } else if (selectedBetName === 'SEVEN') {
-                    d1 = 3; d2 = 4; // Sum 7
+                    d1 = 3; d2 = 4; 
                 } else {
                     d1 = 1; d2 = 1;
                 }
