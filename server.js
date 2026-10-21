@@ -79,25 +79,35 @@ let jetxNextTarget = 2.00;
 let aviatorManualSet = false;
 let jetxManualSet = false;
 
-// Fixed Routes to prevent Cannot GET errors and support Single Page Navigation
+// --- FIXED ROUTING FOR GAMES & PAGES (Prevents Homepage Redirect Issues) ---
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'mani-app', 'public', 'index.html'));
 });
 
+// Dedicated route for 13 games inside public/games folder
+app.get('/games/:gameName', (req, res) => {
+    let gameName = req.params.gameName;
+    if (!gameName.includes('.')) gameName += '.html';
+    const gamePath = path.join(__dirname, 'mani-app', 'public', 'games', gameName);
+    
+    res.sendFile(gamePath, (err) => {
+        if (err) {
+            res.sendFile(path.join(__dirname, 'mani-app', 'public', 'index.html'));
+        }
+    });
+});
+
+// General pages route (payment.html, profile.html, etc.)
 app.get('/:page', (req, res, next) => {
     let pageName = req.params.page;
+    if (pageName === 'games') return next();
     if (!pageName.includes('.')) pageName += '.html';
     
     const filePath = path.join(__dirname, 'mani-app', 'public', pageName);
     
     res.sendFile(filePath, (err) => {
         if (err) {
-            const gamePath = path.join(__dirname, 'mani-app', 'public', 'games', pageName);
-            res.sendFile(gamePath, (err2) => {
-                if (err2) {
-                    res.sendFile(path.join(__dirname, 'mani-app', 'public', 'index.html'));
-                }
-            });
+            res.sendFile(path.join(__dirname, 'mani-app', 'public', 'index.html'));
         }
     });
 });
@@ -328,7 +338,7 @@ app.post('/api/admin/action', async (req, res) => {
     }
 });
 
-app.get('/api/admin/detailed-stats', async (req, res) => {
+app.get('/api/admin/detailed-stats', async (row, res) => {
     try {
         const users = await User.find({}, { password: 0 });
         res.status(200).json({ success: true, users, totalUsersCount: users.length });
@@ -340,7 +350,7 @@ app.get('/api/admin/detailed-stats', async (req, res) => {
 app.get('/api/admin/pending-transactions', async (req, res) => {
     try {
         const pendingDeposits = await Transaction.find({ type: 'Deposit', status: 'Pending' }).sort({ date: -1 });
-        const pendingWithdrawals = await Transaction.find({ type: 'Withdrawal', status: 'Pending' }).sort({ date: -1 });
+        const pendingWithdrawals = awaitTransaction.find({ type: 'Withdrawal', status: 'Pending' }).sort({ date: -1 });
         res.status(200).json({ success: true, pendingDeposits, pendingWithdrawals });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
