@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 const http = require('http');
 const { Server } = require('socket.io');
 const mongoose = require('mongoose');
@@ -20,8 +21,12 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json());
 app.use(cors());
 
-// Static files route for mani-app/public folder
-app.use(express.static(path.join(__dirname, 'mani-app', 'public')));
+// Automatic path detection for Render & Local (Checks mani-app/public or public)
+const publicPath = fs.existsSync(path.join(__dirname, 'mani-app', 'public'))
+    ? path.join(__dirname, 'mani-app', 'public')
+    : (fs.existsSync(path.join(__dirname, 'public')) ? path.join(__dirname, 'public') : __dirname);
+
+app.use(express.static(publicPath));
 
 // MongoDB Connection
 const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://sarathisdh_db_user:Sarathi2007@cluster0.qmjrufz.mongodb.net/dream66?retryWrites=true&w=majority&appName=Cluster0";
@@ -79,9 +84,9 @@ let jetxNextTarget = 2.00;
 let aviatorManualSet = false;
 let jetxManualSet = false;
 
-// --- PERFECT ROUTING FOR FLAT PUBLIC FOLDER STRUCTURE ---
+// --- ROBUST ROUTING MAPPED TO DETECTED PUBLIC PATH ---
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'mani-app', 'public', 'index.html'));
+    res.sendFile(path.join(publicPath, 'index.html'));
 });
 
 app.get('/:page', (req, res, next) => {
@@ -89,11 +94,11 @@ app.get('/:page', (req, res, next) => {
     if (pageName.startsWith('api')) return next();
     if (!pageName.includes('.')) pageName += '.html';
     
-    const filePath = path.join(__dirname, 'mani-app', 'public', pageName);
+    const filePath = path.join(publicPath, pageName);
     
     res.sendFile(filePath, (err) => {
         if (err) {
-            res.sendFile(path.join(__dirname, 'mani-app', 'public', 'index.html'));
+            res.sendFile(path.join(publicPath, 'index.html'));
         }
     });
 });
